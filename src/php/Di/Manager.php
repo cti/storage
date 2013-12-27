@@ -72,13 +72,16 @@ class Manager
             $callback = $this->getCallback($class, '__construct');
             $instance = $callback->launch(null, $parameters, $this);
         }
-
         foreach ($configuration as $k => $v) {
             if (property_exists($class, $k)) {
                 if (Reflection::getReflectionProperty($class, $k)->isPublic()) {
                     $instance->$k = $v;
                 }
             }
+        }
+
+        if(method_exists($class, 'init')) {
+            $this->call($instance, 'init');
         }
 
         return $instance;
@@ -90,7 +93,7 @@ class Manager
      * @param $arguments
      * @return mixed
      */
-    public function call($instance, $method, $arguments)
+    public function call($instance, $method, $arguments = array())
     {
         if(!is_object($instance)) {
             $class = $instance;
@@ -109,9 +112,10 @@ class Manager
      */
     protected function getCallback($class, $method)
     {
-        if (!isset($this->callback[$class])) {
-            $this->callback[$class] = new Callback($class, $method);
+        $key = $class . '.' . $method;
+        if (!isset($this->callback[$key])) {
+            $this->callback[$key] = new Callback($class, $method);
         }
-        return $this->callback[$class];
+        return $this->callback[$key];
     }
 }

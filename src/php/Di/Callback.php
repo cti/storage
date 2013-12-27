@@ -24,6 +24,11 @@ class Callback {
     protected $arguments = array();
 
     /**
+     * @var int
+     */
+    protected $requiredCount = 0;
+
+    /**
      * @param $class
      * @param $method
      */
@@ -34,6 +39,9 @@ class Callback {
 
         $reflection = Reflection::getReflectionMethod($class, $method);
         foreach ($reflection->getParameters() as $parameter) {
+            if(!$parameter->isDefaultValueAvailable()) {
+                $this->requiredCount++;
+            }
             if($parameter->getClass()) {
                 $this->arguments[] = new Reference($parameter->getClass()->getName());
 
@@ -53,7 +61,7 @@ class Callback {
     function launch($instance = null, $parameters, Manager $manager)
     {
         $arguments = array();
-        foreach($this->arguments as $argument) {
+        foreach($this->arguments as $index => $argument) {
             if($argument instanceof Reference) {
                 $arguments[] = $argument->getInstance($manager);
             } elseif(isset($parameters[$argument])) {
@@ -62,7 +70,9 @@ class Callback {
                 if(count(array_filter(array_keys($parameters), 'is_int')) > 0) {
                     $arguments[] = array_shift($parameters);
                 } else {
-                    throw new Exception("Key $argument not found!");
+                    if($index < $this->requiredCount) {
+                        throw new Exception("Key $argument not found!");
+                    }
                 }
             }
         }

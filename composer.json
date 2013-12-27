@@ -14,7 +14,9 @@
     ],
     "autoload": {
         "psr-0": {
-            "Di\\": "src/php/"
+            "Application\\": "src/php/",
+            "Di\\": "src/php/",
+            "Util\\": "src/php/"
         }
     }
 }
