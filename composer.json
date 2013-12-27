@@ -14,7 +14,7 @@
     ],
     "autoload": {
         "psr-0": {
-            "Integration\\": "src/php"
+            "Di\\": "src/php/"
         }
     }
 }
