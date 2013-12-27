@@ -1,0 +1,20 @@
+{
+    "name": "nekufa/base",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/nekufa/base"
+        }
+    ],
+    "authors": [
+        {
+            "name": "Dmitry.Krokhin",
+            "email": "nekufa@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Integration\\": "src/php"
+        }
+    }
+}
