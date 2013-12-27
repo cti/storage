@@ -6,7 +6,8 @@ namespace Di;
  * Class Callback
  * @package Di
  */
-class Callback {
+class Callback
+{
 
     /**
      * @var string
@@ -39,10 +40,10 @@ class Callback {
 
         $reflection = Reflection::getReflectionMethod($class, $method);
         foreach ($reflection->getParameters() as $parameter) {
-            if(!$parameter->isDefaultValueAvailable()) {
+            if (!$parameter->isDefaultValueAvailable()) {
                 $this->requiredCount++;
             }
-            if($parameter->getClass()) {
+            if ($parameter->getClass()) {
                 $this->arguments[] = new Reference($parameter->getClass()->getName());
 
             } else {
@@ -61,22 +62,22 @@ class Callback {
     function launch($instance = null, $parameters, Manager $manager)
     {
         $arguments = array();
-        foreach($this->arguments as $index => $argument) {
-            if($argument instanceof Reference) {
+        foreach ($this->arguments as $index => $argument) {
+            if ($argument instanceof Reference) {
                 $arguments[] = $argument->getInstance($manager);
-            } elseif(isset($parameters[$argument])) {
+            } elseif (isset($parameters[$argument])) {
                 $arguments[] = $parameters[$argument];
             } else {
-                if(count(array_filter(array_keys($parameters), 'is_int')) > 0) {
+                if (count(array_filter(array_keys($parameters), 'is_int')) > 0) {
                     $arguments[] = array_shift($parameters);
                 } else {
-                    if($index < $this->requiredCount) {
+                    if ($index < $this->requiredCount) {
                         throw new Exception("Key $argument not found!");
                     }
                 }
             }
         }
-        if($this->method == '__construct') {
+        if ($this->method == '__construct') {
             return Reflection::getReflectionClass($this->class)->newInstanceArgs($arguments);
         }
 

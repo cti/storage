@@ -89,7 +89,7 @@ class Web extends Base
             }
             throw new Exception("Not found", 404);
 
-        } catch(Exception $e) {
+        } catch (Exception $e) {
 
             if (method_exists($class, 'catchException')) {
                 $this->call($class, 'catchException', array($e));

@@ -80,7 +80,7 @@ class Manager
             }
         }
 
-        if(method_exists($class, 'init')) {
+        if (method_exists($class, 'init')) {
             $this->call($instance, 'init');
         }
 
@@ -95,7 +95,7 @@ class Manager
      */
     public function call($instance, $method, $arguments = array())
     {
-        if(!is_object($instance)) {
+        if (!is_object($instance)) {
             $class = $instance;
             $instance = $this->get($instance);
         } else {

@@ -4,7 +4,8 @@ namespace Application;
 
 use Di\Manager;
 
-abstract class Base {
+abstract class Base
+{
     /**
      * @var \Di\Manager
      */
@@ -18,11 +19,13 @@ abstract class Base {
         $this->manager = $manager;
     }
 
-    function get($class) {
+    function get($class)
+    {
         return $this->manager->get($class);
     }
 
-    function call($class, $method, $arguments = array()) {
+    function call($class, $method, $arguments = array())
+    {
         return $this->manager->call($class, $method, $arguments);
     }
 }

@@ -6,6 +6,7 @@ namespace Di;
  * Class Exception
  * @package Di
  */
-class Exception extends \Exception {
+class Exception extends \Exception
+{
 
 } 

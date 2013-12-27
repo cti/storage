@@ -11,7 +11,7 @@ class String
 
     public static function pluralize($string)
     {
-        $index = strlen($string)-1;
+        $index = strlen($string) - 1;
         $last = $string[$index];
         if ($last == 'e') {
             return $string . 's';
@@ -19,10 +19,10 @@ class String
         if ($last == 'y') {
             $string[$index] = 'i';
 
-            return $string. 'es';
+            return $string . 'es';
         }
 
-        return $string.'s';
+        return $string . 's';
     }
 
     public static function formatBytes($size, $precision = 2)

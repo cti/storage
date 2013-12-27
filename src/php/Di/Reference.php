@@ -6,7 +6,8 @@ namespace Di;
  * Class Reference
  * @package Di
  */
-class Reference {
+class Reference
+{
 
     /**
      * @var string
