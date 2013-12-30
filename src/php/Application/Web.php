@@ -89,11 +89,13 @@ class Web extends Base
                 }
             }
 
-            // restore chain and process it
+            // restore chain
+            if ($slug != 'index') {
+                array_unshift($this->chain, $slug);
+            }
+
+            // direct chain processing
             if (method_exists($class, 'processChain')) {
-                if ($slug != 'index') {
-                    array_unshift($this->chain, $slug);
-                }
                 return $this->call($class, 'processChain', $this->chain);
             }
 
