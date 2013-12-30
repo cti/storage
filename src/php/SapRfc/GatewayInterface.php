@@ -20,4 +20,13 @@ interface GatewayInterface
      */
     public function debug($name);
 
-} 
+    /**
+     * @param Profiler $profiler
+     */
+    public function setProfiler(Profiler $profiler);
+
+    /**
+     * @return Profiler
+     */
+    public function getProfiler();
+}

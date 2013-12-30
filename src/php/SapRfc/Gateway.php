@@ -7,6 +7,22 @@ use Exception;
 class Gateway implements GatewayInterface
 {
     /**
+     * encoding that saprfc connection used
+     * @var string
+     */
+    public $sapEncoding = 'CP1251';
+
+    /**
+     * @var string
+     */
+    public $applicationEncoding = 'UTF-8';
+
+    /**
+     * @var Profiler
+     */
+    private $profiler;
+
+    /**
      * errors description
      * @var array
      */
@@ -45,7 +61,7 @@ class Gateway implements GatewayInterface
         $this->connection = saprfc_open($config);
 
         if (!$this->connection) {
-            throw new Exception(iconv('CP1251', 'UTF-8', saprfc_error()));
+            throw new Exception($this->decodeString(saprfc_error()));
         }
     }
 
@@ -58,6 +74,8 @@ class Gateway implements GatewayInterface
      */
     public function execute($name, $import, $export)
     {
+        $start = microtime(1);
+
         $fce = saprfc_function_discover($this->connection, $name);
 
         if (!$fce) {
@@ -72,12 +90,12 @@ class Gateway implements GatewayInterface
                         $row = get_object_vars($row);
                     }
                     foreach ($row as $row_key => $row_value) {
-                        $row[$row_key] = iconv('UTF-8', 'CP1251', $row_value);
+                        $row[$row_key] = $this->encodeString($row_value);
                     }
                     saprfc_table_insert($fce, $k, $row, $index + 1);
                 }
             } else {
-                saprfc_import($fce, $k, iconv('UTF-8', 'CP1251', $v));
+                saprfc_import($fce, $k, $this->encodeString($v));
             }
         }
 
@@ -85,6 +103,15 @@ class Gateway implements GatewayInterface
 
         if ($result != SAPRFC_OK) {
             $message = isset($this->errors[$result]) ? $this->errors[$result] : 'Unknown error';
+            if ($this->profiler) {
+                $this->profiler->register(array(
+                    'name' => $name,
+                    'import' => $import,
+                    'success' => false,
+                    'message' => $message,
+                    'time' => microtime(1) - $start,
+                ));
+            }
             throw new Exception($message);
         }
 
@@ -95,7 +122,7 @@ class Gateway implements GatewayInterface
 
             if ($count == -1) {
                 // export param
-                $data = iconv('CP1251', 'UTF-8', saprfc_export($fce, $table));
+                $data = $this->decodeString(saprfc_export($fce, $table));
 
             } else {
                 // export table
@@ -103,12 +130,22 @@ class Gateway implements GatewayInterface
                 for ($i = 1; $i <= $count; $i++) {
                     $row = saprfc_table_read($fce, $table, $i);
                     foreach ($row as $k => $v) {
-                        $row[$k] = iconv('CP1251', 'UTF-8', $v);
+                        $row[$k] = $this->decodeString($v);
                     }
                     $data[] = (object)$row;
                 }
             }
             $result[$table] = $data;
+        }
+
+        if ($this->profiler) {
+            $this->profiler->register(array(
+                'name' => $name,
+                'import' => $import,
+                'export' => $export,
+                'success' => true,
+                'time' => microtime(1) - $start,
+            ));
         }
 
         return (object)$result;
@@ -125,5 +162,45 @@ class Gateway implements GatewayInterface
         $fce = saprfc_function_discover($this->connection, $name);
         saprfc_function_debug_info($fce);
         return ob_get_clean();
+    }
+
+    /**
+     * @param Profiler $profiler
+     */
+    public function setProfiler(Profiler $profiler)
+    {
+        $this->profiler = $profiler;
+    }
+
+    /**
+     * @return Profiler
+     */
+    public function getProfiler()
+    {
+        return $this->profiler;
+    }
+
+    /**
+     * @param $string
+     * @return string
+     */
+    public function decodeString($string)
+    {
+        if($this->applicationEncoding == $this->sapEncoding) {
+            return $string;
+        }
+        return iconv($this->sapEncoding, $this->applicationEncoding, $string);
+    }
+
+    /**
+     * @param $string
+     * @return string
+     */
+    public function encodeString($string)
+    {
+        if($this->applicationEncoding == $this->sapEncoding) {
+            return $string;
+        }
+        return iconv($this->applicationEncoding, $this->sapEncoding, $string);
     }
 }

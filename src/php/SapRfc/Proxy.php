@@ -7,6 +7,11 @@ use Exception;
 class Proxy implements GatewayInterface
 {
     /**
+     * @var Profiler
+     */
+    private $profiler;
+
+    /**
      * proxy url
      * @var string
      */
@@ -18,16 +23,16 @@ class Proxy implements GatewayInterface
     public $extra = array();
 
     /**
-     * timeout seconds
+     * request timeout in seconds
      * @var int
      */
     public $timeout = 1800;
 
     /**
-     * @param SapRfc $sap
+     * @param GatewayInterface $sap
      * @param array $params
      */
-    public function processRequest(SapRfc $sap, $params = null)
+    public function processRequest(GatewayInterface $sap, $params = null)
     {
         try {
 
@@ -45,12 +50,21 @@ class Proxy implements GatewayInterface
                 throw new Exception("No valid request found");
             }
 
+            if($params['enableProfiler'] && !$sap->getProfiler()) {
+                $sap->setProfiler(new Profiler());
+            }
+
             $data = $sap->$method($request->name, $request->import, $request->export);
-            echo json_encode(array('data' => $data));
+            $result = array('data' => $data);
 
         } catch (Exception $e) {
-            echo json_encode(array('exception' => $e->getMessage()));
+            $result = array('exception' => $e->getMessage());
         }
+
+        if($sap->getProfiler()) {
+            $result['profiler'] = $sap->getProfiler()->getData();
+        }
+        echo json_encode($result);
     }
 
     /**
@@ -69,6 +83,7 @@ class Proxy implements GatewayInterface
                 'timeout' => $this->timeout,
                 'content' => http_build_query(array(
                     'method' => 'execute',
+                    'enableProfiler' => $this->profiler != null,
                     'request' => json_encode(array(
                         'name' => $name,
                         'import' => $import,
@@ -83,6 +98,15 @@ class Proxy implements GatewayInterface
             throw new Exception("Error Processing Request.<br/>" . $text);
         } elseif (isset($result->exception)) {
             throw new Exception($result->exception);
+        }
+
+        if(isset($result->profiler)) {
+            if(!$this->profiler) {
+                $this->profiler = new Profiler();
+            }
+            foreach($result->profiler as $row) {
+                $this->profiler->register($row);
+            }
         }
 
         return $result->data;
@@ -119,5 +143,21 @@ class Proxy implements GatewayInterface
         }
 
         return $result->data;
+    }
+
+    /**
+     * @param Profiler $profiler
+     */
+    public function setProfiler(Profiler $profiler)
+    {
+        $this->profiler = $profiler;
+    }
+
+    /**
+     * @return Profiler
+     */
+    public function getProfiler()
+    {
+        return $this->profiler;
     }
 }
