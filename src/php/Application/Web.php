@@ -66,18 +66,20 @@ class Web extends Base
 
     function process($class)
     {
-        if (!count($this->chain)) {
-            $nick = 'index';
-        } else {
-            $nick = array_shift($this->chain);
-        }
-
-        $slug = $this->convertSlug($nick);
-
         try {
+            // define name
+            if (!count($this->chain)) {
+                $slug = 'index';
+            } else {
+                $slug = array_shift($this->chain);
+            }
+
+            $name = $this->convertSlug($slug);
+
+            // search method
             foreach (explode(' ', 'get post match') as $http_method) {
                 if ($http_method == $this->method || $http_method == 'match') {
-                    $method_name = $http_method . $slug;
+                    $method_name = $http_method . $name;
                     if (method_exists($class, $method_name)) {
                         if (method_exists($class, 'validateCall')) {
                             $this->call($class, 'validateCall', array($method_name));
@@ -86,6 +88,16 @@ class Web extends Base
                     }
                 }
             }
+
+            // restore chain and process it
+            if (method_exists($class, 'processChain')) {
+                if ($slug != 'index') {
+                    array_unshift($this->chain, $slug);
+                }
+                return $this->call($class, 'processChain', $this->chain);
+            }
+
+            // url not found
             throw new Exception("Not found", 404);
 
         } catch (Exception $e) {
