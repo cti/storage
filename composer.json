@@ -16,8 +16,8 @@
         "psr-0": {
             "Application\\": "src/php/",
             "Di\\": "src/php/",
-            "Integration\\": "src/php/",
-            "Util\\": "src/php/"
+            "Direct\\": "src/php/",
+            "Integration\\": "src/php/"
         }
     }
 }

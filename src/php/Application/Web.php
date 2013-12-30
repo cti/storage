@@ -109,7 +109,7 @@ class Web extends Base
         } catch (Exception $e) {
 
             if (method_exists($class, 'catchException')) {
-                $this->call($class, 'catchException', array($e));
+                $this->get($class)->catchException($e);
 
             } else {
                 echo $e->getMessage();

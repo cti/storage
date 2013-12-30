@@ -72,7 +72,7 @@ class Callback
                     $arguments[] = array_shift($parameters);
                 } else {
                     if ($index < $this->requiredCount) {
-                        throw new Exception("Key $argument not found!");
+                        throw new Exception(sprintf("Key %s for method %s::%s not found!", $argument, $this->class, $this->method));
                     }
                 }
             }
