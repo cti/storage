@@ -1,10 +1,10 @@
 <?php
 
-namespace Integration;
+namespace SapRfc;
 
 use Exception;
 
-class SapRfc implements SapRfcInterface
+class Gateway implements GatewayInterface
 {
     /**
      * errors description

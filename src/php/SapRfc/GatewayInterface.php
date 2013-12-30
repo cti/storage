@@ -1,14 +1,9 @@
 <?php
 
-namespace Integration;
+namespace SapRfc;
 
-/**
- * Interface SapRfcInterface
- * @package Integration
- */
-interface SapRfcInterface
+interface GatewayInterface
 {
-
     /**
      * Execute function method
      * @param $name
@@ -24,4 +19,5 @@ interface SapRfcInterface
      * @return mixed
      */
     public function debug($name);
-}
+
+} 

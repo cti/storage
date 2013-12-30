@@ -1,10 +1,10 @@
 <?php
 
-namespace Integration;
+namespace SapRfc;
 
 use Exception;
 
-class SapRfcProxy implements SapRfcInterface
+class Proxy implements GatewayInterface
 {
     /**
      * proxy url
