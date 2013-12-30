@@ -1,7 +1,6 @@
 <?php
 
 namespace Direct;
-use ___PHPSTORM_HELPERS\static;
 
 /**
  * Class Transaction
