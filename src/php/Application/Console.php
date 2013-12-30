@@ -2,8 +2,6 @@
 
 namespace Application;
 
-use Util\String;
-
 class Console extends Base
 {
     private $arguments;
@@ -22,7 +20,7 @@ class Console extends Base
             $command = 'index';
         }
 
-        $method = 'action' . String::convertToCamelCase($command);
+        $method = 'action' . $this->convertSlug($command);
 
         if (method_exists($class, $method)) {
             return $this->call($class, $method, $this->arguments);

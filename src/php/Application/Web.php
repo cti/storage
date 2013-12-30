@@ -3,7 +3,6 @@
 namespace Application;
 
 use Exception;
-use Util\String;
 
 class Web extends Base
 {
@@ -73,7 +72,7 @@ class Web extends Base
             $nick = array_shift($this->chain);
         }
 
-        $slug = String::convertToCamelCase($nick);
+        $slug = $this->convertSlug($nick);
 
         try {
             foreach (explode(' ', 'get post match') as $http_method) {
