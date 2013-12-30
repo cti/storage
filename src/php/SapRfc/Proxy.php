@@ -48,7 +48,7 @@ class Proxy implements GatewayInterface
                 throw new Exception("No valid request found");
             }
 
-            if($params['enableProfiler'] && !$sap->getProfiler()) {
+            if ($params['enableProfiler'] && !$sap->getProfiler()) {
                 $sap->setProfiler(new Profiler());
             }
 
@@ -59,7 +59,7 @@ class Proxy implements GatewayInterface
             $result = array('exception' => $e->getMessage());
         }
 
-        if($sap->getProfiler()) {
+        if ($sap->getProfiler()) {
             $result['profiler'] = $sap->getProfiler()->getData();
         }
         echo json_encode($result);
@@ -98,11 +98,11 @@ class Proxy implements GatewayInterface
             throw new Exception($result->exception);
         }
 
-        if(isset($result->profiler)) {
-            if(!$this->profiler) {
+        if (isset($result->profiler)) {
+            if (!$this->profiler) {
                 $this->profiler = new Profiler();
             }
-            foreach($result->profiler as $row) {
+            foreach ($result->profiler as $row) {
                 $this->profiler->register($row);
             }
         }

@@ -183,7 +183,7 @@ class Gateway implements GatewayInterface
      */
     public function decodeString($string)
     {
-        if($this->applicationEncoding == $this->sapEncoding) {
+        if ($this->applicationEncoding == $this->sapEncoding) {
             return $string;
         }
         return iconv($this->sapEncoding, $this->applicationEncoding, $string);
@@ -195,7 +195,7 @@ class Gateway implements GatewayInterface
      */
     public function encodeString($string)
     {
-        if($this->applicationEncoding == $this->sapEncoding) {
+        if ($this->applicationEncoding == $this->sapEncoding) {
             return $string;
         }
         return iconv($this->applicationEncoding, $this->sapEncoding, $string);
