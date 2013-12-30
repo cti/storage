@@ -2,8 +2,6 @@
 
 namespace SapRfc;
 
-use Exception;
-
 class Proxy implements GatewayInterface
 {
     /**
@@ -71,7 +69,7 @@ class Proxy implements GatewayInterface
      * @param $name
      * @param $import
      * @param $export
-     * @throws \Exception
+     * @throws Exception
      * @return object
      */
     public function execute($name, $import, $export)
@@ -115,7 +113,7 @@ class Proxy implements GatewayInterface
     /**
      * Get debug information
      * @param $name
-     * @throws \Exception
+     * @throws Exception
      * @return mixed
      */
     public function debug($name)

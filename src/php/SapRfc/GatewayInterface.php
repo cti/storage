@@ -9,6 +9,7 @@ interface GatewayInterface
      * @param $name
      * @param $import
      * @param $export
+     * @throws Exception
      * @return object
      */
     public function execute($name, $import, $export);

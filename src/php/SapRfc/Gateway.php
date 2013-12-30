@@ -2,8 +2,6 @@
 
 namespace SapRfc;
 
-use Exception;
-
 class Gateway implements GatewayInterface
 {
     /**
@@ -51,7 +49,7 @@ class Gateway implements GatewayInterface
 
     /**
      * @param $config
-     * @throws \Exception
+     * @throws Exception
      */
     function __construct($config)
     {
@@ -66,10 +64,10 @@ class Gateway implements GatewayInterface
     }
 
     /**
-     * @param $name
-     * @param $import
-     * @param $export
-     * @throws \Exception
+     * @param string $name
+     * @param array $import
+     * @param array $export
+     * @throws Exception
      * @return object
      */
     public function execute($name, $import, $export)
@@ -82,7 +80,6 @@ class Gateway implements GatewayInterface
             throw new Exception("Error discovering " . $name, 1);
         }
 
-        $export = array();
         foreach ($import as $k => $v) {
             if (is_array($v)) {
                 foreach ($v as $index => $row) {
