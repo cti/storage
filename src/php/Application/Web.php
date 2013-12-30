@@ -64,6 +64,10 @@ class Web extends Base
         }
     }
 
+    /**
+     * @param $class
+     * @return mixed
+     */
     function process($class)
     {
         try {

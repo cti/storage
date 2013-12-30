@@ -2,10 +2,21 @@
 
 namespace Application;
 
+/**
+ * Class Console
+ * @package Application
+ */
 class Console extends Base
 {
+    /**
+     * command line arguments
+     * @var array
+     */
     private $arguments;
 
+    /**
+     * initialization
+     */
     function init()
     {
         global $argv;
@@ -13,6 +24,11 @@ class Console extends Base
         $this->arguments = $argv;
     }
 
+    /**
+     * @param $class
+     * @return mixed
+     * @throws \Exception
+     */
     function process($class)
     {
         $command = array_shift($this->arguments);

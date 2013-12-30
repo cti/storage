@@ -4,6 +4,10 @@ namespace Application;
 
 use Di\Manager;
 
+/**
+ * Base class for all Applications
+ * @package Application
+ */
 abstract class Base
 {
     /**

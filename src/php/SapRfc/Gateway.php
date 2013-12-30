@@ -5,7 +5,7 @@ namespace SapRfc;
 class Gateway implements GatewayInterface
 {
     /**
-     * encoding that saprfc connection used
+     * encoding that sap_rfc connection used
      * @var string
      */
     public $sapEncoding = 'CP1251';
