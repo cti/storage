@@ -43,6 +43,8 @@ class CoffeeExtJs
 
             $out = dirname($js);
 
+            $this->locator->createDirectory($out);
+
             $command = "coffee -bo $out -c $coffee";
 
             $data = array();

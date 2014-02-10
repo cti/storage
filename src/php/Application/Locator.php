@@ -32,7 +32,7 @@ class Locator
         return $this->project . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $args);
     }
 
-    public function project($path)
+    public function project($path = '')
     {
         $args = func_get_args();
         if(count($args) == 1) {
@@ -41,12 +41,24 @@ class Locator
         return $this->project . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $args);
     }
 
-    public function base()
+    public function base($path = '')
     {
         $args = func_get_args();
         if(count($args) == 1) {
             $args = explode(' ', $args[0]);
         }
         return $this->base . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $args);
+    }
+
+    public function createDirectory($location)
+    {
+        if (!is_dir($location)) {
+            $parent = dirname($location);
+            if(!is_dir($parent)) {
+                $this->createDirectory($parent);
+            }
+            mkdir($location);
+        } 
+
     }
 }
