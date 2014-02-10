@@ -64,6 +64,17 @@ class Web extends Base
         }
     }
 
+
+    /**
+     * get Url
+     * @param  string $location 
+     * @return string
+     */
+    function getUrl($location = '')
+    {
+        return $this->base . implode('/', func_get_args());
+    }
+
     /**
      * @param $class
      * @return mixed
