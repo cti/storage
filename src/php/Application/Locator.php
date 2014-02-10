@@ -13,7 +13,7 @@ class Locator
     {
         $this->locations = array(
             $this->project = $project,
-            $this->base = dirname(dirname(__DIR__))
+            $this->base = dirname(dirname(dirname(__DIR__)))
         );
     }
 
