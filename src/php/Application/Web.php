@@ -66,7 +66,7 @@ class Web extends Base
 
 
     /**
-     * get Url
+     * generate relative aplication url
      * @param  string $location 
      * @return string
      */

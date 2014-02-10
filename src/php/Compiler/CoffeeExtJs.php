@@ -31,6 +31,7 @@ class CoffeeExtJs
         $pack = $this->locator->path('public js '. $path .'.js');
 
         if(!file_exists($pack) || md5(file_get_contents($pack)) != md5($content)) {
+            $this->locator->createDirectory(dirname($pack));
             file_put_contents($pack, $content);
         }
 
