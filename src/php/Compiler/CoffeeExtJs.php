@@ -21,10 +21,8 @@ class CoffeeExtJs
         $coffee = $this->locator->path('resources coffee ' . $path . '.coffee');
         $js = $this->locator->path('out js '. $path .'.js');
 
-        $this->manageDependencies($coffee, $js);
-
         $content = '';
-        foreach($this->scriptList as $script) {
+        foreach($this->manageDependencies($coffee, $js) as $script) {
             $content .= file_get_contents($script);
         }
 
@@ -38,8 +36,12 @@ class CoffeeExtJs
         return 'public/js/'.$path.'.js';
     }
 
-    protected function validate($coffee, $js)
+    protected function manageDependencies($coffee, $js)
     {
+        if (in_array($js, $this->scriptList)) {
+            return;
+        }
+
         if (!file_exists($js) || filemtime($js) < filemtime($coffee)) {
 
             $out = dirname($js);
@@ -54,15 +56,6 @@ class CoffeeExtJs
                 throw new \Exception('Execution failed: ' . $command);
             }
         }
-    }
-
-
-    protected function manageDependencies($coffee, $js)
-    {
-        if (in_array($js, $this->scriptList)) {
-            return;
-        }
-        $this->validate($coffee, $js);
 
         $dependencies = array();
 
@@ -74,12 +67,15 @@ class CoffeeExtJs
             $path = implode(' ', explode('.', $dependency));
             $dependency_coffee = $this->locator->path('src coffee '.$path.'.coffee');
             $dependency_js = $this->locator->path('out js '.$path.'.js');
-            $this->manageDependencies($dependency_coffee, $dependency_js);
+            foreach($this->manageDependencies($dependency_coffee, $dependency_js) as $child_dependency_script) {
+                $scriptList[] = $child_dependency_script;
+            }
 
             $dependencies[] = $dependency;
         }
 
-        $this->scriptList[] = $js;
+        $scriptList[] = $js;
+        return $scriptList;
     }
 
     public function getScriptDependencies($text)
