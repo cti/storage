@@ -80,6 +80,35 @@ class Manager
             }
         }
 
+        foreach(Reflection::getReflectionClass($class)->getProperties() as $property) {
+            if(stristr($property->getDocComment(), '@inject')) {
+                foreach(explode("\n", $property->getDocComment()) as $line) {
+                    if(stristr($line, '@var')) {
+
+                        foreach(explode(' ', substr($line, stripos($line, '@var') + 4)) as $item) {
+                            if(strlen($item) > 0) {
+                                if($item[0] == '\\') {
+                                    $item = substr($item, 1);
+                                }
+                                $injected_class = trim(str_replace("\r", '', $item));
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(!$property->isPublic()) {
+                    $property->setAccessible(true);
+                }
+
+                $property->setValue($instance, $this->get($injected_class));
+
+                if(!$property->isPublic()) {
+                    $property->setAccessible(false);
+                }
+            }
+        }
+
         if (method_exists($class, 'init')) {
             $this->call($instance, 'init');
         }
