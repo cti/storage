@@ -3,7 +3,7 @@
 namespace Web;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Exception;
 
 class Application
@@ -38,6 +38,8 @@ class Application
 
         $request = Request::createFromGlobals();
         $this->manager->inject($request);
+
+        $this->manager->inject(new Session());
 
         $location = substr($request->getPathInfo(), strlen($this->base));
         
@@ -88,10 +90,16 @@ class Application
             $result = $this->manager->call($class, 'processException', array($e, 'exception' => $e));
         }
 
-        if($result instanceof Response) {
-            return $result;
-        }
-
-        return new Response($result);
+        echo $result;
     }
+
+    /**
+     * generate relative aplication url
+     * @param  string $location 
+     * @return string
+     */
+    function getUrl($location = '')
+    {
+        return $this->base . implode('/', func_get_args());
+    }    
 }

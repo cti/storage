@@ -1,6 +1,6 @@
 <?php
 
-namespace Application;
+namespace Web;
 
 class Locator
 {
