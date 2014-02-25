@@ -22,6 +22,8 @@
         }
     },
     "require": {
-        "symfony/http-kernel": "dev-master"
+        "symfony/http-foundation": "dev-master",
+        "symfony/console": "dev-master",
+        "symfony/process": "dev-master"
     }
 }

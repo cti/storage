@@ -11,17 +11,10 @@ use Di\Manager;
 abstract class Base
 {
     /**
-     * @var \Di\Manager
+     * @inject
+     * @var  \Di\Manager
      */
     protected $manager;
-
-    /**
-     * @param Manager $manager
-     */
-    function __construct(Manager $manager)
-    {
-        $this->manager = $manager;
-    }
 
     /**
      * Get class instance shortcut
