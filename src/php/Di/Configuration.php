@@ -11,11 +11,6 @@ use RangeException;
 class Configuration
 {
     /**
-     * @var array
-     */
-    protected $delimiter = array('.', '\\');
-
-    /**
      * @var object
      */
     protected $data;
@@ -25,95 +20,50 @@ class Configuration
      */
     function __construct($data = null)
     {
-        $this->data = (object)array();
-        if ($data) {
-            $this->merge($data);
-        }
+        $this->data = $data;
     }
 
     /**
-     * @param $key
-     * @param $value
+     * @param string $class 
+     * @param string $property
+     * @param string $value
      */
-    public function set($key, $value)
+    public function set($class, $property, $value)
     {
-        $this->merge(array($key => $value));
+        if(!isset($this->data[$class])) {
+            $this->data[$class] = array();
+        }
+        $this->data[$class][$property] = $value;
     }
 
     /**
-     * @param $data
+     * @param string $class
+     * @param string $property
+     * @param mixed  $default
+     * @return mixed
+     */
+    public function get($class, $property = null, $default = null) 
+    {
+        if(!$property) {
+            return isset($this->data[$class]) ? $this->data[$class] : array();
+        }
+        return isset($this->data[$class][$property]) ? $this->data[$class][$property] : $default;
+    }
+
+    /**
+     * @param array $data
      */
     public function merge($data)
     {
-        $this->mergeWithObject($this->data, $data);
-    }
-
-    /**
-     * @param $object
-     * @param $data
-     * @throws \RangeException
-     */
-    protected function mergeWithObject($object, $data)
-    {
-        foreach ($data as $key => $value) {
-            $keys = $this->parseKey($key);
-            $current_object = $object;
-            $length = count($keys);
-            foreach ($keys as $i => $k) {
-                if ($k == '' && !is_numeric($k)) {
-                    throw new RangeException("Error Processing $key property");
-                }
-                if (!isset($current_object->$k)) {
-                    $current_object->$k = (object)array();
-                }
-                if ($i != $length - 1) {
-                    $current_object = $current_object->$k;
-                }
-            }
-            if (is_array($value)) {
-                $this->mergeWithObject($current_object->$k, $value);
+        foreach($data as $class => $config) {
+            if(!isset($this->data[$class])) {
+                $this->data[$class] = $config;
             } else {
-                $current_object->$k = $value;
-            }
-        }
-    }
-
-    /**
-     * @param $string
-     * @return array
-     */
-    function parseKey($string)
-    {
-        static $keys = array();
-        if (!isset($keys[$string])) {
-            foreach ($this->delimiter as $delimiter) {
-                $result = explode($delimiter, $string);
-                if (count($result) > 1) {
-                    $keys[$string] = $result;
-                    break;
+                foreach($config as $k => $v) {
+                    $this->data[$class][$k] = $v;
                 }
             }
-            if (!isset($keys[$string])) {
-                $keys[$string] = array($string);
-            }
         }
-        return $keys[$string];
     }
 
-    /**
-     * @param $name
-     * @return mixed
-     */
-    function get($name)
-    {
-        $current_object = $this->data;
-        foreach ($this->parseKey($name) as $key) {
-            if (!isset($current_object->$key)) {
-                return (object)array();
-                break;
-            }
-            $current_object = $current_object->$key;
-        }
-        return $current_object;
-    }
 }

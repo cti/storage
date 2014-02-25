@@ -14,7 +14,7 @@ abstract class Reflection
 {
 
     /**
-     * @param $class
+     * @param string $class
      * @return ReflectionClass
      */
     public static function getReflectionClass($class)
@@ -27,11 +27,11 @@ abstract class Reflection
     }
 
     /**
-     * @param $class
-     * @param $property
+     * @param string $class
+     * @param string $property
      * @return ReflectionProperty
-     */
-    public static function getReflectionProperty($class, $property)
+     */ 
+   public static function getReflectionProperty($class, $property)
     {
         static $instances = array();
         $key = $class . '.' . $property;
@@ -42,8 +42,8 @@ abstract class Reflection
     }
 
     /**
-     * @param $class
-     * @param $method
+     * @param string $class
+     * @param string $method
      * @return ReflectionMethod
      */
     public static function getReflectionMethod($class, $method)

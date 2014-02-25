@@ -30,8 +30,8 @@ class Callback
     protected $requiredCount = 0;
 
     /**
-     * @param $class
-     * @param $method
+     * @param string $class
+     * @param string $method
      */
     function __construct($class, $method)
     {

@@ -20,5 +20,8 @@
             "Direct\\": "src/php/",
             "Integration\\": "src/php/"
         }
+    },
+    "require": {
+        "symfony/http-kernel": "dev-master"
     }
 }

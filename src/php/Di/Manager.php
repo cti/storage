@@ -36,7 +36,7 @@ class Manager
     }
 
     /**
-     * @param $class
+     * @param string $class
      * @return mixed
      * @throws Exception
      */
@@ -52,7 +52,7 @@ class Manager
     }
 
     /**
-     * @param $class
+     * @param string $class
      * @param array $config
      * @return object
      */
@@ -65,7 +65,7 @@ class Manager
 
         } else {
             // define complete params
-            $parameters = array_merge(get_object_vars($configuration), $config);
+            $parameters = array_merge($configuration, $config);
             $parameters['config'] = $parameters;
 
             // launch with null instance, cause it's constructor
@@ -88,9 +88,9 @@ class Manager
     }
 
     /**
-     * @param $instance
-     * @param $method
-     * @param $arguments
+     * @param mixed  $instance
+     * @param string $method
+     * @param array  $arguments
      * @return mixed
      */
     public function call($instance, $method, $arguments = array())
@@ -106,8 +106,8 @@ class Manager
     }
 
     /**
-     * @param $class
-     * @param $method
+     * @param string $class
+     * @param string $method
      * @return Callback
      */
     protected function getCallback($class, $method)
