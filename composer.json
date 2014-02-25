@@ -18,7 +18,7 @@
             "Compiler\\": "src/php/",
             "Di\\": "src/php/",
             "Direct\\": "src/php/",
-            "Integration\\": "src/php/"
+            "Web\\": "src/php/"
         }
     },
     "require": {

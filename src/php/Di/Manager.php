@@ -59,20 +59,21 @@ class Manager
     public function create($class, $config = array())
     {
         $configuration = $this->config->get($class);
+        $parameters = array_merge($configuration, $config);
 
         if (!method_exists($class, '__construct')) {
             $instance = new $class;
 
         } else {
             // define complete params
-            $parameters = array_merge($configuration, $config);
             $parameters['config'] = $parameters;
 
             // launch with null instance, cause it's constructor
             $callback = $this->getCallback($class, '__construct');
             $instance = $callback->launch(null, $parameters, $this);
         }
-        foreach ($configuration as $k => $v) {
+
+        foreach ($parameters as $k => $v) {
             if (property_exists($class, $k)) {
                 if (Reflection::getReflectionProperty($class, $k)->isPublic()) {
                     $instance->$k = $v;
@@ -114,6 +115,18 @@ class Manager
         }
 
         return $instance;
+    }
+
+    /**
+     * @param  mixed $object 
+     */
+    public function inject($object)
+    {
+        $class = get_class($object);
+        if(isset($this->instance[$class])) {
+            throw new Exception("Error Injecting $class");
+        }
+        $this->instance[$class] = $object;
     }
 
     /**
