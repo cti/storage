@@ -1,12 +1,12 @@
 <?php
 
-namespace Web;
+namespace Application;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Exception;
 
-class Application
+class Web
 {
 
     /**

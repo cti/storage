@@ -2,7 +2,7 @@
 
 namespace Compiler;
 
-use Web\Locator;
+use Application\Locator;
 
 class CoffeeExtJs
 {

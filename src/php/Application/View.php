@@ -1,20 +1,20 @@
 <?php
 
-namespace Web;
+namespace Application;
 
 /**
  * Template engine
- * @package Web
+ * @package Application
  */
 class View
 {
     /**
-     * @var \Web\Locator 
+     * @var \Application\Locator 
      */
     protected $locator;
 
     /**
-     * @param \Web\Locator $locator 
+     * @param \Application\Locator $locator 
      */
     public function __construct(Locator $locator)
     {
