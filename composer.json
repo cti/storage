@@ -15,14 +15,20 @@
     "autoload": {
         "psr-0": {
             "Application\\": "src/php/",
+            "Command\\": "src/php/",
             "Compiler\\": "src/php/",
             "Di\\": "src/php/",
-            "Direct\\": "src/php/"
+            "Direct\\": "src/php/",
+            "SapRfc\\": "src/php/",
+            "Storage\\": "src/php/",
+            "Util\\": "src/php/"
         }
     },
     "require": {
+        "doctrine/dbal": "dev-master",
         "symfony/http-foundation": "dev-master",
-        "symfony/console": "dev-master",
-        "symfony/process": "dev-master"
+        "symfony/filesystem": "dev-master",
+        "symfony/finder": "dev-master",
+        "symfony/console": "dev-master"
     }
 }

@@ -2,10 +2,15 @@
 
 namespace Application;
 
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Exception;
+use Util\String;
 
+/**
+ * Web application implementation
+ * @package Application
+ */
 class Web
 {
 
@@ -65,7 +70,7 @@ class Web
         try {
 
             $slug = count($this->chain) ? array_shift($this->chain) : 'index';
-            $method = $this->method . implode('', array_map('ucfirst', explode('_', $slug)));
+            $method = $this->method . String::convertToCamelCase($slug);
 
             if(method_exists($class, $method)) {
                 $result = $this->manager->call($class, $method, array_merge($this->chain, array(

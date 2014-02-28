@@ -2,6 +2,10 @@
 
 namespace Application;
 
+/**
+ * File locator
+ * @package Application
+ */
 class Locator
 {
     protected $locations;
