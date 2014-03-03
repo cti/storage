@@ -2,7 +2,7 @@
 
 namespace Storage\Component;
 
-class Link
+class Sequence
 {
-
+    
 }

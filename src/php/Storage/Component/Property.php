@@ -6,6 +6,20 @@ use Util\String;
 
 class Property
 {
+
+    public $name;
+    public $type;
+    public $comment;
+
+    public $primary;
+    public $required;
+
+    public $setter;
+    public $getter;
+
+    public $min;
+    public $max;
+    
     public function __construct($params)
     {
         if(isset($params[0])) {
@@ -21,9 +35,17 @@ class Property
         $this->name = $params['name'];
         $this->comment = $params['comment'];
         $this->required = isset($params['required']) ? $params['required'] : false;
+        $this->primary = isset($params['primary']) ? $params['primary'] : false;
+
+        if(isset($params['model'])) {
+            $this->model = $params['model'];
+        }
 
         if (isset($params['type'])) {
             $this->type = $params['type'];
+            if($this->type == 'virtual') {
+                $this->virtual_name = String::convertToCamelCase($this->name);
+            }
         } else {
             if (substr($this->name, 0, 3) == 'dt_') {
                 $this->type = 'date';
@@ -55,6 +77,10 @@ class Property
         if (isset($params['max'])) {
             $this->max = $params['max'];
         }
+    }
 
-    }  
+    function copy()
+    {
+        return new Property(get_object_vars($this));
+    }
 }

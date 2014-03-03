@@ -56,7 +56,6 @@ HEADER;
 
     public function renderRepositoryGetter(Model $model)
     {
-        $name = $model->getName();
         $repository_class = $model->getRepositoryClass();
 
         return <<<GETTER
@@ -91,12 +90,20 @@ COMMENT;
     {
         $map = '';
         foreach($this->schema->getModels() as $model) {
-            $map .= "            '" . $model->getName()."' => 'get" . $model->class_name_many."',";
+            $map .= "            '" . $model->name."' => 'get" . $model->class_name_many."'," . PHP_EOL;
         }
 
         $dump = $this->schema->getDump();
 
         return <<<FOOTER
+    /** 
+     * Find record by primary key
+     */
+    public function find(\$name, \$pk)
+    {
+        return $this->getRepository(\$name)->findByPk(\$pk);
+    }
+
     /**
      * Get repository by model nick
      * @param  string \$name 
@@ -106,8 +113,7 @@ COMMENT;
     public function getRepository(\$name)
     {
         \$map = array(
-$map
-        );
+$map        );
         if(!isset(\$map[\$name])) {
             throw new OutOfRangeException("Model \$name was not defined");
         }

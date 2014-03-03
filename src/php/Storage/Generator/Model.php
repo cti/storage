@@ -4,6 +4,8 @@ namespace Storage\Generator;
 
 use Storage\Component\Property;
 
+use Util\String;
+
 class Model
 {
     /**
@@ -29,8 +31,8 @@ class Model
         $result = implode(PHP_EOL . PHP_EOL, array(
             '<?php',
             'namespace Storage\Model;',
-            'use Storage\Repository\\' . $model->getClassName() . 'Repository;',
-            $this->getClassComment(). PHP_EOL . 'class '.$model->getClassName() . 'Base'.PHP_EOL,
+            $this->appendUsage('use Storage\Repository\\' . $model->class_name . 'Repository as Repository;'),
+            $this->getClassComment(). PHP_EOL . 'class '.$model->class_name . 'Base'.PHP_EOL,
             ));
         $result .= '{' . PHP_EOL;
 
@@ -41,11 +43,22 @@ class Model
 
         $result .= $this->renderBase();
 
+        $pk = $model->getPk();
+
         foreach($model->getProperties() as $property)
         {
-            $result .= $this->renderPropertyGetter($property);
-            if($property->setter) {
-                $result .= $this->renderPropertySetter($property);
+            if($property->type == 'virtual') {
+                $result .= $this->renderVirtualPropertyGetter($property);
+                if($property->setter) {
+                    $result .= $this->renderVirtualPropertySetter($property);
+                }
+
+            } else {
+
+                $result .= $this->renderPropertyGetter($property);
+                if(!in_array($property->name, $pk)) {
+                    $result .= $this->renderPropertySetter($property);
+                }
             }
         }
 
@@ -56,14 +69,27 @@ class Model
         return $result;
     }
 
+    public function appendUsage($usage)
+    {
+        $result = array();
+        foreach($this->model->one as $property) {
+            if(!isset($result[$property->model->class_name])) {
+                $result[$property->model->class_name] = 'use ' . $property->model->model_class . ' as ' . $property->model->class_name.';';
+            }
+        }
+        if(count($result)) {
+            array_unshift($result, '');
+        }
+        return $usage . implode(PHP_EOL, $result);
+    }
+
     public function renderBase()
     {
-        $class = $this->model->getClassName();
-
+        $repository_class = $this->model->repository_class;
         return <<<BASE
     /**
      * model repository
-     * @var Base\Repository\\$class
+     * @var $repository_class
      */
     protected \$_repository;
 
@@ -73,7 +99,7 @@ class Model
      */
     protected \$_changes = array();
 
-    public function __construct({$class}Repository \$repository, \$data = array())
+    public function __construct(Repository \$repository, \$data = array())
     {
         \$this->_repository = \$repository;
         foreach(\$data as \$k => \$v) {
@@ -87,10 +113,12 @@ BASE;
 
     public function renderPropertyDescription(Property $property)
     {
+        $comment = $property->type == 'virtual' ? $property->virtual_name : $property->comment;
+        $type = $property->type == 'virtual' ? $property->model->model_class : $property->type;
         return <<<PROPERTY
     /**
-     * $property->comment
-     * @var $property->type
+     * $comment
+     * @var $type
      */
     protected $$property->name;
 
@@ -103,7 +131,7 @@ PROPERTY;
         return <<<GETTER
     /**
      * $property->comment
-     * @param $property->type
+     * @return $property->type
      */
     public function $property->getter()
     {
@@ -129,6 +157,48 @@ GETTER;
             );
         }
         \$this->_changes['$property->name']['new'] = $$property->name;
+        \$this->$property->name = $$property->name;
+    }
+
+
+SETTER;
+    }
+
+    public function renderVirtualPropertyGetter(Property $property)
+    {
+        $name = $property->virtual_name;
+        $model = $property->model;
+        return <<<GETTER
+    /**
+     * Get $name
+     * @param $model->model_class
+     */
+    public function $property->getter()
+    {
+        return \$this->$property->name;
+    }
+
+
+GETTER;
+    }
+
+    public function renderVirtualPropertySetter(Property $property)
+    {
+        $class = $property->model->model_class;
+        $class_name = $property->model->class_name;
+        return <<<SETTER
+    /**
+     * Set $property->name
+     * @param $class
+     */
+    public function $property->setter($class_name $$property->name)
+    {
+        // if(!isset(\$this->_changes['$property->name'])) {
+        //     \$this->_changes['$property->name'] = array(
+        //         'old' => \$this->$property->name,
+        //     );
+        // }
+        // \$this->_changes['$property->name']['new'] = $$property->name;
         \$this->$property->name = $$property->name;
     }
 
@@ -165,13 +235,14 @@ SETTER;
      */
     public function save()
     {
+        \$changes = array();
         foreach(\$this->_changes as \$k => \$change) {
-            if(\$change['old'] == \$change['new']) {
-                unset(\$this->_changes[\$k]);
+            if(\$change['old'] != \$change['new']) {
+                \$changes[\$k] = \$change['new'];
             }
         }
-        if(count(\$this->_changes)) {
-            \$this->_repository->save(\$this, \$this->_changes);
+        if(count(\$changes)) {
+            \$this->_repository->save(\$this, \$changes);
             \$this->_changes = array();
         }
     }

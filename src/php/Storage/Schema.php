@@ -47,10 +47,45 @@ class Schema
         return array_values($this->models);
     }
 
-    public function createLink(Model $a, Model $b)
+    public function createLink($list)
     {
-        $link = new Link($a, $b);
-        return isset($this->models[$link->name]) ? $this->models[$link->name] : $this->models[$link->name] = $link;
+        if($list instanceof Model) {
+            $list = func_get_args();
+        }
+
+        $mapping = array();
+        $name = array();
+        if(count($list) != 2) {
+            throw new \Exception("Link must contain 2 models");
+        }
+
+        $start = $end = array();
+
+        foreach($list as $k => $v) {
+            if(is_numeric($k)) {
+                $k = $v->name;
+            }
+            if($k == $v->name) {
+                $start[] = $k;
+            } else {
+                $end[] = $k;
+            }
+            $mapping[$k] = $v;
+        }
+        sort($start);
+        sort($end);
+        $name = implode('_', $start) . '_' . implode('_', $end) . '_link';
+
+        $this->models[$name] = new Model($name, $name);
+        $this->models[$name]->createBehaviour('link', array(
+            'list' => $list
+        ));
+
+        foreach($list as $model) {
+            $this->models[$name]->hasOne($model);
+        }
+
+        return $this->models[$name];
     }
 
     public function restore()

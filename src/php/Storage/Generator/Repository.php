@@ -15,7 +15,7 @@ class Repository
         $result = implode(PHP_EOL . PHP_EOL, array(
             '<?php',
             'namespace Storage\Repository;',
-            'use '.$model->model_class.' as '.$model->class_name.';',
+            // 'use '.$model->model_class.' as '.$model->class_name.';',
             $this->getClassComment() . PHP_EOL . 'class '. $model->class_name . 'Repository'.PHP_EOL,
             ));
         
@@ -49,6 +49,12 @@ class Repository
      */
     protected \$storage;
 
+    /**
+     * @inject
+     * @var Di\Manager
+     */
+    protected \$di;
+
     protected \$fields = array();
 
     public function __construct()
@@ -58,12 +64,15 @@ class Repository
 
     /**
      * Create new $class instance
-     * @param  array  $data
+     * @param  array  \$data
      * @return $model_class
      */
     public function create(\$data = array())
     {
-        return new $class(\$this, \$data);
+        return \$this->di->create('$model_class', array(
+            'repository' => \$this,
+            'data' => \$data
+        ));
     }
 
 BASE;

@@ -9,6 +9,23 @@ class String
         return implode('', array_map('ucfirst', explode('_', $string)));
     }
 
+    static function camelCaseToUnderScore($string) 
+    {
+        $start = 0;
+        $data = array();
+        $lower = strtolower($string);
+        for ($k = 1; $k < strlen($string); $k++) {
+            if ($lower[$k] != $string[$k]) {
+                if ($k != $start) {
+                    $data[] = strtolower(substr($string, $start, $k - $start));
+                    $start = $k;
+                }
+            }
+        }
+        $data[] = strtolower(substr($string, $start, $k - $start));
+        return implode('_', $data);
+    }    
+
     public static function pluralize($string)
     {
         $index = strlen($string)-1;
