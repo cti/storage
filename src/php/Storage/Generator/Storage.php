@@ -25,7 +25,7 @@ class Storage
 
         $result .= $this->renderHeader();
 
-        foreach($this->schema->getModels() as $model) {
+        foreach($this->schema->models as $model) {
             $result .= $this->renderRepositoryGetter($model);
         }
         $result .= $this->renderFooter();
@@ -89,7 +89,7 @@ COMMENT;
     protected function renderFooter()
     {
         $map = '';
-        foreach($this->schema->getModels() as $model) {
+        foreach($this->schema->models as $model) {
             $map .= "            '" . $model->name."' => 'get" . $model->class_name_many."'," . PHP_EOL;
         }
 
@@ -98,8 +98,11 @@ COMMENT;
         return <<<FOOTER
     /** 
      * Find record by primary key
+     * @param string \$name
+     * @param array  \$pk
+     * @return mixed
      */
-    public function find(\$name, \$pk)
+    public function findByPk(\$name, \$pk)
     {
         return \$this->getRepository(\$name)->findByPk(\$pk);
     }
@@ -131,6 +134,7 @@ $map        );
         }
         return \$this->schema;
     }
+
 FOOTER;
     }
 }

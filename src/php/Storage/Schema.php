@@ -2,6 +2,7 @@
 
 namespace Storage;
 
+use Exception;
 use Storage\Component\Model;
 use Storage\Component\Link;
 use Symfony\Component\Finder\Finder;
@@ -21,14 +22,14 @@ class Schema
      */
     protected $locator;
 
+    public $models = array();
+
     function init($dump = null)
     {
         if($dump) {
             $this->loadDump($dump);
-
         } else {
             $this->processMigrations();
-            
         }
     }
 
@@ -44,12 +45,10 @@ class Schema
 
     public function getModel($name)
     {
+        if(!isset($this->models[$name])) {
+            throw new Exception(sprintf("Model %s was not yet defined", $name));
+        }
         return $this->models[$name];
-    }
-
-    public function getModels()
-    {
-        return array_values($this->models);
     }
 
     public function createLink($list)
@@ -91,22 +90,22 @@ class Schema
         $name[] = 'link';
         $name = implode('_', $name);
 
-        $this->models[$name] = $this->manager->create('Storage\Component\Model', array('name' => $name, 'comment' => $name));
-        $this->models[$name]->createBehaviour('link', array(
+        $link = $this->manager->create('Storage\Component\Model', array('name' => $name, 'comment' => $name));
+        
+        $link->createBehaviour('link', array(
             'list' => $list
         ));
 
-        $many = String::pluralize($name);
         foreach($mapping as $alias => $model) {
-            if($model->hasBehaviour('log') && !$this->models[$name]->hasBehaviour('log')) {
-                $this->models[$name]->createBehaviour('log');
+            if($model->hasBehaviour('log') && !$link->hasBehaviour('log')) {
+                $link->createBehaviour('log');
             }
 
-            $this->models[$name]->hasOne($model, $alias, $many);
-            $model->registerLink($this->models[$name], $relation[$alias]);
+            $link->hasOne($model, $alias, $name);
+            $model->registerLink($link, $relation[$alias]);
         }
 
-        return $this->models[$name];
+        return $this->models[$name] = $link;
     }
 
     public function restore()

@@ -35,12 +35,11 @@ class Property
             }
         }
         $this->name = $params['name'];
-        $this->comment = $params['comment'];
+        $this->comment = isset($params['comment']) ? $params['comment'] : array();
         $this->required = isset($params['required']) ? $params['required'] : false;
         $this->primary = isset($params['primary']) ? $params['primary'] : false;
         $this->behaviour = isset($params['behaviour']) ? $params['behaviour'] : false;
         $this->readonly = isset($params['readonly']) ? $params['readonly'] : $this->primary;
-        $this->mapping = isset($params['mapping']) ? $params['mapping'] : false;
 
         if(isset($params['model'])) {
             $this->model = $params['model'];
@@ -48,9 +47,6 @@ class Property
 
         if (isset($params['type'])) {
             $this->type = $params['type'];
-            if($this->type == 'virtual') {
-                $this->virtual_name = String::convertToCamelCase($this->name);
-            }
         } else {
             if (substr($this->name, 0, 3) == 'dt_') {
                 $this->type = 'date';
@@ -91,26 +87,5 @@ class Property
             $config[$k] = $v;
         }
         return new Property($config);
-    }
-
-    function getForeignModelColumns()
-    {
-        if($this->type != 'virtual') {
-            throw new Exception("Error processing foreign model");
-        }
-        $properties = array();
-        foreach($this->model->getPk() as $name) {
-            $property = $this->model->getProperty($name);
-            if(!$property->behaviour) {
-                $name = $property->name == $this->model->name ? $property->name : 'id_' . $this->name;
-                $properties[] = new Property(array(
-                    'name' => $name,
-                    'mapping' => $property->name,
-                    'comment' => $property->comment,
-                    'type' => $property->type,
-                ));
-            }
-        }
-        return $properties;
     }
 }

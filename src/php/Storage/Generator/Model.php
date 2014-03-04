@@ -45,13 +45,15 @@ class Model
         $pk = $model->getPk();
 
         foreach($model->getProperties() as $property) {
-
             if($property->type == 'virtual') {
                 $result .= $this->renderVirtualProperty($property);
-
             } else {
                 $result .= $this->renderProperty($property);
             }
+        }
+
+        foreach($model->many as $alias => $model) {
+            $result .= $this->renderRelationGetters($model, $alias);
         }
 
         foreach($model->links as $alias => $link) {
@@ -196,7 +198,7 @@ PROPERTY;
     public function $property->getter()
     {
         if(!\$this->$property->name) {
-            \$this->$property->name = \$this->_repository->getStorage()->find('$model->model_class', array(
+            \$this->$property->name = \$this->_repository->getStorage()->find('$model->name', array(
 $finder           ));
         }
         return \$this->$property->name;
@@ -218,6 +220,33 @@ $setProperties        }
 
 
 VIRTUAL;
+    }
+
+    public function renderRelationGetters($property, $alias) 
+    {
+        $model = $property->model;
+
+        $phpname = String::convertToCamelCase($alias);
+
+        $finder = '';
+        foreach($property->getForeignModelColumns() as $p) {
+            $finder .= "            '" . $p->name . "' => \$this->" . $p->mapping . '(),' . PHP_EOL;
+        }
+
+        return <<<RELATION
+    /**
+     * Get $phpname
+     * @return $model->model_class[]
+     */
+    public function get{$phpname}()
+    {
+        return \$this->_repository->getStorage()->find('$model->name', array(
+$finder        ));
+
+    }
+
+
+RELATION;
     }
 
     public function renderLinkMethods($link, $alias)

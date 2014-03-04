@@ -45,7 +45,7 @@ class GenerateFiles extends Command
             ))
         );
 
-        foreach($schema->getModels() as $model) {
+        foreach($schema->models as $model) {
                 // echo $this->manager->create('Storage\Generator\Model', array(
                 //     'model' => $model
                 // ));

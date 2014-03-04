@@ -8,6 +8,17 @@ use Util\String;
 
 abstract class Factory 
 {
+
+    public static function createInstance($nick, $options = array())
+    {
+        $class = self::getBehaviourClass($nick);
+        $instance = new $class;
+        foreach($options as $k => $v) {
+            $instance->$k = $v;
+        }
+        return $instance;
+    }
+
     public static function getBehaviourClass($nick)
     {
         static $mapping;

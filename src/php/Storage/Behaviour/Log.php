@@ -6,24 +6,20 @@ use Storage\Component\Property;
 
 class Log
 {
-    public $model;
-
     protected $properties = array();
 
-    public function init()
+    public function __construct()
     {
         $this->properties = array(
             'v_start' => new Property(array(
                 'behaviour' => true,
                 'name' => 'v_start',
-                'comment' => 'v_start',
                 'type' => 'timestamp',
                 'primary' => true,
             )),
             'v_end' => new Property(array(
                 'behaviour' => true,
                 'name' => 'v_end',
-                'comment' => 'v_end',
                 'type' => 'timestamp',
                 'readonly' => true
             ))

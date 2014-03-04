@@ -18,40 +18,25 @@ class Model
     public $properties = array();
     public $behaviours = array();
 
-    public $one = array();
-    public $many = array();
+    public $relations = array();
+    public $references = array();
+
     public $links = array();
 
-    /**
-     * @inject
-     * @var Di\Manager
-     */
-    protected $manager;
-
     function init()
-    {
-        $this->initNames();
-        if(count($this->properties)) {
-            $this->initProperties();
-        }
-    }
-
-    function initNames()
     {
         $this->name_many = String::pluralize($this->name);
         $this->class_name = String::convertToCamelCase($this->name);
         $this->class_name_many = String::pluralize($this->class_name);
-        $this->repository_class = 'Storage\Repository\\' . $this->class_name.'Repository';
-        $this->model_class = 'Storage\Model\\' . $this->class_name.'Base';
-    }
-
-    function initProperties()
-    {
-        $properties = $this->properties;
-        $this->properties = array();
-
-        foreach ($properties as $key => $config) {
-            $this->addProperty($key, $config);
+        $this->repository_class = 'Storage\Repository\\' . $this->class_name . 'Repository';
+        $this->model_class = 'Storage\Model\\' . $this->class_name . 'Base';
+        
+        if(count($this->properties)) {
+            $properties = $this->properties;
+            $this->properties = array();
+            foreach ($properties as $key => $config) {
+                $this->addProperty($key, $config);
+            }
         }
     }
 
@@ -73,7 +58,7 @@ class Model
 
     function createIndex($field)
     {
-        $this->indexes[] = new Index($this, func_get_args());
+        $this->indexes[] = new Index(func_get_args());
     }
 
     function removeIndex(Index $index)
@@ -94,9 +79,7 @@ class Model
 
     function createBehaviour($nick, $configuration = array())
     {
-        $configuration['model'] = $this;
-        $class = BehaviourFactory::getBehaviourClass($nick, $configuration);
-        return $this->behaviours[$nick] = $this->manager->create($class, $configuration);;
+        return $this->behaviours[$nick] = BehaviourFactory::createInstance($nick, $configuration);;
     }
 
     function hasBehaviour($nick) 
@@ -104,37 +87,12 @@ class Model
         return isset($this->behaviours[$nick]);
     }
 
-    function hasOne(Model $parent, $alias = null, $foreignAlias = null)
+    function hasOne($parent)
     {
-        if(!$alias) {
-            $alias = $parent->name;
-        }
-        if(!$foreignAlias) {
-            $foreignAlias = $this->name;
-        }
-        if(isset($this->one[$alias])) {
-            throw new Exception(sprintf(
-                "Duplicate relation %s.%s throw %s and %s", 
-                $this->name,
-                $alias,
-                $this->one[$alias]->model->name,
-                $parent->name
-            ));
-        }
-        if(!isset($this->one[$alias])) {
-            $this->one[$alias] = new Property(array(
-                'name' => $alias,
-                'type' => 'virtual',
-                'comment' => $parent->name,
-                'model' => $parent,
-            ));
-            $parent->many[$foreignAlias] = new Property(array(
-                'name' => $foreignAlias,
-                'type' => 'virtual', 
-                'comment' => $foreignAlias,
-                'model' => $this,
-            ));
-        }
+        $parent_name = $parent instanceof Model ? $parent->name : $parent;
+        $relation = new Relation($this->name, $parent_name);
+        $this->relations[] = $relation;
+        return $relation;
     }
 
     function registerLink(Model $parent, $alias) 
