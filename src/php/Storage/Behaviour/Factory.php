@@ -8,7 +8,7 @@ use Util\String;
 
 abstract class Factory 
 {
-    public static function createBehaviour($nick, $options)
+    public static function getBehaviourClass($nick)
     {
         static $mapping;
 
@@ -36,13 +36,6 @@ abstract class Factory
             throw new Exception("Alias $nick was not registered");
         }
 
-        $class = $mapping[$nick];
-
-        $instance = new $class;
-        foreach ($options as $key => $value) {
-            $instance->$key = $value;
-        }
-
-        return $instance;
+        return $mapping[$nick];
     }
 }

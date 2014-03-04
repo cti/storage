@@ -21,15 +21,17 @@ class Model
     public $one = array();
     public $many = array();
 
-    function __construct($name, $comment, $properties = array())
+    /**
+     * @inject
+     * @var Di\Manager
+     */
+    protected $manager;
+
+    function init()
     {
-        $this->name = $name;
-        $this->comment = $comment;
-
         $this->initNames();
-
-        if(count($properties)) {
-            $this->initProperties($properties);
+        if(count($this->properties)) {
+            $this->initProperties();
         }
     }
 
@@ -38,14 +40,15 @@ class Model
         $this->name_many = String::pluralize($this->name);
         $this->class_name = String::convertToCamelCase($this->name);
         $this->class_name_many = String::pluralize($this->class_name);
-
-        // @todo filesystem based
         $this->repository_class = 'Storage\Repository\\' . $this->class_name.'Repository';
         $this->model_class = 'Storage\Model\\' . $this->class_name.'Base';
     }
 
-    function initProperties($properties)
+    function initProperties()
     {
+        $properties = $this->properties;
+        $this->properties = array();
+
         foreach ($properties as $key => $config) {
             $this->addProperty($key, $config);
         }
@@ -83,10 +86,21 @@ class Model
         }
     }
 
+    function listIndexes()
+    {
+        return $this->indexes;
+    }
+
     function createBehaviour($nick, $configuration = array())
     {
         $configuration['model'] = $this;
-        return $this->behaviours[$nick] = BehaviourFactory::createBehaviour($nick, $configuration);
+        $class = BehaviourFactory::getBehaviourClass($nick, $configuration);
+        return $this->behaviours[$nick] = $this->manager->create($class, $configuration);;
+    }
+
+    function hasBehaviour($nick) 
+    {
+        return isset($this->behaviours[$nick]);
     }
 
     function hasOne(Model $parent, $alias = null)
@@ -116,11 +130,6 @@ class Model
         }
     }
 
-    function getRepositoryClass()
-    {
-        return $this->repository_class;
-    }
-
     public function __call($name, $params)
     {
         $behaviour = $this->findBehaviourForMethod($name);
@@ -136,7 +145,6 @@ class Model
                 $found[] = $behaviour;
             }
         }
-
         if(count($found) > 1) {
             throw new Exception("Behaviour conflict for ". implode(' and ', $found));
         }
@@ -145,15 +153,77 @@ class Model
 
     protected function hasVirtualPk()
     {
-        return !count($this->pk) && !$this->findBehaviourForMethod('getPk');
+        return !count($this->pk) && !$this->findBehaviourForMethod('getPk') && !$this->findBehaviourForMethod('hasVirtualPk');
     }
 
     protected function getPk()
     {
-        if($this->hasVirtualPk()) {
-            return array('id_' . $this->name);
+        $pk = $this->getModelPk();
+        foreach($this->behaviours as $behaviour) {
+            if(method_exists($behaviour, 'getAdditionalPk')) {
+                foreach ($behaviour->getAdditionalPk() as $key) {
+                    $pk[] = $key;
+                }
+            }
         }
-        return $this->pk;
+        return $pk;
+    }
+
+    protected function getModelPk()
+    {
+        return $this->hasVirtualPk() ? array('id_' . $this->name) : $this->pk;
+    }
+
+    protected function getProperties()
+    {
+        $properties = $this->properties;
+
+        if($this->hasVirtualPk()) {
+            $properties['id_' . $this->name] = $this->getProperty('id_'.$this->name);
+        }
+        foreach($this->behaviours as $behaviour) {
+            if(method_exists($behaviour, 'getAdditionalProperties')) {
+                foreach($behaviour->getAdditionalProperties() as $property) {
+                    $properties[$property->name] = $property;
+                }
+            }
+        }
+
+        foreach($this->one as $alias => $property) {
+            $properties[$property->name] = $property;
+            foreach($property->getForeignModelColumns() as $p) {
+                $properties[$p->name] = $p;
+            }
+        }
+
+        $pk = $other = $last = array();
+        foreach($properties as $property) {
+            if(!is_object($property)) {
+                var_dump($property);
+                die;
+            }
+            if($property->primary) {
+                $pk[$property->name] = $property;
+            } elseif($property->type == 'virtual') {
+                $last[$property->name] = $property;
+            } else {
+                $other[$property->name] = $property;
+            }
+        }
+
+        ksort($pk);
+        ksort($other);
+        ksort($last);
+
+        $properties = $pk;
+        foreach($other as $property) {
+            $properties[] = $property;
+        }   
+        foreach($last as $property) {
+            $properties[] = $property;
+        }
+
+        return $properties;
     }
 
     protected function getProperty($name)
@@ -181,52 +251,5 @@ class Model
         }
 
         return $this->properties[$name];
-    }
-
-    protected function getProperties()
-    {
-        $properties = array_values($this->properties);
-
-        if($this->hasVirtualPk()) {
-            $properties['id_' . $this->name] = $this->getProperty('id_'.$this->name);
-
-        }
-
-        foreach($this->behaviours as $behaviour) {
-            if(method_exists($behaviour, 'getAdditionalProperties')) {
-                foreach($behaviour->getAdditionalProperties() as $property) {
-                    $properties[] = $property;
-                }
-            }
-        }
-
-        foreach($this->one as $alias => $property) {
-            $properties[] = $property;
-        }
-
-        $pk = $other = array();
-        foreach($properties as $property) {
-            if($property->primary) {
-                $pk[$property->name] = $property;
-            } elseif($property->type == 'virtual') {
-                $last[$property->name] = $property;
-            } else {
-                $other[$property->name] = $property;
-            }
-        }
-
-        ksort($pk);
-        ksort($other);
-        ksort($last);
-
-        $properties = $pk;
-        foreach($other as $property) {
-            $properties[] = $property;
-        }
-        foreach($last as $property) {
-            $properties[] = $property;
-        }
-
-        return $properties;
     }
 }

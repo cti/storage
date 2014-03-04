@@ -30,14 +30,13 @@ class Model
         $model = $this->model;
         $result = implode(PHP_EOL . PHP_EOL, array(
             '<?php',
-            'namespace Storage\Model;',
-            $this->appendUsage('use Storage\Repository\\' . $model->class_name . 'Repository as Repository;'),
+            'namespace Storage\\Model;',
+            $this->appendUsage('use Storage\\Repository\\' . $model->class_name . 'Repository as Repository;'),
             $this->getClassComment(). PHP_EOL . 'class '.$model->class_name . 'Base'.PHP_EOL,
             ));
         $result .= '{' . PHP_EOL;
 
-        foreach($model->getProperties() as $property)
-        {
+        foreach($model->getProperties() as $property) {
             $result .= $this->renderPropertyDescription($property);
         }
 
@@ -45,8 +44,8 @@ class Model
 
         $pk = $model->getPk();
 
-        foreach($model->getProperties() as $property)
-        {
+        foreach($model->getProperties() as $property) {
+
             if($property->type == 'virtual') {
                 $result .= $this->renderVirtualPropertyGetter($property);
                 if($property->setter) {
@@ -54,9 +53,8 @@ class Model
                 }
 
             } else {
-
                 $result .= $this->renderPropertyGetter($property);
-                if(!in_array($property->name, $pk)) {
+                if(!$property->readonly) {
                     $result .= $this->renderPropertySetter($property);
                 }
             }
@@ -226,7 +224,9 @@ SETTER;
 
         $array = '';
         foreach($this->model->getProperties() as $property) {
-            $array .= '            \'' . $property->name."'" . str_repeat(' ', $this->getMaxPropertyLength() - strlen($property->name)). " => \$this->".$property->getter.'(),' . PHP_EOL;
+            if($property->type != 'virtual') {
+                $array .= '            \'' . $property->name."'" . str_repeat(' ', $this->getMaxPropertyLength() - strlen($property->name)). " => \$this->".$property->getter.'(),' . PHP_EOL;
+            }
         }
         return <<<SETTER
 

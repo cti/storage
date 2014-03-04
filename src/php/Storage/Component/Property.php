@@ -13,6 +13,7 @@ class Property
 
     public $primary;
     public $required;
+    public $behaviour;
 
     public $setter;
     public $getter;
@@ -36,6 +37,9 @@ class Property
         $this->comment = $params['comment'];
         $this->required = isset($params['required']) ? $params['required'] : false;
         $this->primary = isset($params['primary']) ? $params['primary'] : false;
+        $this->behaviour = isset($params['behaviour']) ? $params['behaviour'] : false;
+        
+        $this->readonly = isset($params['readonly']) ? $params['readonly'] : $this->primary;
 
         if(isset($params['model'])) {
             $this->model = $params['model'];
@@ -79,8 +83,32 @@ class Property
         }
     }
 
-    function copy()
+    function copy($override = array())
     {
-        return new Property(get_object_vars($this));
+        $config = get_object_vars($this);
+        foreach($override as $k => $v) {
+            $config[$k] = $v;
+        }
+        return new Property($config);
+    }
+
+    function getForeignModelColumns()
+    {
+        if($this->type != 'virtual') {
+            throw new Exception("Error processing foreign model");
+        }
+        $properties = array();
+        foreach($this->model->getPk() as $name) {
+            $property = $this->model->getProperty($name);
+            if(!$property->behaviour) {
+                // echo $this->name .' for '. $this->model->name . PHP_EOL;
+                $name = $property->name;
+                $properties[] = $property->copy(array(
+                    'name' => $name,
+                    'primary' => false
+                ));
+            }
+        }
+        return $properties;
     }
 }

@@ -34,7 +34,11 @@ class Schema
 
     public function createModel($name, $comment, $properties = array())
     {
-        return $this->models[$name] = new Model($name, $comment, $properties);
+        return $this->models[$name] = $this->manager->create('Storage\Component\Model', array(
+            'name' => $name, 
+            'comment' => $comment, 
+            'properties' => $properties
+        ));
     }
 
     public function getModel($name)
@@ -74,14 +78,23 @@ class Schema
         }
         sort($start);
         sort($end);
-        $name = implode('_', $start) . '_' . implode('_', $end) . '_link';
 
-        $this->models[$name] = new Model($name, $name);
+        $name = $start;
+        foreach($end as $v) {
+            $name[] = $v;
+        }
+        $name[] = 'link';
+        $name = implode('_', $name);
+
+        $this->models[$name] = $this->manager->create('Storage\Component\Model', array('name' => $name, 'comment' => $name));
         $this->models[$name]->createBehaviour('link', array(
             'list' => $list
         ));
 
         foreach($list as $model) {
+            if($model->hasBehaviour('log') && !$this->models[$name]->hasBehaviour('log')) {
+                $this->models[$name]->createBehaviour('log');
+            }
             $this->models[$name]->hasOne($model);
         }
 
@@ -127,7 +140,7 @@ class Schema
 
     function getDump()
     {
-        return json_encode($this);
+        return 'dump for schema';
     }
 
     function loadDump($dump)

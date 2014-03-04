@@ -56,7 +56,7 @@ HEADER;
 
     public function renderRepositoryGetter(Model $model)
     {
-        $repository_class = $model->getRepositoryClass();
+        $repository_class = $model->repository_class;
 
         return <<<GETTER
     /**
@@ -101,7 +101,7 @@ COMMENT;
      */
     public function find(\$name, \$pk)
     {
-        return $this->getRepository(\$name)->findByPk(\$pk);
+        return \$this->getRepository(\$name)->findByPk(\$pk);
     }
 
     /**

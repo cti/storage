@@ -4,14 +4,24 @@ namespace Storage\Behaviour;
 
 class Link
 {
+    public $model;
     public $list = array();
 
-    function getPk()
+    function hasVirtualPk()
+    {
+        return false;
+    }
+
+    function getAdditionalPk()
     {
         $pk = array();
         foreach($this->list as $model) {
             foreach($model->getPk() as $key) {
-                $pk[] = $key;
+                if(!$model->getProperty($key)->behaviour) {
+                    if(!in_array($key, $pk)) {
+                        $pk[] = $key;
+                    }
+                }
             }
         }
         return $pk;
@@ -20,7 +30,7 @@ class Link
     function getAdditionalProperties()
     {
         $properties = array();
-        foreach($this->getPk() as $key) {
+        foreach($this->getAdditionalPk() as $key) {
             $properties[] = $this->getAdditionalProperty($key);
         }
         return $properties;
@@ -31,7 +41,7 @@ class Link
         if(isset($this->properties[$name])) {
             return $this->properties[$name];
         }
-        if(!in_array($name, $this->getPk())) {
+        if(!in_array($name, $this->getAdditionalPk())) {
             return null;
         }
         foreach ($this->list as $model) {
