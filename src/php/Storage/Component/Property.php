@@ -14,6 +14,7 @@ class Property
     public $primary;
     public $required;
     public $behaviour;
+    public $mapping;
 
     public $setter;
     public $getter;
@@ -38,8 +39,8 @@ class Property
         $this->required = isset($params['required']) ? $params['required'] : false;
         $this->primary = isset($params['primary']) ? $params['primary'] : false;
         $this->behaviour = isset($params['behaviour']) ? $params['behaviour'] : false;
-        
         $this->readonly = isset($params['readonly']) ? $params['readonly'] : $this->primary;
+        $this->mapping = isset($params['mapping']) ? $params['mapping'] : false;
 
         if(isset($params['model'])) {
             $this->model = $params['model'];
@@ -101,11 +102,12 @@ class Property
         foreach($this->model->getPk() as $name) {
             $property = $this->model->getProperty($name);
             if(!$property->behaviour) {
-                // echo $this->name .' for '. $this->model->name . PHP_EOL;
-                $name = $property->name;
-                $properties[] = $property->copy(array(
+                $name = $property->name == $this->model->name ? $property->name : 'id_' . $this->name;
+                $properties[] = new Property(array(
                     'name' => $name,
-                    'primary' => false
+                    'mapping' => $property->name,
+                    'comment' => $property->comment,
+                    'type' => $property->type,
                 ));
             }
         }

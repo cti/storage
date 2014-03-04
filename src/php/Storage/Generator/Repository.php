@@ -75,6 +75,15 @@ class Repository
         ));
     }
 
+    /**
+     * Get Storage instance
+     * @return Storage\Storage
+     */
+    public function getStorage()
+    {
+        return \$this->storage;
+    }
+
 BASE;
     }
 

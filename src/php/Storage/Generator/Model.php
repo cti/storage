@@ -142,12 +142,13 @@ GETTER;
 
     public function renderPropertySetter(Property $property)
     {
+        $type = $property->mapping ? 'protected' : 'public';
         return <<<SETTER
     /**
      * Set $property->name
      * @param $property->type
      */
-    public function $property->setter($$property->name)
+    $type function $property->setter($$property->name)
     {
         if(!isset(\$this->_changes['$property->name'])) {
             \$this->_changes['$property->name'] = array(
@@ -166,6 +167,12 @@ SETTER;
     {
         $name = $property->virtual_name;
         $model = $property->model;
+
+        $finder = '';
+        foreach($property->getForeignModelColumns() as $p) {
+            $finder .= "                '" . $p->mapping ."' => \$this->" . $p->getter .'(), ' . PHP_EOL;
+        }
+
         return <<<GETTER
     /**
      * Get $name
@@ -173,6 +180,10 @@ SETTER;
      */
     public function $property->getter()
     {
+        if(!isset(\$this->$property->name)) {
+            \$this->$property->name = \$this->_repository->getStorage()->find('$model->model_class', array(
+$finder           ));
+        }
         return \$this->$property->name;
     }
 
@@ -184,6 +195,14 @@ GETTER;
     {
         $class = $property->model->model_class;
         $class_name = $property->model->class_name;
+
+        $setNull = '';
+        $setProperties = '';
+        foreach($property->getForeignModelColumns() as $p) {
+            $setNull = '            $this->' . $p->setter . '(null);' . PHP_EOL;
+            $setProperties = '            $this->' . $p->setter . '($'.$property->name.'->'.$property->model->getProperty($p->mapping)->getter.'());' . PHP_EOL;
+        }
+
         return <<<SETTER
     /**
      * Set $property->name
@@ -191,13 +210,11 @@ GETTER;
      */
     public function $property->setter($class_name $$property->name)
     {
-        // if(!isset(\$this->_changes['$property->name'])) {
-        //     \$this->_changes['$property->name'] = array(
-        //         'old' => \$this->$property->name,
-        //     );
-        // }
-        // \$this->_changes['$property->name']['new'] = $$property->name;
         \$this->$property->name = $$property->name;
+
+        if($$property->name == null) {
+$setNull        } else {
+$setProperties        }
     }
 
 
