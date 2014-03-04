@@ -180,7 +180,7 @@ SETTER;
      */
     public function $property->getter()
     {
-        if(!isset(\$this->$property->name)) {
+        if(!\$this->$property->name) {
             \$this->$property->name = \$this->_repository->getStorage()->find('$model->model_class', array(
 $finder           ));
         }
@@ -208,11 +208,11 @@ GETTER;
      * Set $property->name
      * @param $class
      */
-    public function $property->setter($class_name $$property->name)
+    public function $property->setter($class_name $$property->name = null)
     {
         \$this->$property->name = $$property->name;
 
-        if($$property->name == null) {
+        if(!$$property->name) {
 $setNull        } else {
 $setProperties        }
     }

@@ -2,9 +2,9 @@
 
 namespace Storage\Component;
 
-use Util\String;
-
+use Exception;
 use Storage\Behaviour\Factory as BehaviourFactory;
+use Util\String;
 
 class Model
 {
@@ -20,6 +20,7 @@ class Model
 
     public $one = array();
     public $many = array();
+    public $links = array();
 
     /**
      * @inject
@@ -103,10 +104,22 @@ class Model
         return isset($this->behaviours[$nick]);
     }
 
-    function hasOne(Model $parent, $alias = null)
+    function hasOne(Model $parent, $alias = null, $foreignAlias = null)
     {
         if(!$alias) {
             $alias = $parent->name;
+        }
+        if(!$foreignAlias) {
+            $foreignAlias = $this->name;
+        }
+        if(isset($this->one[$alias])) {
+            throw new Exception(sprintf(
+                "Duplicate relation %s.%s throw %s and %s", 
+                $this->name,
+                $alias,
+                $this->one[$alias]->model->name,
+                $parent->name
+            ));
         }
         if(!isset($this->one[$alias])) {
             $this->one[$alias] = new Property(array(
@@ -115,19 +128,28 @@ class Model
                 'comment' => $parent->name,
                 'model' => $parent,
             ));
-            $parent->hasMany($this, $alias);
+            $parent->many[$foreignAlias] = new Property(array(
+                'name' => $foreignAlias,
+                'type' => 'virtual', 
+                'comment' => $foreignAlias,
+                'model' => $this,
+            ));
         }
     }
 
-    function hasMany(Model $child, $alias = null) 
+    function registerLink(Model $parent, $alias) 
     {
-        if(!$alias) {
-            $alias = $child->name;
+        if(isset($this->links[$alias])) {
+            throw new Exception(sprintf(
+                "Duplicate link %s on %s throw %s and %s", 
+                $alias,
+                $this->name,
+                $parent->name,
+                $this->links[$alias]->name
+            ));
+            
         }
-        if(!isset($this->many[$alias])) {
-            $this->many[$alias] = $child;
-            $child->hasOne($this, $alias);
-        }
+        $this->links[$alias] = $parent;
     }
 
     public function __call($name, $params)
@@ -198,10 +220,6 @@ class Model
 
         $pk = $other = $last = array();
         foreach($properties as $property) {
-            if(!is_object($property)) {
-                var_dump($property);
-                die;
-            }
             if($property->primary) {
                 $pk[$property->name] = $property;
             } elseif($property->type == 'virtual') {

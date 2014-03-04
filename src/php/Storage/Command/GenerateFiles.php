@@ -45,11 +45,11 @@ class GenerateFiles extends Command
             ))
         );
 
-        foreach($schema->getModels() as $model)
-        {
-            // echo    $this->manager->create('Storage\Generator\Repository', array(
-            //         'model' => $model
-            //     ));
+        foreach($schema->getModels() as $model) {
+                // echo $this->manager->create('Storage\Generator\Model', array(
+                //     'model' => $model
+                // ));
+
             $fs->dumpFile(
                 $locator->path('out php Storage Model ' . $model->class_name . 'Base.php'), 
                 $this->manager->create('Storage\Generator\Model', array(

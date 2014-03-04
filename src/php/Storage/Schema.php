@@ -35,10 +35,11 @@ class Schema
     public function createModel($name, $comment, $properties = array())
     {
         return $this->models[$name] = $this->manager->create('Storage\Component\Model', array(
-            'name' => $name, 
-            'comment' => $comment, 
-            'properties' => $properties
-        ));
+                'name' => $name, 
+                'comment' => $comment, 
+                'properties' => $properties
+            )
+        );
     }
 
     public function getModel($name)
@@ -76,6 +77,12 @@ class Schema
             }
             $mapping[$k] = $v;
         }
+
+        $multi = array_combine(array_keys($mapping), array_reverse(array_keys($mapping)));
+        foreach($multi as $k => $v) {
+            $multi[$k] = String::pluralize($v);
+        }
+
         sort($start);
         sort($end);
 
@@ -83,6 +90,7 @@ class Schema
         foreach($end as $v) {
             $name[] = $v;
         }
+
         $name[] = 'link';
         $name = implode('_', $name);
 
@@ -91,11 +99,14 @@ class Schema
             'list' => $list
         ));
 
-        foreach($list as $model) {
+        $many = String::pluralize($name);
+        foreach($mapping as $alias => $model) {
             if($model->hasBehaviour('log') && !$this->models[$name]->hasBehaviour('log')) {
                 $this->models[$name]->createBehaviour('log');
             }
-            $this->models[$name]->hasOne($model);
+
+            $this->models[$name]->hasOne($model, $alias, $many);
+            $model->registerLink($this->models[$name], $multi[$alias]);
         }
 
         return $this->models[$name];
@@ -107,6 +118,7 @@ class Schema
         foreach ($dump['models'] as $key => $data) {
             $this->models[$key] = Model::restore($this, $data);
         }
+
         foreach ($dump['links'] as $key => $data) {
             $this->links[$key] = Link::restore($this, $data);
         }
