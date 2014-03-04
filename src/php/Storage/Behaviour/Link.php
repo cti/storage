@@ -2,6 +2,8 @@
 
 namespace Storage\Behaviour;
 
+use Storage\Component\Model;
+
 class Link
 {
     public $model;
@@ -51,5 +53,15 @@ class Link
                 }
             }
         }
+    }
+
+    function getForeignModel(Model $model)
+    {
+        foreach($this->list as $m) {
+            if($m != $model) {
+                return $m;
+            }
+        }
+
     }
 }

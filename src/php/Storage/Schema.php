@@ -78,10 +78,7 @@ class Schema
             $mapping[$k] = $v;
         }
 
-        $multi = array_combine(array_keys($mapping), array_reverse(array_keys($mapping)));
-        foreach($multi as $k => $v) {
-            $multi[$k] = String::pluralize($v);
-        }
+        $relation = array_combine(array_keys($mapping), array_reverse(array_keys($mapping)));
 
         sort($start);
         sort($end);
@@ -106,7 +103,7 @@ class Schema
             }
 
             $this->models[$name]->hasOne($model, $alias, $many);
-            $model->registerLink($this->models[$name], $multi[$alias]);
+            $model->registerLink($this->models[$name], $relation[$alias]);
         }
 
         return $this->models[$name];

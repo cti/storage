@@ -47,17 +47,15 @@ class Model
         foreach($model->getProperties() as $property) {
 
             if($property->type == 'virtual') {
-                $result .= $this->renderVirtualPropertyGetter($property);
-                if($property->setter) {
-                    $result .= $this->renderVirtualPropertySetter($property);
-                }
+                $result .= $this->renderVirtualProperty($property);
 
             } else {
-                $result .= $this->renderPropertyGetter($property);
-                if(!$property->readonly) {
-                    $result .= $this->renderPropertySetter($property);
-                }
+                $result .= $this->renderProperty($property);
             }
+        }
+
+        foreach($model->links as $alias => $link) {
+            $result .= $this->renderLinkMethods($link, $alias);
         }
 
         $result .= $this->renderFinal();
@@ -74,6 +72,11 @@ class Model
             if(!isset($result[$property->model->class_name])) {
                 $result[$property->model->class_name] = 'use ' . $property->model->model_class . ' as ' . $property->model->class_name.';';
             }
+        }
+
+        foreach($this->model->links as $link) {
+            $foreign = $link->getForeignModel($this->model);
+            $result[$foreign->class_name] = 'use ' . $foreign->model_class . ' as ' . $foreign->class_name.';';
         }
         if(count($result)) {
             array_unshift($result, '');
@@ -124,9 +127,11 @@ BASE;
 PROPERTY;
     }
 
-    public function renderPropertyGetter(Property $property)
+    public function renderProperty(Property $property)
     {
-        return <<<GETTER
+        $type = $property->mapping ? 'protected' : 'public';
+
+        $result = <<<PROPERTY
     /**
      * $property->comment
      * @return $property->type
@@ -137,13 +142,10 @@ PROPERTY;
     }
 
 
-GETTER;
-    }
+PROPERTY;
 
-    public function renderPropertySetter(Property $property)
-    {
-        $type = $property->mapping ? 'protected' : 'public';
-        return <<<SETTER
+        if(!$property->readonly) {
+            $result .= <<<PROPERTY
     /**
      * Set $property->name
      * @param $property->type
@@ -160,10 +162,13 @@ GETTER;
     }
 
 
-SETTER;
+PROPERTY;
+        }
+
+        return $result;
     }
 
-    public function renderVirtualPropertyGetter(Property $property)
+    public function renderVirtualProperty(Property $property)
     {
         $name = $property->virtual_name;
         $model = $property->model;
@@ -173,7 +178,17 @@ SETTER;
             $finder .= "                '" . $p->mapping ."' => \$this->" . $p->getter .'(), ' . PHP_EOL;
         }
 
-        return <<<GETTER
+        $class = $property->model->model_class;
+        $class_name = $property->model->class_name;
+
+        $setNull = '';
+        $setProperties = '';
+        foreach($property->getForeignModelColumns() as $p) {
+            $setNull = '            $this->' . $p->setter . '(null);' . PHP_EOL;
+            $setProperties = '            $this->' . $p->setter . '($'.$property->name.'->'.$property->model->getProperty($p->mapping)->getter.'());' . PHP_EOL;
+        }
+
+        return <<<VIRTUAL
     /**
      * Get $name
      * @param $model->model_class
@@ -187,23 +202,6 @@ $finder           ));
         return \$this->$property->name;
     }
 
-
-GETTER;
-    }
-
-    public function renderVirtualPropertySetter(Property $property)
-    {
-        $class = $property->model->model_class;
-        $class_name = $property->model->class_name;
-
-        $setNull = '';
-        $setProperties = '';
-        foreach($property->getForeignModelColumns() as $p) {
-            $setNull = '            $this->' . $p->setter . '(null);' . PHP_EOL;
-            $setProperties = '            $this->' . $p->setter . '($'.$property->name.'->'.$property->model->getProperty($p->mapping)->getter.'());' . PHP_EOL;
-        }
-
-        return <<<SETTER
     /**
      * Set $property->name
      * @param $class
@@ -218,17 +216,60 @@ $setProperties        }
     }
 
 
-SETTER;
+
+VIRTUAL;
     }
 
-    public function getMaxPropertyLength()
+    public function renderLinkMethods($link, $alias)
     {
-        if(!isset($this->max)) {
-            foreach($this->model->getProperties() as $property) {
-                $this->max = !isset($this->max) || $this->max < strlen($property->name) ? strlen($property->name) : $this->max;
+
+        $foreign = $link->getForeignModel($this->model);
+        $phpname = String::convertToCamelCase($alias);
+        $phpname_many = String::pluralize($phpname);
+
+        $model_pk = $this->model->getPk();
+
+        $combineNewValues = '';
+        foreach($link->getPk() as $pk) {
+            $own = in_array($pk, $model_pk);
+            $property = $own ? $this->model->getProperty($pk) : $foreign->getProperty($pk);
+            if(!$property->behaviour) {
+                $combineNewValues .= "            '" . $property->name ."' => \$" . ($own ? 'this' : $alias).'->' . $property->getter.'(),' . PHP_EOL;
+                if($own) {
+
+                    $getConditions .= "            '" . $property->name ."' => \$this->" . $property->getter.'(),' . PHP_EOL;
+                }
             }
         }
-        return $this->max;
+
+        return <<<LINK
+    /**
+     * Get $phpname_many
+     * @return $foreign->model_class[]
+     */
+    public function get{$phpname_many}()
+    {
+        \$links = \$this->_repository->getStorage()->find('$link->name', array(
+$getConditions        ));
+        \$result = array();
+        foreach(\$links as \$link) {
+            \$result[] = \$link->get{$phpname}();
+        }
+        return \$result;
+    }
+
+    /** 
+     * Add $phpname
+     * @param $foreign->model_class
+     */
+    public function add{$phpname}($foreign->class_name $$alias)
+    {
+        \$this->_repository->getStorage()->create('$link->name', array(
+$combineNewValues        ));
+    }
+
+
+LINK;
     }
 
     public function renderFinal()
@@ -305,5 +346,17 @@ SETTER;
  */
 COMMENT;
     }
+
+    public function getMaxPropertyLength()
+    {
+        if(!isset($this->max)) {
+            foreach($this->model->getProperties() as $property) {
+                $this->max = !isset($this->max) || $this->max < strlen($property->name) ? strlen($property->name) : $this->max;
+            }
+        }
+        return $this->max;
+    }
+
+
 
 }
