@@ -46,7 +46,11 @@ class Manager
             throw new Exception();
         }
         if (!isset($this->instance[$class])) {
-            $this->instance[$class] = $this->create($class);
+            $this->instance[$class] = $this->createInstance($class);
+
+            if (method_exists($class, 'init')) {
+                $this->call($this->instance[$class], 'init');
+            }
         }
         return $this->instance[$class];
     }
@@ -57,6 +61,18 @@ class Manager
      * @return object
      */
     public function create($class, $config = array())
+    {
+
+        $instance = $this->createInstance($class, $config);
+
+        if (method_exists($class, 'init')) {
+            $this->call($instance, 'init');
+        }
+
+        return $instance;
+    }
+
+    protected function createInstance($class, $config = array())
     {
         $configuration = $this->config->get($class);
         $parameters = array_merge($configuration, $config);
@@ -108,10 +124,6 @@ class Manager
                     $property->setAccessible(false);
                 }
             }
-        }
-
-        if (method_exists($class, 'init')) {
-            $this->call($instance, 'init');
         }
 
         return $instance;
