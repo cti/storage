@@ -2,8 +2,6 @@
 
 namespace Storage\Generator;
 
-use Storage\Component\Property;
-
 use Util\String;
 
 class Model
@@ -25,44 +23,55 @@ class Model
      */
     public $locator;
 
+    /**
+     * @inject
+     * @var Di\Manager
+     */
+    protected $manager;
+
     public function __toString()
     {
-        $model = $this->model;
-        $result = implode(PHP_EOL . PHP_EOL, array(
-            '<?php',
-            'namespace Storage\\Model;',
-            $this->appendUsage('use Storage\\Repository\\' . $model->class_name . 'Repository as Repository;'),
-            $this->getClassComment(). PHP_EOL . 'class '.$model->class_name . 'Base'.PHP_EOL,
-            ));
-        $result .= '{' . PHP_EOL;
+        try {
 
-        foreach($model->getProperties() as $property) {
-            $result .= $this->renderPropertyDescription($property);
-        }
+            $model = $this->model;
 
-        $result .= $this->renderBase();
-
-        $pk = $model->getPk();
-
-        foreach($model->getProperties() as $property) {
-            if($property->type == 'virtual') {
-                $result .= $this->renderVirtualProperty($property);
-            } else {
-                $result .= $this->renderProperty($property);
+            $properties = array();
+            foreach($model->getProperties() as $property) {
+                $properties[] = $this->manager->create('Storage\Generator\Property', array(
+                    'property' => $property
+                ));
             }
+
+            $header = array(
+                '<?php',
+                'namespace Storage\\Model;',
+                $this->appendUsage('use Storage\\Repository\\' . $model->class_name . 'Repository as Repository;'),
+                $this->getClassComment(). PHP_EOL . 'class '.$model->class_name . 'Base'.PHP_EOL,
+            );
+
+            $result = implode(PHP_EOL . PHP_EOL, $header) . '{' . PHP_EOL;
+
+            foreach($properties as $property) {
+                $result .= $property->renderDescription();
+            }
+
+            $result .= $this->renderHeader();
+
+            foreach($properties as $property) {
+                $result .= $property->renderGetterAndSetter();
+            }
+
+            foreach($properties as $property) {
+                if($property->hasRelation()) {
+                    $result .= $property->renderRelation();
+                }
+            }
+
+            $result .= $this->renderFinal() . '}';
+        } catch(\Exception $e) {
+            return $e->getMessage();
+
         }
-
-        foreach($model->many as $alias => $model) {
-            $result .= $this->renderRelationGetters($model, $alias);
-        }
-
-        foreach($model->links as $alias => $link) {
-            $result .= $this->renderLinkMethods($link, $alias);
-        }
-
-        $result .= $this->renderFinal();
-
-        $result .= '}';
 
         return $result;
     }
@@ -70,23 +79,23 @@ class Model
     public function appendUsage($usage)
     {
         $result = array();
-        foreach($this->model->one as $property) {
-            if(!isset($result[$property->model->class_name])) {
-                $result[$property->model->class_name] = 'use ' . $property->model->model_class . ' as ' . $property->model->class_name.';';
-            }
-        }
+        // foreach($this->model->one as $property) {
+        //     if(!isset($result[$property->model->class_name])) {
+        //         $result[$property->model->class_name] = 'use ' . $property->model->model_class . ' as ' . $property->model->class_name.';';
+        //     }
+        // }
 
-        foreach($this->model->links as $link) {
-            $foreign = $link->getForeignModel($this->model);
-            $result[$foreign->class_name] = 'use ' . $foreign->model_class . ' as ' . $foreign->class_name.';';
-        }
-        if(count($result)) {
-            array_unshift($result, '');
-        }
+        // foreach($this->model->links as $link) {
+        //     $foreign = $link->getForeignModel($this->model);
+        //     $result[$foreign->class_name] = 'use ' . $foreign->model_class . ' as ' . $foreign->class_name.';';
+        // }
+        // if(count($result)) {
+        //     array_unshift($result, '');
+        // }
         return $usage . implode(PHP_EOL, $result);
     }
 
-    public function renderBase()
+    public function renderHeader()
     {
         $repository_class = $this->model->repository_class;
         return <<<BASE
@@ -114,7 +123,7 @@ class Model
 BASE;
     }
 
-    public function renderPropertyDescription(Property $property)
+    public function renderPropertyDescription($property)
     {
         $comment = $property->type == 'virtual' ? $property->virtual_name : $property->comment;
         $type = $property->type == 'virtual' ? $property->model->model_class : $property->type;
@@ -129,9 +138,8 @@ BASE;
 PROPERTY;
     }
 
-    public function renderProperty(Property $property)
+    public function renderProperty($property)
     {
-        $type = $property->mapping ? 'protected' : 'public';
 
         $result = <<<PROPERTY
     /**
@@ -146,7 +154,8 @@ PROPERTY;
 
 PROPERTY;
 
-        if(!$property->readonly) {
+    $type = $property->readonly ? 'protected' : 'public';
+
             $result .= <<<PROPERTY
     /**
      * Set $property->name
@@ -165,12 +174,11 @@ PROPERTY;
 
 
 PROPERTY;
-        }
 
         return $result;
     }
 
-    public function renderVirtualProperty(Property $property)
+    public function renderVirtualProperty($property)
     {
         $name = $property->virtual_name;
         $model = $property->model;
@@ -315,7 +323,19 @@ LINK;
                 $array .= '            \'' . $property->name."'" . str_repeat(' ', $this->getMaxPropertyLength() - strlen($property->name)). " => \$this->".$property->getter.'(),' . PHP_EOL;
             }
         }
-        return <<<SETTER
+
+        $model = $this->model;
+
+        return <<<FINAL
+
+    /**
+     * Get model repository
+     * @return $model->repository_class
+     */
+    public function getRepository()
+    {
+        return \$this->_repository;
+    }
 
     /**
      * Save item in repository
@@ -329,7 +349,7 @@ LINK;
             }
         }
         if(count(\$changes)) {
-            \$this->_repository->save(\$this, \$changes);
+            \$this->getRepository()->save(\$this, \$changes);
             \$this->_changes = array();
         }
     }
@@ -339,7 +359,7 @@ LINK;
      */
     public function delete()
     {
-        \$this->_repository->delete(\$this);
+        \$this->getRepository()->delete(\$this);
     }
 
     /**
@@ -363,7 +383,7 @@ $array        );
     }
 
 
-SETTER;
+FINAL;
     }
 
     function getClassComment()

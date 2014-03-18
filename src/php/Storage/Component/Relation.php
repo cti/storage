@@ -12,10 +12,16 @@ class Relation
     public $destination_alias;
     public $referenced_by;
 
+    public $strategy = 'merge';
+    public $properties = array();
+
     function __construct($source, $destination)
     {
         $this->source = $source;
         $this->destination = $destination;
+        
+        $this->referenced_by = $source;
+        $this->destination_alias = $destination;
     }
 
     function usingAlias($name)
@@ -29,20 +35,35 @@ class Relation
         $this->referenced_by = $name;
         return $this;
     }
+
+    function setStrategy($strategy) 
+    {
+        $this->strategy = $strategy;
+        return $this;
+    }
     
-    function getSourceAlias()
+    function process(Schema $schema) 
     {
-        return $this->source_alias ? $source_alias : $this->source;
-    }
+        $source = $schema->getModel($this->source);
+        $destination = $schema->getModel($this->destination);
 
-    function getReferenced()
-    {
-        return $this->referenced_by ? $this->referenced_by : $this->destination;
-    }
+        foreach($destination->getPk() as $key) {
+            $property = $destination->getProperty($key);
+            if(!$property->behaviour) {
+                $name = $this->destination_alias != $this->destination ? $key . '_' . $this->destination_alias : $key;
+                $this->properties[$name] = $source->properties[$name] = new Property(array(
+                    'name' => $name,
+                    'foreignName' => $key,
+                    'comment' => $this->destination_alias.' link',
+                    'type' => $property->type,
+                    'relation' => $this,
+                    'readonly' => true,
+                ));
 
-    function getMapping(Schema $schema)
-    {
-        $schema->getModel($this->source);
-        $schema->getModel($this->destination);
+                if($source->hasBehaviour('link')) {
+                    $source->pk[] = $name;
+                }
+            }
+        }
     }
 }

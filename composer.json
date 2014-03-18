@@ -28,6 +28,7 @@
         "doctrine/dbal": "dev-master",
         "symfony/http-foundation": "dev-master",
         "symfony/filesystem": "dev-master",
+        "symfony/stopwatch": "dev-master",
         "symfony/finder": "dev-master",
         "symfony/console": "dev-master"
     }

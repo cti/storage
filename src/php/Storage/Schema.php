@@ -30,6 +30,7 @@ class Schema
             $this->loadDump($dump);
         } else {
             $this->processMigrations();
+            $this->processRelation();
         }
     }
 
@@ -101,7 +102,7 @@ class Schema
                 $link->createBehaviour('log');
             }
 
-            $link->hasOne($model, $alias, $name);
+            $link->hasOne($model)->usingAlias($alias)->referencedBy($name);
             $model->registerLink($link, $relation[$alias]);
         }
 
@@ -144,6 +145,15 @@ class Schema
 
             $this->manager->get($class)->process($this);
         }        
+    }
+
+    function processRelation()
+    {
+        foreach($this->models as $model) {
+            foreach($model->relations as $relation) {
+                $relation->process($this);
+            }
+        }
     }
 
     function getDump()

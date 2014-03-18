@@ -10,11 +10,12 @@ class Property
     public $name;
     public $type;
     public $comment;
+    public $foreignName;
 
     public $primary;
     public $required;
     public $behaviour;
-    public $mapping;
+    public $relation;
 
     public $setter;
     public $getter;
@@ -35,10 +36,12 @@ class Property
             }
         }
         $this->name = $params['name'];
-        $this->comment = isset($params['comment']) ? $params['comment'] : array();
+        $this->comment = isset($params['comment']) ? $params['comment'] : null;
+        $this->foreignName = isset($params['foreignName']) ? $params['foreignName'] : null;
         $this->required = isset($params['required']) ? $params['required'] : false;
         $this->primary = isset($params['primary']) ? $params['primary'] : false;
         $this->behaviour = isset($params['behaviour']) ? $params['behaviour'] : false;
+        $this->relation = isset($params['relation']) ? $params['relation'] : null;
         $this->readonly = isset($params['readonly']) ? $params['readonly'] : $this->primary;
 
         if(isset($params['model'])) {
@@ -61,7 +64,7 @@ class Property
 
         if (isset($params['setter'])) {
             $this->setter = $params['setter'];
-        } else {
+        } else {    
             $this->setter = 'set'.String::convertToCamelCase($this->name);
         }
 

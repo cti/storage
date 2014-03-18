@@ -161,27 +161,22 @@ class Model
         if($this->hasVirtualPk()) {
             $properties['id_' . $this->name] = $this->getProperty('id_'.$this->name);
         }
+
         foreach($this->behaviours as $behaviour) {
             if(method_exists($behaviour, 'getAdditionalProperties')) {
                 foreach($behaviour->getAdditionalProperties() as $property) {
+                    if(isset($properties[$property->name])) {
+                        throw new Exception(sprintf("Duplicate property %s.%s", $this->name, $property->name));
+                    }
                     $properties[$property->name] = $property;
                 }
             }
         }
 
-        foreach($this->one as $alias => $property) {
-            $properties[$property->name] = $property;
-            foreach($property->getForeignModelColumns() as $p) {
-                $properties[$p->name] = $p;
-            }
-        }
-
-        $pk = $other = $last = array();
+        $pk = $other = array();
         foreach($properties as $property) {
             if($property->primary) {
                 $pk[$property->name] = $property;
-            } elseif($property->type == 'virtual') {
-                $last[$property->name] = $property;
             } else {
                 $other[$property->name] = $property;
             }
@@ -189,16 +184,11 @@ class Model
 
         ksort($pk);
         ksort($other);
-        ksort($last);
 
         $properties = $pk;
         foreach($other as $property) {
             $properties[] = $property;
         }   
-        foreach($last as $property) {
-            $properties[] = $property;
-        }
-
         return $properties;
     }
 
