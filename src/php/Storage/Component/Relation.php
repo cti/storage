@@ -60,7 +60,7 @@ class Relation
                     'readonly' => true,
                 ));
 
-                if($source->hasBehaviour('link')) {
+                if(!$source->hasVirtualPk()) {
                     $source->pk[] = $name;
                 }
             }

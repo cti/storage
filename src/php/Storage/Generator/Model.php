@@ -35,17 +35,42 @@ class Model
 
             $model = $this->model;
 
+            $usage = array(
+                sprintf('use Storage\\Repository\\%sRepository as Repository;', $model->class_name)
+            );
+
+            // last contains relation properties
+            $last = array();
             $properties = array();
             foreach($model->getProperties() as $property) {
-                $properties[] = $this->manager->create('Storage\Generator\Property', array(
+                $generator = $this->manager->create('Storage\Generator\Property', array(
+                    'model' => $model, 
                     'property' => $property
                 ));
+
+                foreach($generator->getUsages() as $line) {
+                    if(!in_array($line, $usage)) {
+                        $usage[] = $line;
+                    }
+                }
+                if($generator->hasRelation()) {
+                    $last[] = $generator;
+                } else {
+                    $properties[] = $generator;
+                }
             }
+
+            // add relation properties to the end
+            foreach($last as $generator) {
+                $properties[] = $generator;
+            }
+
+            sort($usage);
 
             $header = array(
                 '<?php',
                 'namespace Storage\\Model;',
-                $this->appendUsage('use Storage\\Repository\\' . $model->class_name . 'Repository as Repository;'),
+                implode(PHP_EOL, $usage),
                 $this->getClassComment(). PHP_EOL . 'class '.$model->class_name . 'Base'.PHP_EOL,
             );
 
@@ -53,46 +78,28 @@ class Model
 
             foreach($properties as $property) {
                 $result .= $property->renderDescription();
+                if($property->hasRelation()) {
+                    $result .= $property->renderRelationProperty();
+                }
+
             }
 
             $result .= $this->renderHeader();
 
             foreach($properties as $property) {
                 $result .= $property->renderGetterAndSetter();
-            }
-
-            foreach($properties as $property) {
                 if($property->hasRelation()) {
                     $result .= $property->renderRelation();
                 }
             }
 
             $result .= $this->renderFinal() . '}';
+
         } catch(\Exception $e) {
             return $e->getMessage();
-
         }
 
         return $result;
-    }
-
-    public function appendUsage($usage)
-    {
-        $result = array();
-        // foreach($this->model->one as $property) {
-        //     if(!isset($result[$property->model->class_name])) {
-        //         $result[$property->model->class_name] = 'use ' . $property->model->model_class . ' as ' . $property->model->class_name.';';
-        //     }
-        // }
-
-        // foreach($this->model->links as $link) {
-        //     $foreign = $link->getForeignModel($this->model);
-        //     $result[$foreign->class_name] = 'use ' . $foreign->model_class . ' as ' . $foreign->class_name.';';
-        // }
-        // if(count($result)) {
-        //     array_unshift($result, '');
-        // }
-        return $usage . implode(PHP_EOL, $result);
     }
 
     public function renderHeader()
@@ -121,61 +128,6 @@ class Model
 
 
 BASE;
-    }
-
-    public function renderPropertyDescription($property)
-    {
-        $comment = $property->type == 'virtual' ? $property->virtual_name : $property->comment;
-        $type = $property->type == 'virtual' ? $property->model->model_class : $property->type;
-        return <<<PROPERTY
-    /**
-     * $comment
-     * @var $type
-     */
-    protected $$property->name;
-
-
-PROPERTY;
-    }
-
-    public function renderProperty($property)
-    {
-
-        $result = <<<PROPERTY
-    /**
-     * $property->comment
-     * @return $property->type
-     */
-    public function $property->getter()
-    {
-        return \$this->$property->name;
-    }
-
-
-PROPERTY;
-
-    $type = $property->readonly ? 'protected' : 'public';
-
-            $result .= <<<PROPERTY
-    /**
-     * Set $property->name
-     * @param $property->type
-     */
-    $type function $property->setter($$property->name)
-    {
-        if(!isset(\$this->_changes['$property->name'])) {
-            \$this->_changes['$property->name'] = array(
-                'old' => \$this->$property->name,
-            );
-        }
-        \$this->_changes['$property->name']['new'] = $$property->name;
-        \$this->$property->name = $$property->name;
-    }
-
-
-PROPERTY;
-
-        return $result;
     }
 
     public function renderVirtualProperty($property)
@@ -228,33 +180,6 @@ $setProperties        }
 
 
 VIRTUAL;
-    }
-
-    public function renderRelationGetters($property, $alias) 
-    {
-        $model = $property->model;
-
-        $phpname = String::convertToCamelCase($alias);
-
-        $finder = '';
-        foreach($property->getForeignModelColumns() as $p) {
-            $finder .= "            '" . $p->name . "' => \$this->" . $p->mapping . '(),' . PHP_EOL;
-        }
-
-        return <<<RELATION
-    /**
-     * Get $phpname
-     * @return $model->model_class[]
-     */
-    public function get{$phpname}()
-    {
-        return \$this->_repository->getStorage()->find('$model->name', array(
-$finder        ));
-
-    }
-
-
-RELATION;
     }
 
     public function renderLinkMethods($link, $alias)
