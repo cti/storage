@@ -252,7 +252,6 @@ LINK;
         $model = $this->model;
 
         return <<<FINAL
-
     /**
      * Get model repository
      * @return $model->repository_class
