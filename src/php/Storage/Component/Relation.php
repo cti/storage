@@ -65,5 +65,7 @@ class Relation
                 }
             }
         }
+
+        $destination->references[] = $this;
     }
 }

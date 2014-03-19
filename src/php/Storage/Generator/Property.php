@@ -151,7 +151,7 @@ RELATION;
     {
         if(!\$this->$name) {
             \$storage = \$this->getRepository()->getStorage();
-            \$this->$name = \$storage->find('$relation->destination', array(
+            \$this->$name = \$storage->findByPk('$relation->destination', array(
                 $finder
             ));
         }

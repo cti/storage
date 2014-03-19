@@ -71,7 +71,7 @@ class Model
                 '<?php',
                 'namespace Storage\\Model;',
                 implode(PHP_EOL, $usage),
-                $this->getClassComment(). PHP_EOL . 'class '.$model->class_name . 'Base'.PHP_EOL,
+                $this->renderComment(). PHP_EOL . 'class '.$model->class_name . 'Base'.PHP_EOL,
             );
 
             $result = implode(PHP_EOL . PHP_EOL, $header) . '{' . PHP_EOL;
@@ -84,7 +84,7 @@ class Model
 
             }
 
-            $result .= $this->renderHeader();
+            $result .= $this->renderConstructor();
 
             foreach($properties as $property) {
                 $result .= $property->renderGetterAndSetter();
@@ -93,7 +93,14 @@ class Model
                 }
             }
 
-            $result .= $this->renderFinal() . '}';
+            foreach ($model->references as $reference) {
+               $generator = $this->manager->create('Storage\Generator\Reference', array(
+                    'reference' => $reference
+                ));
+               $result .= $generator->renderGetterAndSetter();
+            }
+
+            $result .= $this->renderFooter() . '}';
 
         } catch(\Exception $e) {
             return $e->getMessage();
@@ -102,7 +109,17 @@ class Model
         return $result;
     }
 
-    public function renderHeader()
+    function renderComment()
+    {
+        return <<<COMMENT
+/** 
+ * ATTENTION! DO NOT CHANGE! THIS CODE IS REGENERATED
+ * Use migrations if you want to change the result of this file
+ */
+COMMENT;
+    }
+
+    public function renderConstructor()
     {
         $repository_class = $this->model->repository_class;
         return <<<BASE
@@ -130,111 +147,7 @@ class Model
 BASE;
     }
 
-    public function renderVirtualProperty($property)
-    {
-        $name = $property->virtual_name;
-        $model = $property->model;
-
-        $finder = '';
-        foreach($property->getForeignModelColumns() as $p) {
-            $finder .= "                '" . $p->mapping ."' => \$this->" . $p->getter .'(), ' . PHP_EOL;
-        }
-
-        $class = $property->model->model_class;
-        $class_name = $property->model->class_name;
-
-        $setNull = '';
-        $setProperties = '';
-        foreach($property->getForeignModelColumns() as $p) {
-            $setNull = '            $this->' . $p->setter . '(null);' . PHP_EOL;
-            $setProperties = '            $this->' . $p->setter . '($'.$property->name.'->'.$property->model->getProperty($p->mapping)->getter.'());' . PHP_EOL;
-        }
-
-        return <<<VIRTUAL
-    /**
-     * Get $name
-     * @param $model->model_class
-     */
-    public function $property->getter()
-    {
-        if(!\$this->$property->name) {
-            \$this->$property->name = \$this->_repository->getStorage()->find('$model->name', array(
-$finder           ));
-        }
-        return \$this->$property->name;
-    }
-
-    /**
-     * Set $property->name
-     * @param $class
-     */
-    public function $property->setter($class_name $$property->name = null)
-    {
-        \$this->$property->name = $$property->name;
-
-        if(!$$property->name) {
-$setNull        } else {
-$setProperties        }
-    }
-
-
-
-VIRTUAL;
-    }
-
-    public function renderLinkMethods($link, $alias)
-    {
-
-        $foreign = $link->getForeignModel($this->model);
-        $phpname = String::convertToCamelCase($alias);
-        $phpname_many = String::pluralize($phpname);
-
-        $model_pk = $this->model->getPk();
-
-        $combineNewValues = '';
-        foreach($link->getPk() as $pk) {
-            $own = in_array($pk, $model_pk);
-            $property = $own ? $this->model->getProperty($pk) : $foreign->getProperty($pk);
-            if(!$property->behaviour) {
-                $combineNewValues .= "            '" . $property->name ."' => \$" . ($own ? 'this' : $alias).'->' . $property->getter.'(),' . PHP_EOL;
-                if($own) {
-
-                    $getConditions .= "            '" . $property->name ."' => \$this->" . $property->getter.'(),' . PHP_EOL;
-                }
-            }
-        }
-
-        return <<<LINK
-    /**
-     * Get $phpname_many
-     * @return $foreign->model_class[]
-     */
-    public function get{$phpname_many}()
-    {
-        \$links = \$this->_repository->getStorage()->find('$link->name', array(
-$getConditions        ));
-        \$result = array();
-        foreach(\$links as \$link) {
-            \$result[] = \$link->get{$phpname}();
-        }
-        return \$result;
-    }
-
-    /** 
-     * Add $phpname
-     * @param $foreign->model_class
-     */
-    public function add{$phpname}($foreign->class_name $$alias)
-    {
-        \$this->_repository->getStorage()->create('$link->name', array(
-$combineNewValues        ));
-    }
-
-
-LINK;
-    }
-
-    public function renderFinal()
+    public function renderFooter()
     {
         $pk = '';
         foreach($this->model->getPk() as $nick) {
@@ -308,16 +221,6 @@ $array        );
 
 
 FINAL;
-    }
-
-    function getClassComment()
-    {
-        return <<<COMMENT
-/** 
- * ATTENTION! DO NOT CHANGE! THIS CODE IS REGENERATED
- * Use migrations if you want to change the result of this file
- */
-COMMENT;
     }
 
     public function getMaxPropertyLength()
