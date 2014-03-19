@@ -87,6 +87,11 @@ class Model
         return isset($this->behaviours[$nick]);
     }
 
+    function getBehaviour($nick) 
+    {
+        return isset($this->behaviours[$nick]) ? $this->behaviours[$nick] : null;
+    }
+
     function hasOne($parent)
     {
         $parent_name = $parent instanceof Model ? $parent->name : $parent;

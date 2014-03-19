@@ -25,9 +25,11 @@ class Reference
         $property_name = String::pluralize($reference->referenced_by);
         $getter = 'get' . String::convertToCamelCase($property_name);
 
+        $destination = $this->schema->getModel($reference->destination);
+
         $finder = array();
         foreach($reference->properties as $property) {
-            $finder[] = "'$property->name' => \$this->" . $this->schema->getModel($reference->destination)->getProperty($property->foreignName)->getter . "(),";
+            $finder[] = "'$property->name' => \$this->" . $destination->getProperty($property->foreignName)->getter . "(),";
         }
         $finder = implode(PHP_EOL.'                ', $finder);
 
@@ -48,30 +50,40 @@ class Reference
 
 
 PROPERTY;
-    return $result;
 
-    $type = $property->readonly ? 'protected' : 'public';
+        if($this->schema->getModel($reference->source)->hasBehaviour('link')) {
+            $link = $this->schema->getModel($reference->source);
+            $foreign = $link->getForeignModel($destination);
+            foreach($link->relations as $relation) {
+                if($relation->destination == $foreign->name) {
+                    break;
+                }
+            }
 
+            $relation_property_name = String::pluralize($relation->destination_alias);
+            $relation_getter = 'get' . String::convertToCamelCase($relation_property_name);
+
+            $link_getter = 'get' . String::convertToCamelCase($relation->destination_alias);
+             
             $result .= <<<PROPERTY
     /**
-     * Set $property->name
-     * @param $property->type
-     * @return $model->model_class
+     * get $relation_property_name
+     * @return $foreign->model_class[]
      */
-    $type function $property->setter($$property->name)
+    public function $relation_getter()
     {
-        if(!isset(\$this->_changes['$property->name'])) {
-            \$this->_changes['$property->name'] = array(
-                'old' => \$this->$property->name,
-            );
+        if(!isset(\$this->$relation_property_name)) {
+            \$this->$relation_property_name = array();
+            foreach(\$this->$getter() as \$link) {
+                \$this->{$relation_property_name}[] = \$link->{$link_getter}();
+            }
         }
-        \$this->_changes['$property->name']['new'] = $$property->name;
-        \$this->$property->name = $$property->name;
-        return \$this;
+        return \$this->$relation_property_name;
     }
 
 
 PROPERTY;
+        }
 
         return $result;
     }
