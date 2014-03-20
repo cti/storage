@@ -65,6 +65,12 @@ class Model
                 $properties[] = $generator;
             }
 
+            foreach ($model->references as $reference) {
+                $references[] = $this->manager->create('Storage\Generator\Reference', array(
+                    'reference' => $reference
+                ));
+            }            
+
             sort($usage);
 
             $header = array(
@@ -81,7 +87,10 @@ class Model
                 if($property->hasRelation()) {
                     $result .= $property->renderRelationProperty();
                 }
+            }
 
+            foreach($references as $generator) {
+                $result .= $generator->renderProperty();
             }
 
             $result .= $this->renderConstructor();
@@ -93,10 +102,7 @@ class Model
                 }
             }
 
-            foreach ($model->references as $reference) {
-               $generator = $this->manager->create('Storage\Generator\Reference', array(
-                    'reference' => $reference
-                ));
+            foreach($references as $generator) {
                $result .= $generator->renderGetterAndSetter();
             }
 

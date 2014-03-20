@@ -17,6 +17,49 @@ class Reference
      */
     public $reference;
 
+    public function renderProperty()
+    {
+
+        $reference = $this->reference;
+        $property_name = String::pluralize($reference->referenced_by);
+
+        $source = $this->schema->getModel($reference->source);
+        $destination = $this->schema->getModel($reference->destination);
+
+
+        $result = <<<PROPERTY
+    /**
+     * @var $source->model_class[]
+     */
+    protected $$property_name;
+
+
+PROPERTY;
+
+        if($this->schema->getModel($reference->source)->hasBehaviour('link')) {
+            $link = $this->schema->getModel($reference->source);
+            $foreign = $link->getForeignModel($destination);
+            foreach($link->relations as $relation) {
+                if($relation->destination == $foreign->name) {
+                    break;
+                }
+            }
+
+            $relation_property_name = String::pluralize($relation->destination_alias);
+            $result .= <<<PROPERTY
+    /**
+     * @var $foreign->model_class[]
+     */
+    protected $$relation_property_name;
+
+
+PROPERTY;
+        }
+
+
+        return $result;
+    }
+
     public function renderGetterAndSetter()
     {
 
@@ -25,6 +68,7 @@ class Reference
         $property_name = String::pluralize($reference->referenced_by);
         $getter = 'get' . String::convertToCamelCase($property_name);
 
+        $source = $this->schema->getModel($reference->source);
         $destination = $this->schema->getModel($reference->destination);
 
         $finder = array();
@@ -36,11 +80,11 @@ class Reference
         $result = <<<PROPERTY
     /**
      * get $property_name
-     * @return $property->type
+     * @return $source->model_class
      */
     public function $getter()
     {
-        if(!isset(\$this->$property_name)) {
+        if(is_null(\$this->$property_name)) {
             \$this->$property_name = \$this->getRepository()->getStorage()->findAll('$reference->source', array(
                 $finder
             ));
@@ -72,7 +116,7 @@ PROPERTY;
      */
     public function $relation_getter()
     {
-        if(!isset(\$this->$relation_property_name)) {
+        if(is_null(\$this->$relation_property_name)) {
             \$this->$relation_property_name = array();
             foreach(\$this->$getter() as \$link) {
                 \$this->{$relation_property_name}[] = \$link->{$link_getter}();
