@@ -223,4 +223,22 @@ class Model
 
         return $this->properties[$name];
     }
+
+    public function hasOwnQuery()
+    {
+        if(count($this->indexes)) {
+            return true;
+        }
+
+        // todo check user defined query
+    }
+
+    public function getQueryClass() 
+    {
+        if($this->hasOwnQuery()) {
+            // todo check user defined query
+            return 'Storage\Query\\' . $this->class_name .'Select';
+        }
+        return 'Storage\Query\Select';
+    }
 }

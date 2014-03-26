@@ -31,9 +31,6 @@ class GenerateFiles extends Command
         $schema = $this->manager->get('Storage\Schema');
 
         $fs = new Filesystem();
-        $fs->mkdir($locator->path('out php Storage Model'));
-        $fs->mkdir($locator->path('out php Storage Repository'));
-
         $fs->dumpFile(
             $locator->path('out php Storage Storage.php'), 
             $this->manager->create('Storage\Generator\Storage', array(
@@ -42,17 +39,7 @@ class GenerateFiles extends Command
         );
 
         foreach($schema->models as $model) {
-            // echo    $this->manager->create('Storage\Generator\Repository', array(
-            //     'model' => $model
-            // ));
-
-            if($model->name == 'person_favorite_module_link') {
-                // echo $this->manager->create('Storage\Generator\Model', array(
-                //     'model' => $model
-                // ));
-                // die;
-            }
-            // 
+            
             $fs->dumpFile(
                 $locator->path('out php Storage Model ' . $model->class_name . 'Base.php'), 
                 $this->manager->create('Storage\Generator\Model', array(
@@ -66,6 +53,15 @@ class GenerateFiles extends Command
                     'model' => $model
                 ))
             );
+
+            if($model->hasOwnQuery()) {
+                $fs->dumpFile(
+                    $locator->path('out php Storage Query ' . $model->class_name . 'Select.php'), 
+                    $this->manager->create('Storage\Generator\Select', array(
+                        'model' => $model
+                    ))
+                );
+            }
         }
     }
 }

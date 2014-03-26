@@ -10,4 +10,9 @@ class Index
     {
         $this->fields = $fields;
     }
+
+    public function getFields() 
+    {
+        return $this->fields;
+    }
 }

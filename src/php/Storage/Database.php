@@ -31,4 +31,20 @@ class Database
     {
         return $this->connection;
     }
+
+    public function execute($query, $params)
+    {
+        $stmt = $this->getConnection()->prepare($query);
+        foreach($params as $k => $v) {
+            $stmt->bindValue(is_numeric($k) ? $k+1 : $k, $v);
+        }
+        $stmt->execute();
+        return $stmt;
+    }
+
+    public function fetchRows($query, $params)
+    {
+        echo $query . PHP_EOL;
+        return $this->execute($query, $params)->fetchAll();
+    }
 }

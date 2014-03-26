@@ -15,7 +15,7 @@ class Repository
         $result = implode(PHP_EOL . PHP_EOL, array(
             '<?php',
             'namespace Storage\Repository;',
-            // 'use '.$model->model_class.' as '.$model->class_name.';',
+            sprintf('use %s as Select;', $this->model->getQueryClass()),
             $this->getClassComment() . PHP_EOL . 'class '. $model->class_name . 'Repository'.PHP_EOL,
             ));
         
@@ -35,7 +35,11 @@ class Repository
         }
         $fields = "array('".implode("', '", $fields)."')";
         $class = $this->model->class_name;
+
+        $model_name = $this->model->name;
         $model_class = $this->model->model_class;
+        $query_class = $this->model->getQueryClass();
+
         return <<<BASE
     /**
      * @inject
@@ -76,6 +80,24 @@ class Repository
     }
 
     /**
+     * select objects
+     * @return $query_class
+     */
+    public function select()
+    {
+        return \$this->di->create('$query_class', '$model_name');
+    }
+
+    /**
+     * select one object
+     * @return $query_class
+     */
+    public function selectOne()
+    {
+        return \$this->select()->setFetchMode(Select::FETCH_ONE);
+    }
+
+    /**
      * Get Storage instance
      * @return Storage\Storage
      */
@@ -92,7 +114,6 @@ BASE;
         return <<<COMMENT
 /** 
  * ATTENTION! DO NOT CHANGE! THIS CODE IS REGENERATED
- * Use migrations if you want to change the result of this file
  */
 COMMENT;
     }
