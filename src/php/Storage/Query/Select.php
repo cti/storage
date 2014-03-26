@@ -47,17 +47,24 @@ class Select implements Iterator
                 unset($this->data);
 
             } else {
-                $this->data = $this->database->fetchRows($this->getQuery(), $this->getParams());
+                if($this->fetch == self::FETCH_ALL) {
+                    $this->data = $this->database->fetchRows($this->getQuery(), $this->getParams());
+
+                } else {
+                    $this->data = array(
+                        $this->database->fetchRow($this->getQuery(), $this->getParams())
+                    );
+                }
             }
         }
         return $this;
     }
 
-    public function setFetchMode($mode) {
-        if(!in_array($mode, array(self::FETCH_ALL, self::FETCH_ONE))) {
-            throw new Exception(sprintf("Unknown fetch mode %s", $mode));
+    public function setFetchMode($fetch) {
+        if(!in_array($fetch, array(self::FETCH_ALL, self::FETCH_ONE))) {
+            throw new Exception(sprintf("Unknown fetch mode %s", $fetch));
         }
-        $this->mode = $mode;
+        $this->fetch = $fetch;
         return $this;
     }
 
@@ -96,6 +103,15 @@ class Select implements Iterator
     {
         $key = key($this->updateState(self::STATE_ITERATION)->data);
         return ($key !== NULL && $key !== FALSE);
+    }
+
+    public function fetch()
+    {
+        if($this->fetch == self::FETCH_ONE) {
+            $data = $this->updateState(self::STATE_ITERATION)->data;
+            return isset($data[0]) ? $data[0] : null;
+        }
+        return $this->updateState(self::STATE_ITERATION)->data;
     }
 
     public function getQuery()
