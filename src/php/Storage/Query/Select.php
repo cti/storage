@@ -105,7 +105,7 @@ class Select implements Iterator
         return ($key !== NULL && $key !== FALSE);
     }
 
-    public function fetch()
+    public function execute()
     {
         if($this->fetch == self::FETCH_ONE) {
             $data = $this->updateState(self::STATE_ITERATION)->data;
