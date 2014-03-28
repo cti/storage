@@ -53,16 +53,4 @@ class Locator
         }
         return $this->base . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $args);
     }
-
-    public function createDirectory($location)
-    {
-        if (!is_dir($location)) {
-            $parent = dirname($location);
-            if(!is_dir($parent)) {
-                $this->createDirectory($parent);
-            }
-            mkdir($location);
-        } 
-
-    }
 }
