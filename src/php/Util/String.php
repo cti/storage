@@ -30,8 +30,8 @@ class String
     {
         $index = strlen($string)-1;
         $last = $string[$index];
-        if ($last == 'e') {
-            return $string . 's';
+        if ($last == 's') {
+            return $string . 'es';
         }
         if ($last == 'y') {
             $string[$index] = 'i';

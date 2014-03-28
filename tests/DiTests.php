@@ -70,6 +70,21 @@ class DiTests extends PHPUnit_Framework_TestCase
 
         // associative arguments
         $this->assertSame($m->call('Common\Application', 'greet', array('name' => 'Dmitry')), 'Hello, Dmitry');
+
+        $anotherManager = new Manager();
+        $anotherModule = $anotherManager->get('Common\Module');
+
+        // access by key
+        $this->assertSame(
+            $m->call('Common\Application', 'extractModuleFromManager', array('manager' => $anotherManager)), 
+            $anotherModule
+        );
+
+        // find by class
+        $this->assertSame(
+            $m->call('Common\Application', 'extractModuleFromManager', array($anotherManager)), 
+            $anotherModule
+        );
     }
 
     public function testMethodParamNotFoundException()
