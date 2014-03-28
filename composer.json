@@ -31,5 +31,8 @@
         "symfony/stopwatch": "dev-master",
         "symfony/finder": "dev-master",
         "symfony/console": "dev-master"
-    }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.0.*"
+    }    
 }
