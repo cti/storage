@@ -1,7 +1,7 @@
 # Base
 
 [![Build Status](https://travis-ci.org/nekufa/base.png)](https://travis-ci.org/nekufa/base)
-[![Coverage Status](https://coveralls.io/repos/nekufa/base/badge.png)](https://coveralls.io/r/nekufa/base)
+[![Coverage Status](https://coveralls.io/repos/nekufa/base/badge.png?branch=master)](https://coveralls.io/r/nekufa/base?branch=master)
 
 Base contains components that helps with creating modern web applications.  
 See the `doc` directory for more detailed documentation.
