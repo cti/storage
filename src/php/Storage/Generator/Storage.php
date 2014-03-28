@@ -130,7 +130,7 @@ $map        );
             \$this->schema = \$this->manager->create('Storage\Schema', array(
                 'dump' => '$dump'
             ));
-            \$this->manager->inject(\$this->schema);
+            \$this->manager->register(\$this->schema);
         }
         return \$this->schema;
     }

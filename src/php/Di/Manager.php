@@ -77,6 +77,10 @@ class Manager
         $configuration = $this->config->get($class);
         $parameters = array_merge($configuration, $config);
 
+        if(!class_exists($class)) {
+            throw new Exception("Class $class not found!");
+        }
+
         if (!method_exists($class, '__construct')) {
             $instance = new $class;
 
@@ -132,7 +136,7 @@ class Manager
     /**
      * @param  mixed $object 
      */
-    public function inject($object)
+    public function register($object)
     {
         $class = get_class($object);
         if(isset($this->instance[$class])) {

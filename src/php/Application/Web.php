@@ -42,9 +42,8 @@ class Web
         }
 
         $request = Request::createFromGlobals();
-        $this->manager->inject($request);
-
-        $this->manager->inject(new Session());
+        $this->manager->register($request);
+        $this->manager->register(new Session());
 
         $location = substr($request->getPathInfo(), strlen($this->base));
         
