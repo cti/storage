@@ -53,7 +53,7 @@ class View
      * get context property
      * @param string $name
      */
-    public function __get ($name)
+    public function __get($name)
     {
         if(is_object($this->context)) {
             return $this->context->$name;
@@ -66,7 +66,7 @@ class View
      * @param string $name
      * @param array  $arguments
      */
-    public function __call ($name, $arguments)
+    public function __call($name, $arguments)
     {
         if(is_object($this->context)) {
             return call_user_func_array(array($this->context, $name), $arguments);
