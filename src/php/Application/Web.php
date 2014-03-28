@@ -22,7 +22,7 @@ class Web
     /**
      * @var string
      */
-    protected $method;
+    public $method;
 
     /**
      * @inject
@@ -41,8 +41,11 @@ class Web
             }
         }
 
-        $request = Request::createFromGlobals();
-        $this->manager->register($request);
+        if(!$this->manager->contains('Symfony\Component\HttpFoundation\Request')) {
+            $this->manager->register(Request::createFromGlobals());
+        }
+
+        $request = $this->manager->get('Symfony\Component\HttpFoundation\Request');
         $this->manager->register(new Session());
 
         $location = substr($request->getPathInfo(), strlen($this->base));

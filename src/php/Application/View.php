@@ -17,11 +17,6 @@ class View
      */
     protected $locator;
 
-    /** 
-     * @var mixed 
-     */
-    protected $context;
-
     /**
      * @param \Application\Locator $locator 
      */
@@ -36,42 +31,16 @@ class View
      * @param array $data 
      * @return string 
      */
-    public function render($name, $data = array(), $context = null)
+    public function render($name, $data = array())
     {
         try {
-            $this->context = $context;
             extract($data);
-            ob_start();         
+            ob_start();
             include $this->locator->path('resources php view '.func_get_arg(0).'.php');
             return ob_get_clean();
         } catch(Exception $e) {
             return $e->getMessage();
         }
-    }
-
-    /**
-     * get context property
-     * @param string $name
-     */
-    public function __get($name)
-    {
-        if(is_object($this->context)) {
-            return $this->context->$name;
-        }
-        throw new OutOfRangeException("Property $name not found");
-    }
-
-    /** 
-     * call context method
-     * @param string $name
-     * @param array  $arguments
-     */
-    public function __call($name, $arguments)
-    {
-        if(is_object($this->context)) {
-            return call_user_func_array(array($this->context, $name), $arguments);
-        }
-        throw new BadMethodCallException("Method $name not found");
     }
 
 

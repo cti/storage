@@ -32,7 +32,7 @@ class Manager
             $config = new Configuration;
         }
         $this->instance[__CLASS__] = $this;
-        $this->instance['Di\Config'] = $this->config = $config;
+        $this->instance['Di\Configuration'] = $this->config = $config;
     }
 
     /**
@@ -134,15 +134,25 @@ class Manager
     }
 
     /**
-     * @param  mixed $object 
+     * @param mixed $object 
      */
-    public function register($object)
+    public function register($object, $class = null)
     {
-        $class = get_class($object);
+        if(!$class) {
+            $class = get_class($object);
+        }
         if(isset($this->instance[$class])) {
             throw new Exception("Error Injecting $class");
         }
         $this->instance[$class] = $object;
+    }
+
+    /**
+     * @param string $class
+     */
+    public function contains($class)
+    {
+        return isset($this->instance[$class]);
     }
 
     /**

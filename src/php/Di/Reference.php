@@ -23,6 +23,14 @@ class Reference
     }
 
     /**
+     * @return string
+     */
+    function getClass()
+    {
+        return $this->class;
+    }
+
+    /**
      * @param Manager $manager
      * @return object
      */
