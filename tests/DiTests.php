@@ -5,13 +5,6 @@ use Di\Manager;
 
 class DiTests extends PHPUnit_Framework_TestCase
 {
-    public function testBasic()
-    {
-        $m = new Manager;
-        $this->assertInstanceOf('Common\Module', $m->get('Common\Module'));
-        $this->assertNotSame($m->get('Common\Module'), $m->create('Common\Module'));
-    }
-
     public function testInstanceConfiguration()
     {
         $configuration = new Configuration(array(
