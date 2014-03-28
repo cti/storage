@@ -25,15 +25,16 @@
         }
     },
     "require": {
-        "doctrine/dbal": "2.5.*@dev",
-        "symfony/http-foundation": "2.5.*@dev",
-        "symfony/symfony": "2.5.*@dev",
-        "symfony/stopwatch": "2.5.*@dev",
-        "symfony/finder": "2.5.*@dev",
-        "symfony/console": "2.5.*@dev"
+        "doctrine/dbal": "dev-master",
+        "symfony/http-foundation": "dev-master",
+        "symfony/filesystem": "dev-master",
+        "symfony/stopwatch": "dev-master",
+        "symfony/finder": "dev-master",
+        "symfony/console": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "4.0.*",
-        "satooshi/php-coveralls": "0.7.*@dev"
-    }
+        "satooshi/php-coveralls": "dev-master"
+    }    
+
 }
