@@ -7,7 +7,7 @@ php:
   - 5.6
 
 before_script:
-  - curl -s http://getcomposer.org/installer | php
+  - composer selfupdate
   - php composer.phar install --dev --no-interaction
 
 script:
@@ -15,7 +15,6 @@ script:
 
 after_script:
   - php vendor/bin/coveralls
-  - php vendor/bin/coveralls -v    
 
 
 notifications:
