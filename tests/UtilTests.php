@@ -1,6 +1,6 @@
 <?php
 
-use Base\Util\String;
+use Nekufa\Util\String;
 
 class UtilTests extends PHPUnit_Framework_TestCase
 {
