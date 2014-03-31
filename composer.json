@@ -1,11 +1,5 @@
 {
-    "name": "nekufa/base",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/nekufa/base"
-        }
-    ],
+    "name": "nekufa/sandbox",
     "authors": [
         {
             "name": "Dmitry.Krokhin",
