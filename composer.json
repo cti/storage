@@ -25,7 +25,7 @@
         }
     },
     "require": {
-        "doctrine/dbal": "dev-master",
+        "doctrine/dbal": "2.5",
         "symfony/http-foundation": "dev-master",
         "symfony/filesystem": "dev-master",
         "symfony/stopwatch": "dev-master",
