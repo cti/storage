@@ -12,29 +12,22 @@
             "email": "nekufa@gmail.com"
         }
     ],
-    "autoload": {
-        "psr-0": {
-            "Application\\": "src/php/",
-            "Command\\": "src/php/",
-            "Compiler\\": "src/php/",
-            "Di\\": "src/php/",
-            "Direct\\": "src/php/",
-            "SapRfc\\": "src/php/",
-            "Storage\\": "src/php/",
-            "Util\\": "src/php/"
-        }
-    },
     "require": {
-        "doctrine/dbal": "2.5",
-        "symfony/http-foundation": "dev-master",
-        "symfony/filesystem": "dev-master",
-        "symfony/stopwatch": "dev-master",
-        "symfony/finder": "dev-master",
-        "symfony/console": "dev-master"
+        "php": ">=5.3.2",        
+        "doctrine/dbal": "2.5.*@dev",
+        "symfony/http-foundation": "2.5.*@dev",
+        "symfony/filesystem": "2.4.*@dev",
+        "symfony/stopwatch": "2.4.*@dev",
+        "symfony/finder": "2.4.*@dev",
+        "symfony/console": "2.5.*@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "4.0.*",
-        "satooshi/php-coveralls": "dev-master"
-    }    
-
+        "satooshi/php-coveralls": "0.7.*@dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "Base\\" : "src"
+        }
+    }
 }

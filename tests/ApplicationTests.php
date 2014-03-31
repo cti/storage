@@ -1,9 +1,9 @@
 <?php
 
-use Application\Locator;
-use Application\View;
-use Application\Web;
-use Di\Manager;
+use Base\Application\Locator;
+use Base\Application\View;
+use Base\Application\Web;
+use Base\Di\Manager;
 
 class ApplicationTests extends PHPUnit_Framework_TestCase
 {
@@ -19,13 +19,13 @@ class ApplicationTests extends PHPUnit_Framework_TestCase
         );
 
         // file that exists in the base
-        $reflection = new ReflectionClass('Application\Locator');
-        $this->assertSame($l->path('src php Application Locator.php'), $reflection->getFileName());
+        $reflection = new ReflectionClass('Base\Application\Locator');
+        $this->assertSame($l->path('src Base Application Locator.php'), $reflection->getFileName());
 
         // project location 
         $this->assertSame(
-            $l->project('src php Application Locator.php'), 
-            implode(DIRECTORY_SEPARATOR, array(__DIR__, 'src', 'php', 'Application', 'Locator.php'))
+            $l->project('src Base Application Locator.php'), 
+            implode(DIRECTORY_SEPARATOR, array(__DIR__, 'src', 'Base', 'Application', 'Locator.php'))
         );
 
         // not exists file - project location
@@ -63,7 +63,7 @@ class ApplicationTests extends PHPUnit_Framework_TestCase
     function testBasics()
     {
         $m = new Manager;
-        $web = $m->get('Application\Web');
+        $web = $m->get('Base\Application\Web');
 
         $this->assertTrue($m->contains('Symfony\Component\HttpFoundation\Request'));
 
@@ -73,7 +73,7 @@ class ApplicationTests extends PHPUnit_Framework_TestCase
     function testChainCalculation()
     {
         $manager = new Manager();
-        $manager->get('Di\Configuration')->set('Application\Web', 'base', '/application/');
+        $manager->get('Base\Di\Configuration')->set('Base\Application\Web', 'base', '/application/');
 
 
         $mock = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')
@@ -85,13 +85,14 @@ class ApplicationTests extends PHPUnit_Framework_TestCase
         $mock->method('getMethod')->will($this->returnValue('POST'));
         $mock->method('getPathInfo')->will($this->returnValue('/application//hello'));
 
-        $this->assertSame($manager->get('Application\Web')->chain, array('hello'));
+        $this->assertSame($manager->get('Base\Application\Web')->base, '/application/');
+        $this->assertSame($manager->get('Base\Application\Web')->chain, array('hello'));
     }
 
     function testChainProcessing()
     {
         $manager = new Manager();
-        $web = $manager->get('Application\Web');
+        $web = $manager->get('Base\Application\Web');
 
         ob_start();
         $web->method = 'get';

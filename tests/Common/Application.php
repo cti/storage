@@ -2,7 +2,7 @@
 
 namespace Common;
 
-use Di\Manager;
+use Base\Di\Manager;
 
 class Application
 {

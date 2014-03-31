@@ -1,7 +1,7 @@
 <?php
 
-use Di\Configuration;
-use Di\Manager;
+use Base\Di\Configuration;
+use Base\Di\Manager;
 
 class DiTests extends PHPUnit_Framework_TestCase
 {

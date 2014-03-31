@@ -1,6 +1,6 @@
 <?php
 
-use Util\String;
+use Base\Util\String;
 
 class UtilTests extends PHPUnit_Framework_TestCase
 {
