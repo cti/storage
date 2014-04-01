@@ -1,6 +1,7 @@
 {
     "name": "nekufa/sandbox",
     "description": "Sandbox module",
+    "license": "MIT",
     "authors": [
         {
             "name": "Dmitry.Krokhin",
