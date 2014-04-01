@@ -20,12 +20,24 @@ class ApplicationTests extends PHPUnit_Framework_TestCase
 
         // file that exists in the base
         $reflection = new ReflectionClass('Nekufa\Application\Locator');
-        $this->assertSame($l->path('src Nekufa Application Locator.php'), $reflection->getFileName());
+        $this->assertSame($l->path('src Application Locator.php'), $reflection->getFileName());
 
         // project location 
         $this->assertSame(
-            $l->project('src Nekufa Application Locator.php'), 
-            implode(DIRECTORY_SEPARATOR, array(__DIR__, 'src', 'Nekufa', 'Application', 'Locator.php'))
+            $l->project('src Application Locator.php'), 
+            implode(DIRECTORY_SEPARATOR, array(__DIR__, 'src', 'Application', 'Locator.php'))
+        );
+
+        // ignore duplicate spaced 
+        $this->assertSame(
+            $l->project('a b'), 
+            $l->project('a  b')
+        );
+
+        // working with array 
+        $this->assertSame(
+            $l->project('a', 'b'), 
+            $l->project('a  b')
         );
 
         // not exists file - project location
