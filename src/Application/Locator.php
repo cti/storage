@@ -26,17 +26,7 @@ class Locator
         if(count($args) == 1) {
             $args = explode(' ', $args[0]);
         }
-        $found = false;
-        foreach($args as $k => $v) {
-            if(strlen($v) === 0) {
-                unset($args[$k]);
-                $found = true;
-            }
-        }
-        if($found) {
-            $args = array_values($args);
-        }
-        return $args;
+        return array_filter($args, 'strlen');
     }
 
     public function path()
