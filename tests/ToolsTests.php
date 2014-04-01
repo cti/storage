@@ -1,31 +1,32 @@
 <?php
 
-use Nekufa\Application\Locator;
-use Nekufa\Application\View;
-use Nekufa\Application\Web;
+use Nekufa\Tools\Locator;
+use Nekufa\Tools\String;
+use Nekufa\Tools\View;
+use Nekufa\Tools\Web;
 use Nekufa\Di\Manager;
 
-class ApplicationTests extends PHPUnit_Framework_TestCase
+class ToolsTests extends PHPUnit_Framework_TestCase
 {
     function testLocator()
     {
         $l = new Locator(__DIR__);
 
         // file that exists in this project
-        $this->assertSame($l->path('ApplicationTests.php'), __FILE__);
+        $this->assertSame($l->path('ToolsTests.php'), __FILE__);
         $this->assertSame(
-            $l->base('ApplicationTests.php'),
-            implode(DIRECTORY_SEPARATOR, array(dirname(__DIR__), 'ApplicationTests.php'))
+            $l->base('ToolsTests.php'),
+            implode(DIRECTORY_SEPARATOR, array(dirname(__DIR__), 'ToolsTests.php'))
         );
 
         // file that exists in the base
-        $reflection = new ReflectionClass('Nekufa\Application\Locator');
-        $this->assertSame($l->path('src Application Locator.php'), $reflection->getFileName());
+        $reflection = new ReflectionClass('Nekufa\Tools\Locator');
+        $this->assertSame($l->path('src Tools Locator.php'), $reflection->getFileName());
 
         // project location 
         $this->assertSame(
-            $l->project('src Application Locator.php'), 
-            implode(DIRECTORY_SEPARATOR, array(__DIR__, 'src', 'Application', 'Locator.php'))
+            $l->project('src Tools Locator.php'), 
+            implode(DIRECTORY_SEPARATOR, array(__DIR__, 'src', 'Tools', 'Locator.php'))
         );
 
         // ignore duplicate spaced 
@@ -75,7 +76,7 @@ class ApplicationTests extends PHPUnit_Framework_TestCase
     function testBasics()
     {
         $m = new Manager;
-        $web = $m->get('Nekufa\Application\Web');
+        $web = $m->get('Nekufa\Tools\Web');
 
         $this->assertTrue($m->contains('Symfony\Component\HttpFoundation\Request'));
 
@@ -85,7 +86,7 @@ class ApplicationTests extends PHPUnit_Framework_TestCase
     function testChainCalculation()
     {
         $manager = new Manager();
-        $manager->get('Nekufa\Di\Configuration')->set('Nekufa\Application\Web', 'base', '/application/');
+        $manager->get('Nekufa\Di\Configuration')->set('Nekufa\Tools\Web', 'base', '/application/');
 
 
         $mock = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')
@@ -97,14 +98,14 @@ class ApplicationTests extends PHPUnit_Framework_TestCase
         $mock->method('getMethod')->will($this->returnValue('POST'));
         $mock->method('getPathInfo')->will($this->returnValue('/application//hello'));
 
-        $this->assertSame($manager->get('Nekufa\Application\Web')->base, '/application/');
-        $this->assertSame($manager->get('Nekufa\Application\Web')->chain, array('hello'));
+        $this->assertSame($manager->get('Nekufa\Tools\Web')->base, '/application/');
+        $this->assertSame($manager->get('Nekufa\Tools\Web')->chain, array('hello'));
     }
 
     function testChainProcessing()
     {
         $manager = new Manager();
-        $web = $manager->get('Nekufa\Application\Web');
+        $web = $manager->get('Nekufa\Tools\Web');
 
         ob_start();
         $web->method = 'get';
@@ -134,5 +135,31 @@ class ApplicationTests extends PHPUnit_Framework_TestCase
         ob_start();
         $web->process('Common\Application');
         $this->assertSame(ob_get_clean(), 'Not found');
+    }
+
+    public function testConvertToCamelCase()
+    {
+        $this->assertSame(String::convertToCamelCase('hello_world'), 'HelloWorld');
+    }
+
+    public function testCamelCaseToUnderScore()
+    {
+        $this->assertSame(String::camelCaseToUnderScore('ThisIsTest'), 'this_is_test');
+    }
+
+    public function testPluralize()
+    {
+        $this->assertSame(String::pluralize('cat'), 'cats');
+        $this->assertSame(String::pluralize('pony'), 'ponies');
+        $this->assertSame(String::pluralize('bass'), 'basses');
+        $this->assertSame(String::pluralize('case'), 'cases');
+    }
+
+    public function testFormatBytes()
+    {
+        $this->assertSame(String::formatBytes(1024), '1k');
+        $this->assertSame(String::formatBytes(1024*1024*2), '2M');
+        $this->assertSame(String::formatBytes(1024*1024*1024*4), '4G');
+        $this->assertSame(String::formatBytes(1024*1024*1024*1024*5), '5T');
     }
 }

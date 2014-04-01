@@ -1,7 +1,11 @@
 <?php
 
-namespace Nekufa\Util;
+namespace Nekufa\Tools;
 
+/**
+ * String transformation
+ * @package Nekufa\Tools
+ */
 class String
 {
     public static function convertToCamelCase($string)

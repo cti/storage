@@ -1,10 +1,10 @@
 <?php
 
-namespace Nekufa\Application;
+namespace Nekufa\Tools;
 
 /**
  * File locator
- * @package Application
+ * @package Nekufa\Tools
  */
 class Locator
 {

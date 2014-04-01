@@ -1,15 +1,14 @@
 <?php
 
-namespace Nekufa\Application;
+namespace Nekufa\Tools;
 
-use Nekufa\Util\String;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Web application implementation
- * @package Application
+ * @package Nekufa\Tools
  */
 class Web
 {

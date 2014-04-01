@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekufa\Application;
+namespace Nekufa\Tools;
 
 use BadMethodCallException;
 use Exception;
@@ -8,17 +8,17 @@ use OutOfRangeException;
 
 /**
  * Template engine
- * @package Application
+ * @package Nekufa\Tools
  */
 class View
 {
     /**
-     * @var Nekufa\Application\Locator 
+     * @var Nekufa\Tools\Locator 
      */
     protected $locator;
 
     /**
-     * @param Nekufa\Application\Locator $locator 
+     * @param Nekufa\Tools\Locator $locator 
      */
     public function __construct(Locator $locator)
     {
