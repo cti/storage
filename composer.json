@@ -1,5 +1,6 @@
 {
     "name": "nekufa/sandbox",
+    "description": "Sandbox module",
     "authors": [
         {
             "name": "Dmitry.Krokhin",
