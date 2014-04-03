@@ -2,7 +2,7 @@
 
 namespace Nekufa\Tools;
 
-class CoffeeSenchaCompiler
+class SenchaCoffeeCompiler
 {
     protected $locator;
 

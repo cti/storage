@@ -7,7 +7,7 @@
         }
     ],
     "require": {
-        "doctrine/dbal": "2.5.*@dev",
+        "doctrine/dbal": ">=2.5-dev",
         "php": ">=5.3.2",        
         "nekufa/di": "*",
         "nekufa/direct": "*",
