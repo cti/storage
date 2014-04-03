@@ -1,10 +1,8 @@
 <?php
 
-namespace Nekufa\Compiler;
+namespace Nekufa\Tools;
 
-use Nekufa\Application\Locator;
-
-class CoffeeExtJs
+class CoffeeSenchaCompiler
 {
     protected $locator;
 

@@ -44,9 +44,11 @@ class Web
             $this->manager->register(Request::createFromGlobals());
         }
 
-        $request = $this->manager->get('Symfony\Component\HttpFoundation\Request');
-        $this->manager->register(new Session());
+        if(!$this->manager->contains('Symfony\Component\HttpFoundation\Session\Session')) {
+            $this->manager->register(new Session());
+        }
 
+        $request = $this->manager->get('Symfony\Component\HttpFoundation\Request');
         $location = substr($request->getPathInfo(), strlen($this->base));
         
         $this->method = strtolower($request->getMethod());
