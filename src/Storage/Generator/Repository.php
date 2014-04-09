@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekufa\Storage\Generator;
+namespace Cti\Storage\Generator;
 
 class Repository
 {
@@ -14,19 +14,19 @@ class Repository
         $model = $this->model;
         $result = implode(PHP_EOL . PHP_EOL, array(
             '<?php',
-            'namespace Nekufa\Storage\Repository;',
+            'namespace Cti\Storage\Repository;',
             sprintf('use %s as Select;', $this->model->getQueryClass()),
             $this->getClassComment() . PHP_EOL . 'class '. $model->class_name . 'Repository'.PHP_EOL,
             ));
         
         $result .= '{' . PHP_EOL;
-        $result .= $this->renderNekufa();
+        $result .= $this->renderCti();
         $result .= '}';
 
         return $result;
     }
 
-    protected function renderNekufa()
+    protected function renderCti()
     {
         $fields = array();
         foreach($this->model->getProperties() as $property)

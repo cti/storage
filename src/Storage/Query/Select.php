@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekufa\Storage\Query;
+namespace Cti\Storage\Query;
 
 use Exception;
 use Iterator;

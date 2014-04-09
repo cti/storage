@@ -1,10 +1,10 @@
 <?php
 
-namespace Nekufa\Tools;
+namespace Cti\Tools;
 
 /**
  * File locator
- * @package Nekufa\Tools
+ * @package Cti\Tools
  */
 class Locator
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Nekufa\Storage\Generator;
+namespace Cti\Storage\Generator;
 
-use Nekufa\Util\String;
+use Cti\Util\String;
 
 class Property
 {

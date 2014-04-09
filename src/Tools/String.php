@@ -1,10 +1,10 @@
 <?php
 
-namespace Nekufa\Tools;
+namespace Cti\Tools;
 
 /**
  * String transformation
- * @package Nekufa\Tools
+ * @package Cti\Tools
  */
 class String
 {

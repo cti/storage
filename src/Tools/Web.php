@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekufa\Tools;
+namespace Cti\Tools;
 
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Web application implementation
- * @package Nekufa\Tools
+ * @package Cti\Tools
  */
 class Web
 {
@@ -25,7 +25,7 @@ class Web
 
     /**
      * @inject
-     * @var Nekufa\Di\Manager
+     * @var Cti\Di\Manager
      */
     protected $manager;
 

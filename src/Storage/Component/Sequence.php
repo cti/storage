@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekufa\Storage\Component;
+namespace Cti\Storage\Component;
 
 class Sequence
 {

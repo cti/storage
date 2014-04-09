@@ -1,9 +1,9 @@
 <?php
 
-namespace Nekufa\Storage\Generator;
+namespace Cti\Storage\Generator;
 
-use Nekufa\Storage\Component\Model;
-use Nekufa\Storage\Component\Property;
+use Cti\Storage\Component\Model;
+use Cti\Storage\Component\Property;
 
 class Storage
 {
@@ -16,7 +16,7 @@ class Storage
     {
         $result = implode(PHP_EOL . PHP_EOL, array(
             '<?php',
-            'namespace Nekufa\Storage;',
+            'namespace Cti\Storage;',
             'use OutOfRangeException;',
             $this->getClassComment() . PHP_EOL . 'class Storage'.PHP_EOL,
             ));

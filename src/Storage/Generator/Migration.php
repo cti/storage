@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekufa\Storage\Generator;
+namespace Cti\Storage\Generator;
 
 class Migration
 {
@@ -15,7 +15,7 @@ class Migration
 return <<<STR
 <?php
 
-namespace Nekufa\Migration;
+namespace Cti\Migration;
 
 use Storage\Schema;
 

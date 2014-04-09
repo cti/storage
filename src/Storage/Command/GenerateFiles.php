@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekufa\Storage\Command;
+namespace Cti\Storage\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -41,7 +41,7 @@ class GenerateFiles extends Command
         foreach($schema->models as $model) {
             
             $fs->dumpFile(
-                $locator->path('out php Storage Model ' . $model->class_name . 'Nekufa.php'), 
+                $locator->path('out php Storage Model ' . $model->class_name . 'Cti.php'), 
                 $this->manager->create('Storage\Generator\Model', array(
                     'model' => $model
                 ))

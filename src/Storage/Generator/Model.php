@@ -1,8 +1,8 @@
 <?php
 
-namespace Nekufa\Storage\Generator;
+namespace Cti\Storage\Generator;
 
-use Nekufa\Util\String;
+use Cti\Util\String;
 
 class Model
 {
@@ -75,9 +75,9 @@ class Model
 
             $header = array(
                 '<?php',
-                'namespace Nekufa\Storage\\Model;',
+                'namespace Cti\Storage\\Model;',
                 implode(PHP_EOL, $usage),
-                $this->renderComment(). PHP_EOL . 'class '.$model->class_name . 'Nekufa'.PHP_EOL,
+                $this->renderComment(). PHP_EOL . 'class '.$model->class_name . 'Cti'.PHP_EOL,
             );
 
             $result = implode(PHP_EOL . PHP_EOL, $header) . '{' . PHP_EOL;

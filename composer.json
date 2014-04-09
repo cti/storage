@@ -1,5 +1,5 @@
 {
-    "name": "nekufa/sandbox",
+    "name": "cti/sandbox",
     "description": "Sandbox module",
     "license": "MIT",
     "authors": [
@@ -11,9 +11,9 @@
     "require": {
         "doctrine/dbal": ">=2.5-dev",
         "php": ">=5.3.2",        
-        "nekufa/di": "*",
-        "nekufa/direct": "*",
-        "nekufa/saprfc": "*",
+        "cti/di": "*",
+        "cti/direct": "*",
+        "cti/saprfc": "*",
         "symfony/http-foundation": "2.5.*@dev",
         "symfony/filesystem": "2.4.*@dev",
         "symfony/stopwatch": "2.4.*@dev",
@@ -26,7 +26,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Nekufa\\" : "src"
+            "Cti\\" : "src"
         }
     }
 }

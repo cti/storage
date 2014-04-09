@@ -1,8 +1,8 @@
 <?php
 
-namespace Nekufa\Storage\Component;
+namespace Cti\Storage\Component;
 
-use Nekufa\Util\String;
+use Cti\Util\String;
 
 class Property
 {

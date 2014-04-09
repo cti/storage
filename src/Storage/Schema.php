@@ -1,10 +1,10 @@
 <?php
 
-namespace Nekufa\Storage;
+namespace Cti\Storage;
 
-use Nekufa\Storage\Component\Model;
-use Nekufa\Storage\Component\Link;
-use Nekufa\Util\String;
+use Cti\Storage\Component\Model;
+use Cti\Storage\Component\Link;
+use Cti\Util\String;
 use Exception;
 use Symfony\Component\Finder\Finder;
 
@@ -134,7 +134,7 @@ class Schema
 
             $date = substr($file->getFileName(), 0, 8);
             $time = substr($file->getFileName(), 9, 6);
-            $index = substr($file->getNekufaname('.php'), 16);
+            $index = substr($file->getCtiname('.php'), 16);
             $name = String::convertToCamelCase($index);
 
             $class = 'Migration\\' . $name . '_' . $date . '_' . $time;

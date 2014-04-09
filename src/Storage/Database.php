@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekufa\Storage;
+namespace Cti\Storage;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Nekufa\Storage\Behaviour;
+namespace Cti\Storage\Behaviour;
 
-use Nekufa\Util\String;
+use Cti\Util\String;
 use Exception;
 use Symfony\Component\Finder\Finder;
 
@@ -36,7 +36,7 @@ abstract class Factory
 
             foreach($finder as $file) {
 
-                $name = $file->getNekufaname('.php');
+                $name = $file->getCtiname('.php');
                 $alias = String::camelCaseToUnderScore($name);
                 $classname = 'Storage\\Behaviour\\' . $name;
                 $mapping[$alias] = $classname;

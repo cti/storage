@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekufa\Tools;
+namespace Cti\Tools;
 
 class SenchaCoffeeCompiler
 {

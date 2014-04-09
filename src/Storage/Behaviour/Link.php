@@ -1,8 +1,8 @@
 <?php
 
-namespace Nekufa\Storage\Behaviour;
+namespace Cti\Storage\Behaviour;
 
-use Nekufa\Storage\Component\Model;
+use Cti\Storage\Component\Model;
 
 class Link
 {

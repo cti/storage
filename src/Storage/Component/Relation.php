@@ -1,8 +1,8 @@
 <?php
 
-namespace Nekufa\Storage\Component;
+namespace Cti\Storage\Component;
 
-use Nekufa\Storage\Schema;
+use Cti\Storage\Schema;
 
 class Relation
 {

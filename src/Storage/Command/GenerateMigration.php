@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekufa\Storage\Command;
+namespace Cti\Storage\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Nekufa\Util\String;
+use Cti\Util\String;
 
 class GenerateMigration extends Command
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekufa\Tools;
+namespace Cti\Tools;
 
 use BadMethodCallException;
 use Exception;
@@ -8,17 +8,17 @@ use OutOfRangeException;
 
 /**
  * Template engine
- * @package Nekufa\Tools
+ * @package Cti\Tools
  */
 class View
 {
     /**
-     * @var Nekufa\Tools\Locator 
+     * @var Cti\Tools\Locator 
      */
     protected $locator;
 
     /**
-     * @param Nekufa\Tools\Locator $locator 
+     * @param Cti\Tools\Locator $locator 
      */
     public function __construct(Locator $locator)
     {

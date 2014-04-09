@@ -1,10 +1,10 @@
 <?php
 
-use Nekufa\Tools\Locator;
-use Nekufa\Tools\String;
-use Nekufa\Tools\View;
-use Nekufa\Tools\Web;
-use Nekufa\Di\Manager;
+use Cti\Tools\Locator;
+use Cti\Tools\String;
+use Cti\Tools\View;
+use Cti\Tools\Web;
+use Cti\Di\Manager;
 
 class ToolsTests extends PHPUnit_Framework_TestCase
 {
@@ -20,7 +20,7 @@ class ToolsTests extends PHPUnit_Framework_TestCase
         );
 
         // file that exists in the base
-        $reflection = new ReflectionClass('Nekufa\Tools\Locator');
+        $reflection = new ReflectionClass('Cti\Tools\Locator');
         $this->assertSame($l->path('src Tools Locator.php'), $reflection->getFileName());
 
         // project location 
@@ -76,7 +76,7 @@ class ToolsTests extends PHPUnit_Framework_TestCase
     function testBasics()
     {
         $m = new Manager;
-        $web = $m->get('Nekufa\Tools\Web');
+        $web = $m->get('Cti\Tools\Web');
 
         $this->assertTrue($m->contains('Symfony\Component\HttpFoundation\Request'));
 
@@ -86,7 +86,7 @@ class ToolsTests extends PHPUnit_Framework_TestCase
     function testChainCalculation()
     {
         $manager = new Manager();
-        $manager->get('Nekufa\Di\Configuration')->set('Nekufa\Tools\Web', 'base', '/application/');
+        $manager->get('Cti\Di\Configuration')->set('Cti\Tools\Web', 'base', '/application/');
 
 
         $mock = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')
@@ -98,14 +98,14 @@ class ToolsTests extends PHPUnit_Framework_TestCase
         $mock->method('getMethod')->will($this->returnValue('POST'));
         $mock->method('getPathInfo')->will($this->returnValue('/application//hello'));
 
-        $this->assertSame($manager->get('Nekufa\Tools\Web')->base, '/application/');
-        $this->assertSame($manager->get('Nekufa\Tools\Web')->chain, array('hello'));
+        $this->assertSame($manager->get('Cti\Tools\Web')->base, '/application/');
+        $this->assertSame($manager->get('Cti\Tools\Web')->chain, array('hello'));
     }
 
     function testChainProcessing()
     {
         $manager = new Manager();
-        $web = $manager->get('Nekufa\Tools\Web');
+        $web = $manager->get('Cti\Tools\Web');
 
         ob_start();
         $web->method = 'get';

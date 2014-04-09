@@ -1,8 +1,8 @@
 <?php
 
-namespace Nekufa\Storage\Behaviour;
+namespace Cti\Storage\Behaviour;
 
-use Nekufa\Storage\Component\Property;
+use Cti\Storage\Component\Property;
 
 class Log
 {

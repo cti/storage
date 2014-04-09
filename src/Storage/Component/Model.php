@@ -1,9 +1,9 @@
 <?php
 
-namespace Nekufa\Storage\Component;
+namespace Cti\Storage\Component;
 
-use Nekufa\Storage\Behaviour\Factory as BehaviourFactory;
-use Nekufa\Util\String;
+use Cti\Storage\Behaviour\Factory as BehaviourFactory;
+use Cti\Util\String;
 use Exception;
 
 class Model
@@ -29,7 +29,7 @@ class Model
         $this->class_name = String::convertToCamelCase($this->name);
         $this->class_name_many = String::pluralize($this->class_name);
         $this->repository_class = 'Storage\Repository\\' . $this->class_name . 'Repository';
-        $this->model_class = 'Storage\Model\\' . $this->class_name . 'Nekufa';
+        $this->model_class = 'Storage\Model\\' . $this->class_name . 'Cti';
         
         if(count($this->properties)) {
             $properties = $this->properties;
