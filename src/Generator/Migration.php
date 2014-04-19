@@ -15,9 +15,9 @@ class Migration
 return <<<STR
 <?php
 
-namespace Cti\Migration;
+namespace Storage\Migration;
 
-use Storage\Schema;
+use Cti\Storage\Schema;
 
 /**
  * Migration was generated at $date

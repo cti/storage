@@ -1,8 +1,8 @@
 <?php
 
-namespace Base\Storage\Generator;
+namespace Cti\Storage\Generator;
 
-use Base\Util\String;
+use Cti\Util\String;
 
 class Select
 {
@@ -24,7 +24,7 @@ class Select
 return <<<STR
 <?php
 
-namespace Base\Storage\Query;
+namespace Storage\Query;
 
 use Storage\Query\Select;
 

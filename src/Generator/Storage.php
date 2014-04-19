@@ -40,15 +40,9 @@ class Storage
         return <<<HEADER
     /**
      * @inject
-     * @var Di\Manager
+     * @var Cti\Di\Manager
      */
     protected \$manager;
-
-    /**
-     * @inject
-     * @var Storage\Database
-     */
-    protected \$database;
 
 
 HEADER;
@@ -65,10 +59,7 @@ HEADER;
      */
     public function get{$model->class_name_many}()
     {
-        if(!isset(\$this->$model->name_many)) {
-            \$this->$model->name_many = \$this->manager->create('$repository_class');
-        }
-        return \$this->$model->name_many;
+        return \$this->manager->get('$repository_class');
     }
 
 
@@ -92,8 +83,6 @@ COMMENT;
         foreach($this->schema->models as $model) {
             $map .= "            '" . $model->name."' => 'get" . $model->class_name_many."'," . PHP_EOL;
         }
-
-        $dump = $this->schema->getDump();
 
         return <<<FOOTER
     /** 
@@ -122,17 +111,6 @@ $map        );
         }
         \$method = \$map[\$name];
         return \$this->\$method();
-    }
-
-    public function getSchema()
-    {
-        if(!isset(\$this->schema)) {
-            \$this->schema = \$this->manager->create('Storage\Schema', array(
-                'dump' => '$dump'
-            ));
-            \$this->manager->register(\$this->schema);
-        }
-        return \$this->schema;
     }
 
 FOOTER;

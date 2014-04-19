@@ -4,39 +4,32 @@ namespace Cti\Storage;
 
 use Cti\Storage\Component\Model;
 use Cti\Storage\Component\Link;
-use Cti\Util\String;
+use Cti\Core\String;
+
 use Exception;
+
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
 class Schema
 {
     /**
      * @inject
-     * @var Di\Manager 
+     * @var Cti\Core\Application
      */
-    protected $manager;
-
-    /**
-     * @inject
-     * @var Application\Locator
-     */
-    protected $locator;
+    protected $application;
 
     public $models = array();
 
     function init($dump = null)
     {
-        if($dump) {
-            $this->loadDump($dump);
-        } else {
-            $this->processMigrations();
-            $this->processRelation();
-        }
+        $this->processMigrations();
+        $this->processRelation();
     }
 
     public function createModel($name, $comment, $properties = array())
     {
-        return $this->models[$name] = $this->manager->create('Storage\Component\Model', array(
+        return $this->models[$name] = $this->application->getManager()->create('Cti\Storage\Component\Model', array(
                 'name' => $name, 
                 'comment' => $comment, 
                 'properties' => $properties
@@ -91,7 +84,13 @@ class Schema
         $name[] = 'link';
         $name = implode('_', $name);
 
-        $link = $this->manager->create('Storage\Component\Model', array('name' => $name, 'comment' => $name));
+        $link = $this->application->getManager()->create(
+            'Cti\Storage\Component\Model',
+            array(
+                'name' => $name,
+                'comment' => $name
+            )
+        );
         
         $link->createBehaviour('link', array(
             'list' => $list
@@ -109,42 +108,35 @@ class Schema
         return $this->models[$name] = $link;
     }
 
-    public function restore()
-    {
-        $dump = \Generated\Storage::getDump();
-        foreach ($dump['models'] as $key => $data) {
-            $this->models[$key] = Model::restore($this, $data);
-        }
-
-        foreach ($dump['links'] as $key => $data) {
-            $this->links[$key] = Link::restore($this, $data);
-        }
-    }
-
     function processMigrations()
     {
+        $filesystem = new Filesystem;
+        $migrations = $this->application->getPath('build', 'php', 'Migration');
+        if($filesystem->exists($migrations)) {
+            $filesystem->remove($migrations);
+        }
+        $filesystem->mkdir($migrations);
+
         $finder = new Finder();
 
         $finder
             ->files()
             ->name("*.php")
-            ->in($this->locator->path('resources php migrations'));
+            ->in($this->application->getPath('resources php migrations'));
 
         foreach($finder as $file) {
 
             $date = substr($file->getFileName(), 0, 8);
             $time = substr($file->getFileName(), 9, 6);
-            $index = substr($file->getCtiname('.php'), 16);
+            $index = substr($file->getBasename('.php'), 16);
             $name = String::convertToCamelCase($index);
 
-            $class = 'Migration\\' . $name . '_' . $date . '_' . $time;
-
-            if(!class_exists($class, false)) {
-                include $file->getPathname();
-            }
-
-            $this->manager->get($class)->process($this);
-        }        
+            $class_name = $name . '_' . $date . '_' . $time;
+            $class = 'Storage\\Migration\\' . $class_name;
+            
+            $filesystem->copy($file->getRealPath(), $migrations . DIRECTORY_SEPARATOR . $class_name . '.php');
+            $this->application->getManager()->get($class)->process($this);
+        }
     }
 
     function processRelation()
@@ -154,14 +146,5 @@ class Schema
                 $relation->process($this);
             }
         }
-    }
-
-    function getDump()
-    {
-        return 'dump for schema';
-    }
-
-    function loadDump($dump)
-    {
     }
 }

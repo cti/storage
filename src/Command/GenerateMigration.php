@@ -8,21 +8,15 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Cti\Util\String;
+use Cti\Core\String;
 
 class GenerateMigration extends Command
 {
     /**
      * @inject
-     * @var Application\Locator
+     * @var Cti\Core\Application
      */
-    protected $locator;
-
-    /**
-     * @inject
-     * @var Di\Manager
-     */
-    protected $manager;
+    protected $application;
 
     protected function configure()
     {
@@ -42,14 +36,13 @@ class GenerateMigration extends Command
 
         $timestamp = time();
 
-        $filename = $this->locator->path('resources php migrations ' . date('Ymd_His', $timestamp) . '_' . $id . '.php');
-        $migration = $this->manager->create('Storage\Generator\Migration', array(
+        $filename = $this->application->getPath('resources php migrations ' . date('Ymd_His', $timestamp) . '_' . $id . '.php');
+        $migration = $this->application->getManager()->create('Cti\Storage\Generator\Migration', array(
             'class' => $class,
             'timestamp' => $timestamp
         ));
 
         $fs = new Filesystem();
-
         $fs->dumpFile($filename, $migration);
     }
 }

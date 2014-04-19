@@ -3,7 +3,7 @@
 namespace Cti\Storage\Component;
 
 use Cti\Storage\Behaviour\Factory as BehaviourFactory;
-use Cti\Util\String;
+use Cti\Core\String;
 use Exception;
 
 class Model

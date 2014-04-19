@@ -2,7 +2,7 @@
 
 namespace Cti\Storage\Component;
 
-use Cti\Util\String;
+use Cti\Core\String;
 
 class Property
 {

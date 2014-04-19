@@ -2,7 +2,7 @@
 
 namespace Cti\Storage\Behaviour;
 
-use Cti\Util\String;
+use Cti\Core\String;
 use Exception;
 use Symfony\Component\Finder\Finder;
 
@@ -36,9 +36,9 @@ abstract class Factory
 
             foreach($finder as $file) {
 
-                $name = $file->getCtiname('.php');
+                $name = $file->getBasename('.php');
                 $alias = String::camelCaseToUnderScore($name);
-                $classname = 'Storage\\Behaviour\\' . $name;
+                $classname = 'Cti\\Storage\\Behaviour\\' . $name;
                 $mapping[$alias] = $classname;
             }
         }

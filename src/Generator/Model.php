@@ -13,21 +13,15 @@ class Model
 
     /**
      * @inject
-     * @var Application\View
+     * @var Cti\Core\View
      */
     public $view;
 
     /**
      * @inject
-     * @var Application\Locator
+     * @var Cti\Core\Application
      */
-    public $locator;
-
-    /**
-     * @inject
-     * @var Di\Manager
-     */
-    protected $manager;
+    public $application;
 
     public function __toString()
     {
@@ -43,7 +37,7 @@ class Model
             $last = array();
             $properties = array();
             foreach($model->getProperties() as $property) {
-                $generator = $this->manager->create('Storage\Generator\Property', array(
+                $generator = $this->application->getManager()->create('Cti\Storage\Generator\Property', array(
                     'model' => $model, 
                     'property' => $property
                 ));
@@ -66,7 +60,7 @@ class Model
             }
 
             foreach ($model->references as $reference) {
-                $references[] = $this->manager->create('Storage\Generator\Reference', array(
+                $references[] = $this->application->getManager()->create('Cti\Storage\Generator\Reference', array(
                     'reference' => $reference
                 ));
             }            

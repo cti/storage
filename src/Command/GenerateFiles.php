@@ -13,9 +13,9 @@ class GenerateFiles extends Command
 {
     /**
      * @inject
-     * @var Di\Manager
+     * @var Cti\Core\Application
      */
-    protected $manager;
+    protected $application;
 
     protected function configure()
     {
@@ -27,13 +27,12 @@ class GenerateFiles extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $locator = $this->manager->get('Application\Locator');
-        $schema = $this->manager->get('Storage\Schema');
+        $schema = $this->application->getSchema();
 
         $fs = new Filesystem();
         $fs->dumpFile(
-            $locator->path('out php Storage Storage.php'), 
-            $this->manager->create('Storage\Generator\Storage', array(
+            $this->application->getPath('build php Storage.php'), 
+            $this->application->getManager()->create('Cti\Storage\Generator\Storage', array(
                 'schema' => $schema
             ))
         );
@@ -41,23 +40,23 @@ class GenerateFiles extends Command
         foreach($schema->models as $model) {
             
             $fs->dumpFile(
-                $locator->path('out php Storage Model ' . $model->class_name . 'Cti.php'), 
-                $this->manager->create('Storage\Generator\Model', array(
+                $this->application->getPath('build php Storage Model ' . $model->class_name . 'Cti.php'), 
+                $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
                     'model' => $model
                 ))
             );
 
             $fs->dumpFile(
-                $locator->path('out php Storage Repository ' . $model->class_name . 'Repository.php'), 
-                $this->manager->create('Storage\Generator\Repository', array(
+                $this->application->getPath('build php Repository ' . $model->class_name . 'Repository.php'), 
+                $this->application->getManager()->create('Cti\Storage\Generator\Repository', array(
                     'model' => $model
                 ))
             );
 
             if($model->hasOwnQuery()) {
                 $fs->dumpFile(
-                    $locator->path('out php Storage Query ' . $model->class_name . 'Select.php'), 
-                    $this->manager->create('Storage\Generator\Select', array(
+                    $this->application->getPath('build php Query ' . $model->class_name . 'Select.php'), 
+                    $this->application->getManager()->create('Cti\Storage\Generator\Select', array(
                         'model' => $model
                     ))
                 );
