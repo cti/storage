@@ -31,8 +31,8 @@ class GenerateFiles extends Command
 
         $fs = new Filesystem();
         $fs->dumpFile(
-            $this->application->getPath('build php Storage.php'), 
-            $this->application->getManager()->create('Cti\Storage\Generator\Storage', array(
+            $this->application->getPath('build php Storage Master.php'), 
+            $this->application->getManager()->create('Cti\Storage\Generator\Master', array(
                 'schema' => $schema
             ))
         );
@@ -40,14 +40,14 @@ class GenerateFiles extends Command
         foreach($schema->models as $model) {
             
             $fs->dumpFile(
-                $this->application->getPath('build php Storage Model ' . $model->class_name . 'Cti.php'), 
+                $this->application->getPath('build php Storage Model ' . $model->class_name . 'Base.php'), 
                 $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
                     'model' => $model
                 ))
             );
 
             $fs->dumpFile(
-                $this->application->getPath('build php Repository ' . $model->class_name . 'Repository.php'), 
+                $this->application->getPath('build php Storage Repository ' . $model->class_name . 'Repository.php'), 
                 $this->application->getManager()->create('Cti\Storage\Generator\Repository', array(
                     'model' => $model
                 ))
@@ -55,7 +55,7 @@ class GenerateFiles extends Command
 
             if($model->hasOwnQuery()) {
                 $fs->dumpFile(
-                    $this->application->getPath('build php Query ' . $model->class_name . 'Select.php'), 
+                    $this->application->getPath('build php Storage Query ' . $model->class_name . 'Select.php'), 
                     $this->application->getManager()->create('Cti\Storage\Generator\Select', array(
                         'model' => $model
                     ))

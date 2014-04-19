@@ -2,7 +2,7 @@
 
 namespace Cti\Storage\Generator;
 
-use Cti\Util\String;
+use Cti\Core\String;
 
 class Select
 {

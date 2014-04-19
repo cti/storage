@@ -2,23 +2,23 @@
 
 namespace Cti\Storage\Generator;
 
-use Cti\Util\String;
+use Cti\Core\String;
 
 class Property
 {
     /**
      * @inject
-     * @var Storage\Schema
+     * @var Cti\Storage\Schema
      */
     public $schema;
 
     /**
-     * @var Storage\Component\Property
+     * @var Cti\Storage\Component\Property
      */
     public $property;
 
     /**
-     * @var Storage\Component\Model
+     * @var Cti\Storage\Component\Model
      */
     public $model;
 
@@ -150,8 +150,8 @@ RELATION;
     public function $getter()
     {
         if(!\$this->$name) {
-            \$storage = \$this->getRepository()->getStorage();
-            \$this->$name = \$storage->findByPk('$relation->destination', array(
+            \$master = \$this->getRepository()->getMaster();
+            \$this->$name = \$master->findByPk('$relation->destination', array(
                 $finder
             ));
         }

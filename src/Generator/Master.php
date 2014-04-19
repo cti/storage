@@ -5,10 +5,10 @@ namespace Cti\Storage\Generator;
 use Cti\Storage\Component\Model;
 use Cti\Storage\Component\Property;
 
-class Storage
+class Master
 {
     /**
-     * @var Storage\Schema
+     * @var Cti\Storage\Schema
      */
     public $schema;
 
@@ -16,9 +16,9 @@ class Storage
     {
         $result = implode(PHP_EOL . PHP_EOL, array(
             '<?php',
-            'namespace Cti\Storage;',
+            'namespace Storage;',
             'use OutOfRangeException;',
-            $this->getClassComment() . PHP_EOL . 'class Storage'.PHP_EOL,
+            $this->getClassComment() . PHP_EOL . 'class Master'.PHP_EOL,
             ));
 
         $result .= '{' . PHP_EOL;

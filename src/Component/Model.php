@@ -29,7 +29,7 @@ class Model
         $this->class_name = String::convertToCamelCase($this->name);
         $this->class_name_many = String::pluralize($this->class_name);
         $this->repository_class = 'Storage\Repository\\' . $this->class_name . 'Repository';
-        $this->model_class = 'Storage\Model\\' . $this->class_name . 'Cti';
+        $this->model_class = 'Storage\Model\\' . $this->class_name . 'Base';
         
         if(count($this->properties)) {
             $properties = $this->properties;
@@ -239,6 +239,6 @@ class Model
             // todo check user defined query
             return 'Storage\Query\\' . $this->class_name .'Select';
         }
-        return 'Storage\Query\Select';
+        return 'Cti\Storage\Query\Select';
     }
 }

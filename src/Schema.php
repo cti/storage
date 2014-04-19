@@ -111,7 +111,7 @@ class Schema
     function processMigrations()
     {
         $filesystem = new Filesystem;
-        $migrations = $this->application->getPath('build', 'php', 'Migration');
+        $migrations = $this->application->getPath('build php Storage Migration');
         if($filesystem->exists($migrations)) {
             $filesystem->remove($migrations);
         }
@@ -135,6 +135,10 @@ class Schema
             $class = 'Storage\\Migration\\' . $class_name;
             
             $filesystem->copy($file->getRealPath(), $migrations . DIRECTORY_SEPARATOR . $class_name . '.php');
+
+            if(!class_exists($class_name)) {
+                include $file->getRealPath();
+            }
             $this->application->getManager()->get($class)->process($this);
         }
     }

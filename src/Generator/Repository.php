@@ -5,7 +5,7 @@ namespace Cti\Storage\Generator;
 class Repository
 {
     /**
-     * @var Storage\Component\Model
+     * @var Cti\Storage\Component\Model
      */
     public $model;
 
@@ -14,7 +14,7 @@ class Repository
         $model = $this->model;
         $result = implode(PHP_EOL . PHP_EOL, array(
             '<?php',
-            'namespace Cti\Storage\Repository;',
+            'namespace Storage\Repository;',
             sprintf('use %s as Select;', $this->model->getQueryClass()),
             $this->getClassComment() . PHP_EOL . 'class '. $model->class_name . 'Repository'.PHP_EOL,
             ));
@@ -43,22 +43,26 @@ class Repository
         return <<<BASE
     /**
      * @inject
-     * @var Storage\Database
+     * @var Cti\Di\Manager
+     */
+    protected \$manager;
+
+    /**
+     * @inject
+     * @var Cti\Storage\Database
      */
     protected \$database;
 
     /**
      * @inject
-     * @var Storage\Storage
+     * @var Storage\Master
      */
-    protected \$storage;
+    protected \$master;
 
     /**
-     * @inject
-     * @var Di\Manager
+     * model fields
+     * @var array
      */
-    protected \$di;
-
     protected \$fields = array();
 
     public function __construct()
@@ -73,7 +77,7 @@ class Repository
      */
     public function create(\$data = array())
     {
-        return \$this->di->create('$model_class', array(
+        return \$this->manager->create('$model_class', array(
             'repository' => \$this,
             'data' => \$data
         ));
@@ -85,7 +89,7 @@ class Repository
      */
     public function select()
     {
-        return \$this->di->create('$query_class', '$model_name');
+        return \$this->manager->create('$query_class', '$model_name');
     }
 
     /**
@@ -98,12 +102,12 @@ class Repository
     }
 
     /**
-     * Get Storage instance
-     * @return Storage\Storage
+     * Get Master instance
+     * @return Storage\Master
      */
-    public function getStorage()
+    public function getMaster()
     {
-        return \$this->storage;
+        return \$this->master;
     }
 
 BASE;

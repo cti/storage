@@ -2,18 +2,18 @@
 
 namespace Cti\Storage\Generator;
 
-use Cti\Util\String;
+use Cti\Core\String;
 
 class Reference
 {
     /**
      * @inject
-     * @var Storage\Schema
+     * @var Cti\Storage\Schema
      */
     public $schema;
 
     /**
-     * @var Storage\Component\Reference
+     * @var Cti\Storage\Component\Reference
      */
     public $reference;
 
@@ -85,7 +85,7 @@ PROPERTY;
     public function $getter()
     {
         if(is_null(\$this->$property_name)) {
-            \$this->$property_name = \$this->getRepository()->getStorage()->findAll('$reference->source', array(
+            \$this->$property_name = \$this->getRepository()->getMaster()->findAll('$reference->source', array(
                 $finder
             ));
         }

@@ -2,12 +2,12 @@
 
 namespace Cti\Storage\Generator;
 
-use Cti\Util\String;
+use Cti\Core\String;
 
 class Model
 {
     /**
-     * @var Storage\Component\Model
+     * @var Cti\Storage\Component\Model
      */
     public $model;
 
@@ -71,7 +71,7 @@ class Model
                 '<?php',
                 'namespace Cti\Storage\\Model;',
                 implode(PHP_EOL, $usage),
-                $this->renderComment(). PHP_EOL . 'class '.$model->class_name . 'Cti'.PHP_EOL,
+                $this->renderComment(). PHP_EOL . 'class '.$model->class_name . 'Base'.PHP_EOL,
             );
 
             $result = implode(PHP_EOL . PHP_EOL, $header) . '{' . PHP_EOL;
