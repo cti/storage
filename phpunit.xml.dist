@@ -7,8 +7,8 @@
         syntaxCheck="false">
     <testsuites>
         <testsuite name="base/tests">
-            <directory>tests/</directory>
-            <exclude>tests/resources</exclude>
+            <directory>./tests/</directory>
+            <exclude>./tests/resources</exclude>
         </testsuite>
     </testsuites>
     <logging>

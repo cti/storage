@@ -47,36 +47,27 @@ class SchemaTest extends PHPUnit_Framework_TestCase
 
     function getApplication()
     {
+        $fs = new Filesystem;
+        $fs->remove(__DIR__ . DIRECTORY_SEPARATOR . 'build');
         $application = Application::create(implode(DIRECTORY_SEPARATOR, array(__DIR__, 'resources', 'php', 'config.php')));
         $application->extend('Cti\Storage\Extension');
         return $application;
     }
 
-    function testBasics()
+    function testGenerator()
     {
-        $schema = $this->getApplication()->getSchema();
+        $application = $this->getApplication();
 
-        // $person = $schema->createModel('person', 'Пользователь', array(
-        //     'login' => 'Имя пользователя',
-        //     'salt' => 'Соль для вычисления хэша',
-        //     'hash' => 'Полученный хэш',
-        // ));
+        $generator = $application->getConsole()->find('generate:files');
 
-        // // find by login
-        // $person->createIndex('login');
+        $input = new ArrayInput(array(
+            'command' => 'generate:files', 
+        ));
 
-        // $this->assertInstanceOf('Cti\Storage\Component\Model', $person);
-        // $this->assertSame($person->name, 'person');
-        // $this->assertSame($person->comment, 'Пользователь');
+        $output = new NullOutput;
+        $generator->run($input, $output);
 
-        // $this->assertSame($person->getPk(), array('id_person'));
-        // $this->assertCount(4, $person->getProperties());
-    }
-
-    function testException()
-    {
-        // $person = $this->getApplication()->getSchema()->createModel('person', 'person');
-        // $this->setExpectedException('Exception');
-        // $person->callUnknownMethod();
+        $master =  new \Storage\Master;
+        $this->assertNotNull($master);
     }
 }
