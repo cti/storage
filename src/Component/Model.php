@@ -119,6 +119,9 @@ class Model
     {
         $behaviour = $this->findBehaviourForMethod($name);
         $instance = $behaviour ? $behaviour : $this;
+        if(!method_exists($instance, $name)) {
+            throw new Exception("Unknown method $name");
+        }
         return call_user_func_array(array($instance, $name), $params);
     }
 

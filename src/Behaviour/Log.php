@@ -28,7 +28,7 @@ class Log
 
     public function getAdditionalPk()
     {
-        return array('v_start');
+        return array('v_end');
     }
 
     function getAdditionalProperties()

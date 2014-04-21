@@ -29,9 +29,7 @@ class GenerateMigration extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $input->getArgument('name');
-
-        $id = implode('_', $name);
+        $id = implode('_', $input->getArgument('name'));
         $class = String::convertToCamelCase($id);
 
         $timestamp = time();
