@@ -75,7 +75,10 @@ class Property
      * @var bool
      */
     protected $readonly;
-    
+
+    /**
+     * @param $params
+     */
     public function __construct($params)
     {
         if(isset($params[0])) {
@@ -136,6 +139,10 @@ class Property
         }
     }
 
+    /**
+     * @param array $override
+     * @return Property
+     */
     function copy($override = array())
     {
         $config = get_object_vars($this);

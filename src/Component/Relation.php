@@ -36,6 +36,10 @@ class Relation
      */
     protected $properties = array();
 
+    /**
+     * @param string $source
+     * @param string $destination
+     */
     function __construct($source, $destination)
     {
         $this->source = $source;
@@ -45,25 +49,41 @@ class Relation
         $this->destination_alias = $destination;
     }
 
+    /**
+     * @param $name
+     * @return $this
+     */
     function usingAlias($name)
     {
         $this->destination_alias = $name;
         return $this;
     }
 
+    /**
+     * @param $name
+     * @return $this
+     */
     function referencedBy($name)
     {
         $this->referenced_by = $name;
         return $this;
     }
 
+    /**
+     * @param $strategy
+     * @return $this
+     */
     function setStrategy($strategy) 
     {
         $this->strategy = $strategy;
         return $this;
     }
-    
-    function process(Schema $schema) 
+
+    /**
+     * @param Schema $schema
+     * @return $this
+     */
+    function process(Schema $schema)
     {
         $source = $schema->getModel($this->source);
         $destination = $schema->getModel($this->destination);
@@ -84,6 +104,7 @@ class Relation
         }
 
         $destination->addReference($this);
+        return $this;
     }
 
     /**

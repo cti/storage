@@ -121,38 +121,67 @@ class Model
     }
 
 
+    /**
+     * @param string $field
+     * @return Index
+     */
     function createIndex($field)
     {
-        $this->indexes[] = new Index(func_get_args());
+        return $this->indexes[] = new Index(func_get_args());
     }
 
+    /**
+     * @param Index $index
+     * @return $this
+     */
     function removeIndex(Index $index)
     {
         $key = array_search($index, $this->indexes);
         unset($this->indexes[$key]);
         $this->indexes = array_values($this->indexes);
+        return $this;
     }
 
+    /**
+     * @return Index[]
+     */
     function listIndexes()
     {
         return $this->indexes;
     }
 
+    /**
+     * @param $nick
+     * @param array $configuration
+     * @return Behaviour
+     */
     function addBehaviour($nick, $configuration = array())
     {
         return $this->behaviours[$nick] = Behaviour::create($this, $nick, $configuration);
     }
 
+    /**
+     * @param $nick
+     * @return bool
+     */
     function hasBehaviour($nick) 
     {
         return isset($this->behaviours[$nick]);
     }
 
+    /**
+     * @param $nick
+     * @return Behaviour
+     */
     function getBehaviour($nick) 
     {
         return isset($this->behaviours[$nick]) ? $this->behaviours[$nick] : null;
     }
 
+    /**
+     * @param $nick
+     * @throws \Exception
+     */
     function removeBehaviour($nick)
     {
         if(!$this->hasBehaviour($nick)) {
@@ -161,6 +190,10 @@ class Model
         unset($this->behaviours[$nick]);
     }
 
+    /**
+     * @param mixed $parent
+     * @return Relation
+     */
     function hasOne($parent)
     {
         $parent_name = $parent instanceof Model ? $parent->name : $parent;
@@ -169,6 +202,11 @@ class Model
         return $relation;
     }
 
+    /**
+     * @param Model $parent
+     * @param string $alias
+     * @throws \Exception
+     */
     function registerLink(Model $parent, $alias) 
     {
         if(isset($this->links[$alias])) {
@@ -184,6 +222,9 @@ class Model
         $this->links[$alias] = $parent;
     }
 
+    /**
+     * @return array
+     */
     public function getPk()
     {
         $pk = $this->pk;
@@ -197,6 +238,10 @@ class Model
         return $pk;
     }
 
+    /**
+     * @return Property[]
+     * @throws \Exception
+     */
     public function getProperties()
     {
         $first = $this->getPk();
@@ -231,6 +276,10 @@ class Model
         return $properties;
     }
 
+    /**
+     * @param $name
+     * @return Property
+     */
     public function getProperty($name)
     {
         if(isset($this->properties[$name])) {
@@ -245,9 +294,14 @@ class Model
         }
     }
 
+    /**
+     * @param $relation
+     * @return Model
+     */
     public function addReference($relation)
     {
         $this->references[] = $relation;
+        return $this;
     }
 
     /**
