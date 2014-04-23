@@ -8,47 +8,54 @@ class Reference
 {
     /**
      * @inject
-     * @var Cti\Storage\Schema
+     * @var \Cti\Storage\Schema
      */
     public $schema;
 
     /**
-     * @var Cti\Storage\Component\Reference
+     * @var \Cti\Storage\Component\Relation
      */
     public $reference;
+
+    /**
+     * @var \Cti\Storage\Component\Property
+     */
+    public $property;
 
     public function renderProperty()
     {
 
         $reference = $this->reference;
-        $property_name = String::pluralize($reference->referenced_by);
+        $property_name = String::pluralize($reference->getReferencedBy());
 
-        $source = $this->schema->getModel($reference->source);
-        $destination = $this->schema->getModel($reference->destination);
+        $source = $this->schema->getModel($reference->getSource());
+        $destination = $this->schema->getModel($reference->getDestination());
 
 
+        $source_model_class = $source->getModelClass();
         $result = <<<PROPERTY
     /**
-     * @var $source->model_class[]
+     * @var {$source_model_class}[]
      */
     protected $$property_name;
 
 
 PROPERTY;
 
-        if($this->schema->getModel($reference->source)->hasBehaviour('link')) {
-            $link = $this->schema->getModel($reference->source);
+        if($this->schema->getModel($reference->getSource())->hasBehaviour('link')) {
+            $link = $this->schema->getModel($reference->getSource());
             $foreign = $link->getBehaviour('link')->getForeignModel($destination);
-            foreach($link->relations as $relation) {
-                if($relation->destination == $foreign->name) {
+            foreach($link->getRelations() as $relation) {
+                if($relation->getDestination() == $foreign->getName()) {
                     break;
                 }
             }
 
-            $relation_property_name = String::pluralize($relation->destination_alias);
+            $relation_property_name = String::pluralize($relation->getDestinationAlias());
+            $model_class = $foreign->getModelClass();
             $result .= <<<PROPERTY
     /**
-     * @var $foreign->model_class[]
+     * @var {$model_class}[]
      */
     protected $$relation_property_name;
 
@@ -65,27 +72,29 @@ PROPERTY;
 
         $reference = $this->reference;
 
-        $property_name = String::pluralize($reference->referenced_by);
+        $property_name = String::pluralize($reference->getReferencedBy());
         $getter = 'get' . String::convertToCamelCase($property_name);
 
-        $source = $this->schema->getModel($reference->source);
-        $destination = $this->schema->getModel($reference->destination);
+        $source = $this->schema->getModel($reference->getSource());
+        $destination = $this->schema->getModel($reference->getDestination());
 
         $finder = array();
-        foreach($reference->properties as $property) {
-            $finder[] = "'$property->name' => \$this->" . $destination->getProperty($property->foreignName)->getter . "(),";
+        foreach($reference->getProperties() as $property) {
+            $finder[] = "'" . $property->getName() . "' => \$this->" . $destination->getProperty($property->getForeignName())->getGetter() . "(),";
         }
         $finder = implode(PHP_EOL.'                ', $finder);
 
+        $source_model_class = $source->getModelClass();
+        $source_name = $reference->getSource();
         $result = <<<PROPERTY
     /**
      * get $property_name
-     * @return $source->model_class
+     * @return $source_model_class
      */
     public function $getter()
     {
         if(is_null(\$this->$property_name)) {
-            \$this->$property_name = \$this->getRepository()->getMaster()->findAll('$reference->source', array(
+            \$this->$property_name = \$this->getRepository()->getMaster()->findAll('$source_name', array(
                 $finder
             ));
         }
@@ -95,24 +104,25 @@ PROPERTY;
 
 PROPERTY;
 
-        if($this->schema->getModel($reference->source)->hasBehaviour('link')) {
-            $link = $this->schema->getModel($reference->source);
+        if($this->schema->getModel($source_name)->hasBehaviour('link')) {
+            $link = $this->schema->getModel($source_name);
             $foreign = $link->getBehaviour('link')->getForeignModel($destination);
-            foreach($link->relations as $relation) {
-                if($relation->destination == $foreign->name) {
+            foreach($link->getRelations() as $relation) {
+                if($relation->getDestination() == $foreign->getName()) {
                     break;
                 }
             }
 
-            $relation_property_name = String::pluralize($relation->destination_alias);
+            $relation_property_name = String::pluralize($relation->getDestinationAlias());
             $relation_getter = 'get' . String::convertToCamelCase($relation_property_name);
 
-            $link_getter = 'get' . String::convertToCamelCase($relation->destination_alias);
-             
+            $link_getter = 'get' . String::convertToCamelCase($relation->getDestinationAlias());
+
+            $foreign_model_class = $foreign->getModelClass();
             $result .= <<<PROPERTY
     /**
      * get $relation_property_name
-     * @return $foreign->model_class[]
+     * @return {$foreign_model_class}[]
      */
     public function $relation_getter()
     {
@@ -134,22 +144,23 @@ PROPERTY;
 
     public function hasRelation()
     {
-        return isset($this->property->relation);
+        return !is_null($this->property->getRelation());
     }
 
     public function renderRelationProperty()
     {
         $property = $this->property;
-        $relation = $property->relation;
+        $relation = $property->getRelation();
 
-        $foreignModel = $this->schema->getModel($relation->destination);
+        $foreignModel = $this->schema->getModel($relation->getDestination());
 
-        $name = $relation->destination_alias ? $relation->destination_alias : $foreignModel->name;
+        $name = $relation->getDestinationAlias() ? $relation->getDestinationAlias() : $foreignModel->getName();
+        $model_class = $foreignModel->getModelClass();
 
         return <<<RELATION
     /**
      * $name property
-     * @var $foreignModel->model_class
+     * @var $model_class
      */
     protected $$name;
 

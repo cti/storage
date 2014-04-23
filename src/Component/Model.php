@@ -250,10 +250,10 @@ class Model
 
         foreach($this->behaviours as $behaviour) {
             foreach($behaviour->getProperties() as $property) {
-                if(isset($properties[$property->name])) {
-                    throw new Exception(sprintf("Duplicate property %s.%s", $this->name, $property->name));
+                if(isset($properties[$property->getName()])) {
+                    throw new Exception(sprintf("Duplicate property %s.%s", $this->getName(), $property->getName()));
                 }
-                $properties[$property->name] = $property;
+                $properties[$property->getName()] = $property;
             }
         }
 

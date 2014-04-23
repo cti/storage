@@ -11,7 +11,7 @@ class Id extends Behaviour
 
     public function init(Model $model)
     {
-        $this->name = 'id_' . $model->name;
+        $this->name = 'id_' . $model->getName();
         $this->properties = array(
             $this->name => new Property(array(
                 'behaviour' => true,

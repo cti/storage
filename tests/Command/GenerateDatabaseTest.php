@@ -17,16 +17,16 @@ class GenerateDatabaseTest extends \PHPUnit_Framework_TestCase
         $converter = $application->getManager()->get('\Cti\Storage\Converter\DBAL');
         $dbalSchema = $converter->convert($schema);
         foreach($schema->getModels() as $model) {
-            $table = $dbalSchema->getTable($model->name);
+            $table = $dbalSchema->getTable($model->getName());
             // check table existence
             $this->assertNotEmpty($table);
             $properties = $model->getProperties();
             $this->assertEquals(count($properties), count($table->getColumns()));
             foreach($properties as $property) {
-                $column = $table->getColumn($property->name);
+                $column = $table->getColumn($property->getName());
                 $this->assertNotEmpty($column); // check column existance
-                $this->assertEquals($property->type, $column->getType());
-                $this->assertEquals($property->required, $column->getNotnull());
+                $this->assertEquals($property->getType(), $column->getType());
+                $this->assertEquals($property->getRequired(), $column->getNotnull());
 
             }
         }

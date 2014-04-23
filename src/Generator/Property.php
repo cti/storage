@@ -25,14 +25,15 @@ class Property
     public function renderDescription()
     {
         $property = $this->property;
-        $comment = $property->type == 'virtual' ? $property->virtual_name : $property->comment;
-        $type = $property->type == 'virtual' ? $property->model->model_class : $property->type;
+        $comment = $property->getComment();
+        $type = $property->getType();
+        $name = $property->getName();
         return <<<PROPERTY
     /**
      * $comment
      * @var $type
      */
-    protected $$property->name;
+    protected $$name;
 
 
 PROPERTY;
@@ -43,36 +44,42 @@ PROPERTY;
 
         $model = $this->model;
         $property = $this->property;
+        $comment = $property->getComment();
+        $type = $property->getType();
+        $getter = $property->getGetter();
+        $name = $property->getName();
+        $access = $property->getReadonly() ? 'protected' : 'public';
+        $model_class = $model->getModelClass();
+        $setter = $property->getSetter();
         $result = <<<PROPERTY
     /**
-     * $property->comment
-     * @return $property->type
+     * $comment
+     * @return $type
      */
-    public function $property->getter()
+    public function $getter()
     {
-        return \$this->$property->name;
+        return \$this->$name;
     }
 
 
 PROPERTY;
 
-    $type = $property->readonly ? 'protected' : 'public';
 
-            $result .= <<<PROPERTY
+        $result .= <<<PROPERTY
     /**
-     * Set $property->name
-     * @param $property->type
-     * @return $model->model_class
+     * Set $name
+     * @param $type
+     * @return $model_class
      */
-    $type function $property->setter($$property->name)
+    $access function $setter($$name)
     {
-        if(!isset(\$this->_changes['$property->name'])) {
-            \$this->_changes['$property->name'] = array(
-                'old' => \$this->$property->name,
+        if(!isset(\$this->_changes['$name'])) {
+            \$this->_changes['$name'] = array(
+                'old' => \$this->$name,
             );
         }
-        \$this->_changes['$property->name']['new'] = $$property->name;
-        \$this->$property->name = $$property->name;
+        \$this->_changes['$name']['new'] = $$name;
+        \$this->$name = $$name;
         return \$this;
     }
 
@@ -84,22 +91,22 @@ PROPERTY;
 
     public function hasRelation()
     {
-        return isset($this->property->relation);
+        return !is_null($this->property->getRelation());
     }
 
     public function renderRelationProperty()
     {
         $property = $this->property;
-        $relation = $property->relation;
+        $relation = $property->getRelation();
 
-        $foreignModel = $this->schema->getModel($relation->destination);
-
-        $name = $relation->destination_alias ? $relation->destination_alias : $foreignModel->name;
+        $foreignModel = $this->schema->getModel($relation->getDestination());
+        $name = $relation->getDestinationAlias() ? $relation->getDestinationAlias() : $foreignModel->getName();
+        $model_class = $foreignModel->getModelClass();
 
         return <<<RELATION
     /**
      * $name property
-     * @var $foreignModel->model_class
+     * @var $model_class
      */
     protected $$name;
 
@@ -111,11 +118,11 @@ RELATION;
     {
         $model = $this->model;
         $property = $this->property;
-        $relation = $property->relation;
+        $relation = $property->getRelation();
 
-        $foreignModel = $this->schema->getModel($relation->destination);
+        $foreignModel = $this->schema->getModel($relation->getDestination());
 
-        $name = $relation->destination_alias ? $relation->destination_alias : $foreignModel->name;
+        $name = $relation->getDestinationAlias() ? $relation->getDestinationAlias() : $foreignModel->getName();
         $getter = 'get' . String::convertToCamelCase($name);
         $setter = 'set' . String::convertToCamelCase($name);
 
@@ -125,16 +132,16 @@ RELATION;
 
         foreach($relation->properties as $property) {
 
-            $clear[] = "\$this->" . $property->setter . '(null);';
+            $clear[] = "\$this->" . $property->getSetter() . '(null);';
 
             $reader[] = sprintf(
                 "\$this->%s($%s->%s());",
-                $property->setter,
+                $property->getSetter(),
                 $name,
-                $foreignModel->getProperty($property->foreignName)->getter
+                $foreignModel->getProperty($property->getForeignName())->getGetter()
             );
 
-            $finder[] = "'" . $property->foreignName . "' => \$this->" . $property->getter . '()';
+            $finder[] = "'" . $property->getForeignName() . "' => \$this->" . $property->getGetter() . '()';
         }
 
         $finder = implode(',' . PHP_EOL.'                ', $finder);
@@ -142,16 +149,20 @@ RELATION;
         $clear = implode(PHP_EOL . '        ', $clear);
 
 
+        $foreign_model_class = $foreignModel->getModelClass();
+        $destination = $relation->getDestination();
+        $model_class = $model->getModelClass();
+        $foreign_class_name = $foreignModel->getClassName();
         return <<<RELATION
     /**
      * Get $name
-     * @return $foreignModel->model_class
+     * @return $foreign_model_class
      */
     public function $getter()
     {
         if(!\$this->$name) {
             \$master = \$this->getRepository()->getMaster();
-            \$this->$name = \$master->findByPk('$relation->destination', array(
+            \$this->$name = \$master->findByPk('$destination', array(
                 $finder
             ));
         }
@@ -160,10 +171,10 @@ RELATION;
 
     /**
      * Set $name
-     * @param $foreignModel->model_class $$name
-     * @return $model->model_class
+     * @param $foreign_model_class $$name
+     * @return $model_class
      */
-    public function $setter($foreignModel->class_name $$name = null)
+    public function $setter($foreign_class_name $$name = null)
     {
         $clear
         if($$name) {
@@ -180,8 +191,8 @@ RELATION;
     {
         $usages = array();
         if($this->hasRelation()) {
-            $model = $this->schema->getModel($this->property->relation->destination);
-            $usages[] = sprintf('use %s as %s;', $model->model_class, $model->class_name);
+            $model = $this->schema->getModel($this->property->getRelation()->getDestination());
+            $usages[] = sprintf('use %s as %s;', $model->getModelClass(), $model->getClassName());
         }
         return $usages;
     }    

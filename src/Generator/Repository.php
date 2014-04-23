@@ -5,7 +5,7 @@ namespace Cti\Storage\Generator;
 class Repository
 {
     /**
-     * @var Cti\Storage\Component\Model
+     * @var \Cti\Storage\Component\Model
      */
     public $model;
 
@@ -16,7 +16,7 @@ class Repository
             '<?php',
             'namespace Storage\Repository;',
 //            sprintf('use %s as Select;', $this->model->getQueryClass()),
-            $this->getClassComment() . PHP_EOL . 'class '. $model->class_name . 'Repository'.PHP_EOL,
+            $this->getClassComment() . PHP_EOL . 'class '. $model->getClassName() . 'Repository'.PHP_EOL,
             ));
         
         $result .= '{' . PHP_EOL;
@@ -31,30 +31,30 @@ class Repository
         $fields = array();
         foreach($this->model->getProperties() as $property)
         {
-            $fields[] = $property->name;
+            $fields[] = $property->getName();
         }
         $fields = "array('".implode("', '", $fields)."')";
-        $class = $this->model->class_name;
+        $class = $this->model->getClassName();
 
-        $model_name = $this->model->name;
-        $model_class = $this->model->model_class;
+        $model_name = $this->model->getName();
+        $model_class = $this->model->getModelClass();
 
         return <<<BASE
     /**
      * @inject
-     * @var Cti\Di\Manager
+     * @var \Cti\Di\Manager
      */
     protected \$manager;
 
     /**
      * @inject
-     * @var Cti\Storage\Database
+     * @var \Cti\Storage\Database
      */
     protected \$database;
 
     /**
      * @inject
-     * @var Storage\Master
+     * @var \Storage\Master
      */
     protected \$master;
 

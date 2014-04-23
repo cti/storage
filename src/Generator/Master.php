@@ -39,7 +39,7 @@ class Master
         return <<<HEADER
     /**
      * @inject
-     * @var Cti\Di\Manager
+     * @var \Cti\Di\Manager
      */
     protected \$manager;
 
@@ -49,14 +49,16 @@ HEADER;
 
     public function renderRepositoryGetter(Model $model)
     {
-        $repository_class = $model->repository_class;
+        $repository_class = $model->getRepositoryClass();
 
+        $class_name = $model->getClassName();
+        $class_name_many = $model->getClassNameMany();
         return <<<GETTER
     /**
-     * Get $model->class_name repository
-     * @return $repository_class
+     * Get $class_name repository
+     * @return \\$repository_class
      */
-    public function get{$model->class_name_many}()
+    public function get{$class_name_many}()
     {
         return \$this->manager->get('$repository_class');
     }
@@ -80,7 +82,7 @@ COMMENT;
     {
         $map = '';
         foreach($this->schema->getModels() as $model) {
-            $map .= "            '" . $model->name."' => 'get" . $model->class_name_many."'," . PHP_EOL;
+            $map .= "            '" . $model->getName()."' => 'get" . $model->getClassNameMany()."'," . PHP_EOL;
         }
 
         return <<<FOOTER

@@ -34,6 +34,7 @@ class GenerateFiles extends Command
         $schema = $this->application->getSchema();
 
         $fs = new Filesystem();
+
         $fs->dumpFile(
             $this->application->getPath('build php Storage Master.php'), 
             $this->application->getManager()->create('Cti\Storage\Generator\Master', array(
@@ -43,15 +44,23 @@ class GenerateFiles extends Command
 
         foreach($schema->getModels() as $model) {
 
+//            if($model->getName() == 'person_favorite_module_link') {
+//echo                 $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
+//    'model' => $model
+//))
+//;
+//                die;
+//            }
+
             $fs->dumpFile(
-                $this->application->getPath('build php Storage Model ' . $model->class_name . 'Base.php'), 
+                $this->application->getPath('build php Storage Model ' . $model->getClassName() . 'Base.php'),
                 $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
                     'model' => $model
                 ))
             );
 
             $fs->dumpFile(
-                $this->application->getPath('build php Storage Repository ' . $model->class_name . 'Repository.php'), 
+                $this->application->getPath('build php Storage Repository ' . $model->getClassName() . 'Repository.php'),
                 $this->application->getManager()->create('Cti\Storage\Generator\Repository', array(
                     'model' => $model
                 ))

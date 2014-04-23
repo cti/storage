@@ -27,7 +27,7 @@ class Schema
 
     /**
      * model list
-     * @var array[Model]
+     * @var Model[]
      */
     protected $models = array();
 
@@ -77,7 +77,7 @@ class Schema
     }
 
     /**
-     * @param array[Model] $list
+     * @param Model[] $list
      * @return Model
      * @throws \Exception
      */
@@ -97,9 +97,9 @@ class Schema
 
         foreach($list as $k => $v) {
             if(is_numeric($k)) {
-                $k = $v->name;
+                $k = $v->getName();
             }
-            if($k == $v->name) {
+            if($k == $v->getName()) {
                 $start[] = $k;
             } else {
                 $end[] = $k;
@@ -188,7 +188,7 @@ class Schema
     function completeRelations()
     {
         foreach($this->models as $model) {
-            foreach($model->relations as $relation) {
+            foreach($model->getRelations() as $relation) {
                 $relation->process($this);
             }
         }

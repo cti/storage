@@ -7,19 +7,19 @@ use Cti\Core\String;
 class Model
 {
     /**
-     * @var Cti\Storage\Component\Model
+     * @var \Cti\Storage\Component\Model
      */
     public $model;
 
     /**
      * @inject
-     * @var Cti\Core\View
+     * @var \Cti\Core\View
      */
     public $view;
 
     /**
      * @inject
-     * @var Cti\Core\Application
+     * @var \Cti\Core\Application
      */
     public $application;
 
@@ -30,7 +30,7 @@ class Model
             $model = $this->model;
 
             $usage = array(
-                sprintf('use Storage\\Repository\\%sRepository as Repository;', $model->class_name)
+                sprintf('use Storage\\Repository\\%sRepository as Repository;', $model->getClassName())
             );
 
             // last contains relation properties
@@ -59,7 +59,7 @@ class Model
                 $properties[] = $generator;
             }
 
-            foreach ($model->references as $reference) {
+            foreach ($model->getReferences() as $reference) {
                 $references[] = $this->application->getManager()->create('Cti\Storage\Generator\Reference', array(
                     'reference' => $reference
                 ));
@@ -71,7 +71,7 @@ class Model
                 '<?php',
                 'namespace Cti\Storage\\Model;',
                 implode(PHP_EOL, $usage),
-                $this->renderComment(). PHP_EOL . 'class '.$model->class_name . 'Base'.PHP_EOL,
+                $this->renderComment(). PHP_EOL . 'class '.$model->getClassName() . 'Base'.PHP_EOL,
             );
 
             $result = implode(PHP_EOL . PHP_EOL, $header) . '{' . PHP_EOL;
@@ -120,7 +120,7 @@ COMMENT;
 
     public function renderConstructor()
     {
-        $repository_class = $this->model->repository_class;
+        $repository_class = $this->model->getRepositoryClass();
         return <<<BASE
     /**
      * model repository
@@ -151,22 +151,21 @@ BASE;
         $pk = '';
         foreach($this->model->getPk() as $nick) {
             $property = $this->model->getProperty($nick);
-            $pk .= '            \'' . $property->name."'" . str_repeat(' ', $this->getMaxPropertyLength() - strlen($property->name)). " => \$this->".$property->getter.'(),' . PHP_EOL;
+            $pk .= '            \'' . $property->getName()."'" . str_repeat(' ', $this->getMaxPropertyLength() - strlen($property->getName())). " => \$this->".$property->getGetter().'(),' . PHP_EOL;
         }
 
         $array = '';
         foreach($this->model->getProperties() as $property) {
-            if($property->type != 'virtual') {
-                $array .= '            \'' . $property->name."'" . str_repeat(' ', $this->getMaxPropertyLength() - strlen($property->name)). " => \$this->".$property->getter.'(),' . PHP_EOL;
-            }
+            $array .= '            \'' . $property->getName()."'" . str_repeat(' ', $this->getMaxPropertyLength() - strlen($property->getName())). " => \$this->".$property->getGetter().'(),' . PHP_EOL;
         }
 
         $model = $this->model;
 
+        $repository_class = $model->getRepositoryClass();
         return <<<FINAL
     /**
      * Get model repository
-     * @return $model->repository_class
+     * @return $repository_class
      */
     public function getRepository()
     {
@@ -226,7 +225,7 @@ FINAL;
     {
         if(!isset($this->max)) {
             foreach($this->model->getProperties() as $property) {
-                $this->max = !isset($this->max) || $this->max < strlen($property->name) ? strlen($property->name) : $this->max;
+                $this->max = !isset($this->max) || $this->max < strlen($property->getName()) ? strlen($property->getName()) : $this->max;
             }
         }
         return $this->max;
