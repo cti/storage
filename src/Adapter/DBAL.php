@@ -7,23 +7,21 @@ class DBAL extends \Doctrine\DBAL\Connection {
 
     protected $user;
     protected $password;
-    protected $tns;
-    protected $driver;
 
     public function __construct($config)
     {
-        $params = array(
-            'user' => $config['user'],
-            'password' => $config['password'],
-            'dbname' => $config['tns'],
-            'charset' => 'AL32UTF8',
-        );
         if ($config['driver'] == 'oracle') {
-            $params['driver'] = 'oci8';
+            $config['charset'] = 'AL32UTF8';
+            $config['driver'] = 'oci8';
+            $config['dbname'] = $config['tns'];
+            unset($config['tns']);
             $driver = new \Doctrine\DBAL\Driver\OCI8\Driver();
+        } elseif ($config['driver'] == 'sqlite') {
+            $config['driver'] = 'pdo_sqlite';
+            $driver = new \Doctrine\DBAL\Driver\PDOSqlite\Driver();
         } else {
-            throw new \Exception("Unknown driver for database in config");
+            throw new \Exception("Unknown driver \"" . $config['driver'] . "\" for database in config");
         }
-        parent::__construct($params, $driver);
+        parent::__construct($config, $driver);
     }
 }

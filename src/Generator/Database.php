@@ -17,7 +17,7 @@ class Database {
      * @inject
      * @var \Cti\Storage\Adapter\DBAL
      */
-    private $oracle;
+    private $dbal;
 
     public function setToSchema(\Doctrine\DBAL\Schema\Schema $toSchema) {
         $this->toSchema = $toSchema;
@@ -51,10 +51,10 @@ class Database {
         if (empty($this->fromSchema)) {
             throw new \Exception("From schema not defined in Generator\\Database");
         }
-        $sql = $this->fromSchema->getMigrateToSql($this->toSchema, $this->oracle->getDatabasePlatform());
+        $sql = $this->fromSchema->getMigrateToSql($this->toSchema, $this->dbal->getDatabasePlatform());
         if (!$this->isInTestMode()) {
             foreach($sql as $query) {
-                $this->oracle->executeQuery($query);
+                $this->dbal->executeQuery($query);
             }
         }
         return $sql;

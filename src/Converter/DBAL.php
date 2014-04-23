@@ -24,12 +24,20 @@ class DBAL {
 
     public function convert(\Cti\Storage\Schema $inputSchema)
     {
-        $this->inputSchema = $inputSchema;
-        $this->schema = $this->application->getManager()->create('\Doctrine\DBAL\Schema\Schema');
+        $schema = new \Doctrine\DBAL\Schema\Schema;
 
-        foreach($this->inputSchema->getModels() as $model) {
 
+        foreach($inputSchema->getModels() as $model) {
+//            $table = $schema->createTable($model->name);
+//            foreach($model->getProperties() as $property) {
+                /**
+                 * @var $property \Cti\Storage\Component\Property
+                 */
+//                $table->addColumn($property->name, $property->type, array(
+//                    'comment' => $property->comment,
+//                ));
+//            }
         }
-        return $this->schema;
+        return $schema;
     }
 }
