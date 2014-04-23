@@ -2,13 +2,12 @@
 
 namespace Cti\Storage\Behaviour;
 
+use Cti\Storage\Component\Model;
 use Cti\Storage\Component\Property;
 
-class Log
+class Log extends Behaviour
 {
-    protected $properties = array();
-
-    public function __construct()
+    public function init(Model $model)
     {
         $this->properties = array(
             'v_start' => new Property(array(
@@ -26,23 +25,8 @@ class Log
         );
     }
 
-    public function getAdditionalPk()
+    public function getPk()
     {
         return array('v_end');
-    }
-
-    function getAdditionalProperties()
-    {
-        return array(
-            $this->properties['v_start'],
-            $this->properties['v_end'],
-        );
-    }
-
-    function getAdditionalProperty($name)
-    {
-        if(isset($this->properties[$name])) {
-            return $this->properties[$name];
-        }
     }
 }

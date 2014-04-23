@@ -6,22 +6,75 @@ use Cti\Core\String;
 
 class Property
 {
+    /**
+     * @var string
+     */
+    protected $name;
 
-    public $name;
-    public $type;
-    public $comment;
-    public $foreignName;
+    /**
+     * @var string
+     */
+    protected $type;
 
-    public $primary;
-    public $required;
-    public $behaviour;
-    public $relation;
+    /**
+     * @var string
+     */
+    protected $comment;
 
-    public $setter;
-    public $getter;
+    /**
+     * @var string
+     */
+    protected $foreignName;
 
-    public $min;
-    public $max;
+    /**
+     * @var boolean
+     */
+    protected $primary;
+
+    /**
+     * @var boolean
+     */
+    protected $required;
+
+    /**
+     * @var boolean
+     */
+    protected $behaviour;
+
+    /**
+     * @var boolean
+     */
+    protected $relation;
+
+    /**
+     * @var string
+     */
+    protected $setter;
+
+    /**
+     * @var string
+     */
+    protected $getter;
+
+    /**
+     * @var integer
+     */
+    protected $min;
+
+    /**
+     * @var integer
+     */
+    protected $max;
+
+    /**
+     * @var mixed
+     */
+    protected $model;
+
+    /**
+     * @var bool
+     */
+    protected $readonly;
     
     public function __construct($params)
     {
@@ -91,4 +144,119 @@ class Property
         }
         return new Property($config);
     }
+
+    /**
+     * @return boolean
+     */
+    public function getBehaviour()
+    {
+        return $this->behaviour;
+    }
+
+    /**
+     * @return string
+     */
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    /**
+     * @return string
+     */
+    public function getForeignName()
+    {
+        return $this->foreignName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGetter()
+    {
+        return $this->getter;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMax()
+    {
+        return $this->max;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMin()
+    {
+        return $this->min;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getPrimary()
+    {
+        return $this->primary;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getReadonly()
+    {
+        return $this->readonly;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getRelation()
+    {
+        return $this->relation;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getRequired()
+    {
+        return $this->required;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSetter()
+    {
+        return $this->setter;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+
+
 }

@@ -2,26 +2,76 @@
 
 namespace Cti\Storage\Component;
 
-use Cti\Storage\Behaviour\Factory as BehaviourFactory;
+use Cti\Storage\Behaviour\Behaviour;
 use Cti\Core\String;
 use Exception;
 
 class Model
 {
-    public $name;
-    public $class_name;
-    public $repository_class;
-    public $comment;
+    /**
+     * @var string
+     */
+    protected $name;
 
-    public $pk = array();
-    public $indexes = array();
-    public $properties = array();
-    public $behaviours = array();
+    /**
+     * @var string
+     */
+    protected $class_name;
 
-    public $relations = array();
-    public $references = array();
+    /**
+     * @var string
+     */
+    protected $class_name_many;
 
-    public $links = array();
+    /**
+     * @var string
+     */
+    protected $repository_class;
+
+    /**
+     * @var string
+     */
+    protected $model_class;
+
+    /**
+     * @var string
+     */
+    protected $comment;
+
+    /**
+     * @var array
+     */
+    protected $pk = array();
+
+    /**
+     * @var Index[]
+     */
+    protected $indexes = array();
+
+    /**
+     * @var Property[]
+     */
+    protected $properties = array();
+
+    /**
+     * @var Behaviour[]
+     */
+    protected $behaviours = array();
+
+    /**
+     * @var Relation[]
+     */
+    protected $references = array();
+
+    /**
+     * @var Relation[]
+     */
+    protected $relations = array();
+
+    /**
+     * @var Model[]
+     */
+    protected $links = array();
 
     function init()
     {
@@ -38,21 +88,36 @@ class Model
                 $this->addProperty($key, $config);
             }
         }
+
+        if(!$this->getPk()) {
+            $this->addBehaviour('id');
+        }
     }
 
+    /**
+     * @param $name
+     * @param $config
+     * @return Property
+     */
     public function addProperty($name, $config)
     {
-        if (is_string($config)) {
-            $config = array('name' => $name, 'comment' => $config);
-        } elseif (is_array($config) && !is_numeric($name)) {
-            if(isset($config[0])) {
-                array_unshift($config, $name);
-            } else {
-                $config['name'] = $name;
+        if($config instanceof Property) {
+            $property = $config;
+
+        } else {
+            if (is_string($config)) {
+                $config = array('name' => $name, 'comment' => $config);
+            } elseif (is_array($config) && !is_numeric($name)) {
+                if(isset($config[0])) {
+                    array_unshift($config, $name);
+                } else {
+                    $config['name'] = $name;
+                }
             }
+            $property = new Property($config);
         }
-        $property = new Property($config);
-        $this->properties[$property->name] = $property;
+
+        return $this->properties[$property->getName()] = $property;
     }
 
 
@@ -63,13 +128,9 @@ class Model
 
     function removeIndex(Index $index)
     {
-        foreach($this->indexes as $k => $v) {
-            if($v == $index) {
-                unset($this->indexes[$k]);
-                $this->indexes = array_values($this->indexes);
-                break;
-            }
-        }
+        $key = array_search($index, $this->indexes);
+        unset($this->indexes[$key]);
+        $this->indexes = array_values($this->indexes);
     }
 
     function listIndexes()
@@ -77,9 +138,9 @@ class Model
         return $this->indexes;
     }
 
-    function createBehaviour($nick, $configuration = array())
+    function addBehaviour($nick, $configuration = array())
     {
-        return $this->behaviours[$nick] = BehaviourFactory::createInstance($nick, $configuration);;
+        return $this->behaviours[$nick] = Behaviour::create($this, $nick, $configuration);
     }
 
     function hasBehaviour($nick) 
@@ -90,6 +151,14 @@ class Model
     function getBehaviour($nick) 
     {
         return isset($this->behaviours[$nick]) ? $this->behaviours[$nick] : null;
+    }
+
+    function removeBehaviour($nick)
+    {
+        if(!$this->hasBehaviour($nick)) {
+            throw new Exception(sprintf('Behaviour %s not found!', $nick));
+        }
+        unset($this->behaviours[$nick]);
     }
 
     function hasOne($parent)
@@ -115,78 +184,40 @@ class Model
         $this->links[$alias] = $parent;
     }
 
-    public function __call($name, $params)
+    public function getPk()
     {
-        $behaviour = $this->findBehaviourForMethod($name);
-        $instance = $behaviour ? $behaviour : $this;
-        if(!method_exists($instance, $name)) {
-            throw new Exception("Unknown method $name");
-        }
-        return call_user_func_array(array($instance, $name), $params);
-    }
-
-    protected function findBehaviourForMethod($name) 
-    {
-        $found = array();
+        $pk = $this->pk;
         foreach($this->behaviours as $behaviour) {
-            if(method_exists($behaviour, $name)) {
-                $found[] = $behaviour;
-            }
-        }
-        if(count($found) > 1) {
-            throw new Exception("Behaviour conflict for ". implode(' and ', $found));
-        }
-        return count($found) ? $found[0] : null;
-    }
-
-    protected function hasVirtualPk()
-    {
-        return !count($this->pk) && !$this->findBehaviourForMethod('getPk') && !$this->findBehaviourForMethod('hasVirtualPk');
-    }
-
-    protected function getPk()
-    {
-        $pk = $this->getModelPk();
-        foreach($this->behaviours as $behaviour) {
-            if(method_exists($behaviour, 'getAdditionalPk')) {
-                foreach ($behaviour->getAdditionalPk() as $key) {
-                    $pk[] = $key;
+            foreach($behaviour->getPk() as $field) {
+                if(!in_array($field, $pk)) {
+                    $pk[] = $field;
                 }
             }
         }
         return $pk;
     }
 
-    protected function getModelPk()
+    public function getProperties()
     {
-        return $this->hasVirtualPk() ? array('id_' . $this->name) : $this->pk;
-    }
+        $first = $this->getPk();
 
-    protected function getProperties()
-    {
         $properties = $this->properties;
 
-        if($this->hasVirtualPk()) {
-            $properties['id_' . $this->name] = $this->getProperty('id_'.$this->name);
-        }
-
         foreach($this->behaviours as $behaviour) {
-            if(method_exists($behaviour, 'getAdditionalProperties')) {
-                foreach($behaviour->getAdditionalProperties() as $property) {
-                    if(isset($properties[$property->name])) {
-                        throw new Exception(sprintf("Duplicate property %s.%s", $this->name, $property->name));
-                    }
-                    $properties[$property->name] = $property;
+            foreach($behaviour->getProperties() as $property) {
+                if(isset($properties[$property->name])) {
+                    throw new Exception(sprintf("Duplicate property %s.%s", $this->name, $property->name));
                 }
+                $properties[$property->name] = $property;
             }
         }
 
         $pk = $other = array();
         foreach($properties as $property) {
-            if($property->primary) {
-                $pk[$property->name] = $property;
+            if(in_array($property->getName(), $first)) {
+                $pk[$property->getName()] = $property;
             } else {
-                $other[$property->name] = $property;
+                $other[$property->getName()] = $property;
             }
         }
 
@@ -200,48 +231,112 @@ class Model
         return $properties;
     }
 
-    protected function getProperty($name)
+    public function getProperty($name)
     {
-        if($name == 'id_' . $this->name && $this->hasVirtualPk()) {
-            if(isset($this->pk_field)) {
-                return $this->pk_field;
-            }
-            return $this->pk_field = new Property(array(
-                'name' => 'id_' . $this->name, 
-                'comment' => 'id_' . $this->name,
-                'primary' => true,
-            ));
+        if(isset($this->properties[$name])) {
+            return $this->properties[$name];
         }
 
-        if(!isset($this->properties[$name])) {
-            foreach ($this->behaviours as $behaviour) {
-                if(method_exists($behaviour, 'getAdditionalProperty')) {
-                    $property = $behaviour->getAdditionalProperty($name);
-                    if($property) {
-                        return $property;
-                    }
-                }
+        foreach ($this->behaviours as $behaviour) {
+            $property = $behaviour->getProperty($name);
+            if($property) {
+                return $property;
             }
         }
-
-        return $this->properties[$name];
     }
 
-    public function hasOwnQuery()
+    public function addReference($relation)
     {
-        if(count($this->indexes)) {
-            return true;
-        }
-
-        // todo check user defined query
+        $this->references[] = $relation;
     }
 
-    public function getQueryClass() 
+    /**
+     * @return \Cti\Storage\Behaviour\Behaviour[]
+     */
+    public function getBehaviours()
     {
-        if($this->hasOwnQuery()) {
-            // todo check user defined query
-            return 'Storage\Query\\' . $this->class_name .'Select';
-        }
-        return 'Cti\Storage\Query\Select';
+        return $this->behaviours;
     }
+
+    /**
+     * @return string
+     */
+    public function getClassName()
+    {
+        return $this->class_name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClassNameMany()
+    {
+        return $this->class_name_many;
+    }
+
+    /**
+     * @return string
+     */
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    /**
+     * @return \Cti\Storage\Component\Index[]
+     */
+    public function getIndexes()
+    {
+        return $this->indexes;
+    }
+
+    /**
+     * @return \Cti\Storage\Component\Model[]
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModelClass()
+    {
+        return $this->model_class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return \Cti\Storage\Component\Relation[]
+     */
+    public function getReferences()
+    {
+        return $this->references;
+    }
+
+    /**
+     * @return \Cti\Storage\Component\Relation[]
+     */
+    public function getRelations()
+    {
+        return $this->relations;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRepositoryClass()
+    {
+        return $this->repository_class;
+    }
+
+
 }

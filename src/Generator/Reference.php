@@ -38,7 +38,7 @@ PROPERTY;
 
         if($this->schema->getModel($reference->source)->hasBehaviour('link')) {
             $link = $this->schema->getModel($reference->source);
-            $foreign = $link->getForeignModel($destination);
+            $foreign = $link->getBehaviour('link')->getForeignModel($destination);
             foreach($link->relations as $relation) {
                 if($relation->destination == $foreign->name) {
                     break;
@@ -97,7 +97,7 @@ PROPERTY;
 
         if($this->schema->getModel($reference->source)->hasBehaviour('link')) {
             $link = $this->schema->getModel($reference->source);
-            $foreign = $link->getForeignModel($destination);
+            $foreign = $link->getBehaviour('link')->getForeignModel($destination);
             foreach($link->relations as $relation) {
                 if($relation->destination == $foreign->name) {
                     break;

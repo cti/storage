@@ -8,7 +8,7 @@ use Cti\Storage\Component\Property;
 class Master
 {
     /**
-     * @var Cti\Storage\Schema
+     * @var \Cti\Storage\Schema
      */
     public $schema;
 

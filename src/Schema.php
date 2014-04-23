@@ -127,14 +127,14 @@ class Schema
                 'comment' => $name
             )
         );
-        
-        $link->createBehaviour('link', array(
+
+        $link->addBehaviour('link', array(
             'list' => $list
         ));
 
         foreach($mapping as $alias => $model) {
             if($model->hasBehaviour('log') && !$link->hasBehaviour('log')) {
-                $link->createBehaviour('log');
+                $link->addBehaviour('log');
             }
 
             $link->hasOne($model)->usingAlias($alias)->referencedBy($name);

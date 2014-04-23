@@ -57,14 +57,14 @@ class GenerateFiles extends Command
                 ))
             );
 
-            if($model->hasOwnQuery()) {
-                $fs->dumpFile(
-                    $this->application->getPath('build php Storage Query ' . $model->class_name . 'Select.php'), 
-                    $this->application->getManager()->create('Cti\Storage\Generator\Select', array(
-                        'model' => $model
-                    ))
-                );
-            }
+//            if($model->hasOwnQuery()) {
+//                $fs->dumpFile(
+//                    $this->application->getPath('build php Storage Query ' . $model->class_name . 'Select.php'),
+//                    $this->application->getManager()->create('Cti\Storage\Generator\Select', array(
+//                        'model' => $model
+//                    ))
+//                );
+//            }
         }
     }
 }

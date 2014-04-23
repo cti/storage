@@ -18,7 +18,7 @@ class Test_20140421_171425
         ));
 
         $person->createIndex('login');
-        $person->createBehaviour('log');
+        $person->addBehaviour('log');
 
         $module = $schema->createModel('module', 'Модуль', array(
             'name' => 'Наименование'

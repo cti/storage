@@ -8,17 +8,17 @@ class Property
 {
     /**
      * @inject
-     * @var Cti\Storage\Schema
+     * @var \Cti\Storage\Schema
      */
     public $schema;
 
     /**
-     * @var Cti\Storage\Component\Property
+     * @var \Cti\Storage\Component\Property
      */
     public $property;
 
     /**
-     * @var Cti\Storage\Component\Model
+     * @var \Cti\Storage\Component\Model
      */
     public $model;
 

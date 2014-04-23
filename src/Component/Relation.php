@@ -6,14 +6,35 @@ use Cti\Storage\Schema;
 
 class Relation
 {
-    public $source;
-    public $destination;
+    /**
+     * @var string
+     */
+    protected $source;
 
-    public $destination_alias;
-    public $referenced_by;
+    /**
+     * @var string
+     */
+    protected $destination;
 
-    public $strategy = 'merge';
-    public $properties = array();
+    /**
+     * @var string
+     */
+    protected $destination_alias;
+
+    /**
+     * @var string
+     */
+    protected $referenced_by;
+
+    /**
+     * @var string
+     */
+    protected $strategy = 'merge';
+
+    /**
+     * @var Property[]
+     */
+    protected $properties = array();
 
     function __construct($source, $destination)
     {
@@ -49,23 +70,67 @@ class Relation
 
         foreach($destination->getPk() as $key) {
             $property = $destination->getProperty($key);
-            if(!$property->behaviour) {
-                $name = $this->destination_alias != $this->destination ? $key . '_' . $this->destination_alias : $key;
-                $this->properties[$name] = $source->properties[$name] = new Property(array(
+            if(!$property->getBehaviour()) {
+                $name = $this->getDestinationAlias() != $this->getDestination() ? $key . '_' . $this->getDestinationAlias(): $key;
+                $this->properties[$name] = $source->addProperty($name, new Property(array(
                     'name' => $name,
                     'foreignName' => $key,
-                    'comment' => $this->destination_alias.' link',
-                    'type' => $property->type,
+                    'comment' => $this->getDestinationAlias().' link',
+                    'type' => $property->getType(),
                     'relation' => $this,
                     'readonly' => true,
-                ));
-
-                if(!$source->hasVirtualPk()) {
-                    $source->pk[] = $name;
-                }
+                )));
             }
         }
 
-        $destination->references[] = $this;
+        $destination->addReference($this);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDestination()
+    {
+        return $this->destination;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDestinationAlias()
+    {
+        return $this->destination_alias;
+    }
+
+    /**
+     * @return \Cti\Storage\Component\Property[]
+     */
+    public function getProperties()
+    {
+        return $this->properties;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReferencedBy()
+    {
+        return $this->referenced_by;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSource()
+    {
+        return $this->source;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStrategy()
+    {
+        return $this->strategy;
     }
 }
