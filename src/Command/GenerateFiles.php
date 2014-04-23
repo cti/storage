@@ -2,6 +2,7 @@
 
 namespace Cti\Storage\Command;
 
+use Cti\Storage\Schema;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,7 +14,7 @@ class GenerateFiles extends Command
 {
     /**
      * @inject
-     * @var Cti\Core\Application
+     * @var \Cti\Core\Application
      */
     protected $application;
 
@@ -27,6 +28,9 @@ class GenerateFiles extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /**
+         * @var $schema Schema
+         */
         $schema = $this->application->getSchema();
 
         $fs = new Filesystem();
@@ -37,8 +41,8 @@ class GenerateFiles extends Command
             ))
         );
 
-        foreach($schema->models as $model) {
-            
+        foreach($schema->getModels() as $model) {
+
             $fs->dumpFile(
                 $this->application->getPath('build php Storage Model ' . $model->class_name . 'Base.php'), 
                 $this->application->getManager()->create('Cti\Storage\Generator\Model', array(

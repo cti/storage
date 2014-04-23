@@ -15,28 +15,59 @@ class Schema
 {
     /**
      * @inject
-     * @var Cti\Core\Application
+     * @var \Cti\Di\Manager
+     */
+    protected $manager;
+
+    /**
+     * @inject
+     * @var \Cti\Core\Application
      */
     protected $application;
 
-    public $models = array();
+    /**
+     * model list
+     * @var array[Model]
+     */
+    protected $models = array();
 
-    function init($dump = null)
+    function init()
     {
         $this->processMigrations();
-        $this->processRelation();
+        $this->completeRelations();
     }
 
+    /**
+     * Create new model
+     * @param $name
+     * @param $comment
+     * @param array $properties
+     * @return Model
+     */
     public function createModel($name, $comment, $properties = array())
     {
-        return $this->models[$name] = $this->application->getManager()->create('Cti\Storage\Component\Model', array(
-                'name' => $name, 
+        return $this->models[$name] = $this->manager->create('Cti\Storage\Component\Model', array(
+                'name' => $name,
                 'comment' => $comment, 
                 'properties' => $properties
             )
         );
     }
 
+    /**
+     * @return Model[]
+     */
+    public function getModels()
+    {
+        return $this->models;
+    }
+
+
+    /**
+     * @param string $name
+     * @return Component\Model
+     * @throws \Exception
+     */
     public function getModel($name)
     {
         if(!isset($this->models[$name])) {
@@ -45,6 +76,11 @@ class Schema
         return $this->models[$name];
     }
 
+    /**
+     * @param array[Model] $list
+     * @return Model
+     * @throws \Exception
+     */
     public function createLink($list)
     {
         if($list instanceof Model) {
@@ -108,6 +144,9 @@ class Schema
         return $this->models[$name] = $link;
     }
 
+    /**
+     * process migrations from filesystem
+     */
     function processMigrations()
     {
         $filesystem = new Filesystem;
@@ -143,7 +182,10 @@ class Schema
         }
     }
 
-    function processRelation()
+    /**
+     * complete relation
+     */
+    function completeRelations()
     {
         foreach($this->models as $model) {
             foreach($model->relations as $relation) {

@@ -24,8 +24,7 @@ class Master
         $result .= '{' . PHP_EOL;
 
         $result .= $this->renderHeader();
-
-        foreach($this->schema->models as $model) {
+        foreach($this->schema->getModels() as $model) {
             $result .= $this->renderRepositoryGetter($model);
         }
         $result .= $this->renderFooter();
@@ -80,7 +79,7 @@ COMMENT;
     protected function renderFooter()
     {
         $map = '';
-        foreach($this->schema->models as $model) {
+        foreach($this->schema->getModels() as $model) {
             $map .= "            '" . $model->name."' => 'get" . $model->class_name_many."'," . PHP_EOL;
         }
 
