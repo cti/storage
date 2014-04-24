@@ -33,9 +33,12 @@ class Model
                 sprintf('use Storage\\Repository\\%sRepository as Repository;', $model->getClassName())
             );
 
+            $properties = array();
+            $references = array();
+
             // last contains relation properties
             $last = array();
-            $properties = array();
+
             foreach($model->getProperties() as $property) {
                 $generator = $this->application->getManager()->create('Cti\Storage\Generator\Property', array(
                     'model' => $model, 
@@ -58,6 +61,7 @@ class Model
             foreach($last as $generator) {
                 $properties[] = $generator;
             }
+
 
             foreach ($model->getReferences() as $reference) {
                 $references[] = $this->application->getManager()->create('Cti\Storage\Generator\Reference', array(

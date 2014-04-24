@@ -44,14 +44,6 @@ class GenerateFiles extends Command
 
         foreach($schema->getModels() as $model) {
 
-//            if($model->getName() == 'person_favorite_module_link') {
-//echo                 $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
-//    'model' => $model
-//))
-//;
-//                die;
-//            }
-
             $fs->dumpFile(
                 $this->application->getPath('build php Storage Model ' . $model->getClassName() . 'Base.php'),
                 $this->application->getManager()->create('Cti\Storage\Generator\Model', array(

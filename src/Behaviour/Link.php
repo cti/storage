@@ -36,11 +36,38 @@ class Link extends Behaviour
         $result = array();
         foreach($this->list as $model) {
             foreach($model->getPk() as $field) {
-                if(!in_array($field, $result)) {
-                    $result[] = $field;
+
+                if($model->getProperty($field)->getBehaviour()) {
+                    continue;
                 }
+
+                if(in_array($field, $result)) {
+                    continue;
+                }
+
+                $result[] = $field;
             }
         }
         return $result;
     }
+
+    function getProperties()
+    {
+        $properties = array();
+        foreach($this->getPk() as $field) {
+            $properties[] = $this->getProperty($field);
+        }
+        return $properties;
+    }
+
+    function getProperty($name)
+    {
+        foreach($this->list as $model) {
+            if($model->hasProperty($name)) {
+                return $model->getProperty($name);
+            }
+        }
+    }
+
+
 }

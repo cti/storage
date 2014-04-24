@@ -95,33 +95,6 @@ class Model
     }
 
     /**
-     * @param $name
-     * @param $config
-     * @return Property
-     */
-    public function addProperty($name, $config)
-    {
-        if($config instanceof Property) {
-            $property = $config;
-
-        } else {
-            if (is_string($config)) {
-                $config = array('name' => $name, 'comment' => $config);
-            } elseif (is_array($config) && !is_numeric($name)) {
-                if(isset($config[0])) {
-                    array_unshift($config, $name);
-                } else {
-                    $config['name'] = $name;
-                }
-            }
-            $property = new Property($config);
-        }
-
-        return $this->properties[$property->getName()] = $property;
-    }
-
-
-    /**
      * @param string $field
      * @return Index
      */
@@ -239,6 +212,32 @@ class Model
     }
 
     /**
+     * @param $name
+     * @param $config
+     * @return Property
+     */
+    public function addProperty($name, $config)
+    {
+        if($config instanceof Property) {
+            $property = $config;
+
+        } else {
+            if (is_string($config)) {
+                $config = array('name' => $name, 'comment' => $config);
+            } elseif (is_array($config) && !is_numeric($name)) {
+                if(isset($config[0])) {
+                    array_unshift($config, $name);
+                } else {
+                    $config['name'] = $name;
+                }
+            }
+            $property = new Property($config);
+        }
+
+        return $this->properties[$property->getName()] = $property;
+    }
+
+    /**
      * @return Property[]
      * @throws \Exception
      */
@@ -292,6 +291,28 @@ class Model
                 return $property;
             }
         }
+
+        throw new Exception(sprintf('Model %s has not property %s', $this->getName(), $name));
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function hasProperty($name)
+    {
+        if(isset($this->properties[$name])) {
+            return true;
+        }
+
+        foreach ($this->behaviours as $behaviour) {
+            $property = $behaviour->getProperty($name);
+            if($property) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
