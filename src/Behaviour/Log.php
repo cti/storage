@@ -11,13 +11,13 @@ class Log extends Behaviour
     {
         $this->properties = array(
             'v_start' => new Property(array(
-                'behaviour' => true,
+                'behaviour' => $this,
                 'name' => 'v_start',
                 'type' => 'timestamp',
                 'primary' => true,
             )),
             'v_end' => new Property(array(
-                'behaviour' => true,
+                'behaviour' => $this,
                 'name' => 'v_end',
                 'type' => 'timestamp',
                 'readonly' => true

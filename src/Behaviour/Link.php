@@ -37,7 +37,7 @@ class Link extends Behaviour
         foreach($this->list as $model) {
             foreach($model->getPk() as $field) {
 
-                if($model->getProperty($field)->getBehaviour()) {
+                if($model->getProperty($field)->getBehaviour() instanceof Log) {
                     continue;
                 }
 
