@@ -56,7 +56,7 @@ HEADER;
         return <<<GETTER
     /**
      * Get $class_name repository
-     * @return \\$repository_class
+     * @return $repository_class
      */
     public function get{$class_name_many}()
     {

@@ -13,8 +13,8 @@ class Test_20140421_171425
     {
         $person = $schema->createModel('person', 'Пользователь', array(
             'login' => 'Имя пользователя',
-            'salt' => 'Соль для вычисления хэша',
-            'hash' => 'Полученный хэш',
+            'salt'  => 'Соль для вычисления хэша',
+            'hash'  => 'Полученный хэш',
         ));
 
         $person->createIndex('login');
@@ -32,7 +32,7 @@ class Test_20140421_171425
 
         $favorite_module->addProperty('rating', array(
             'comment' => 'Рейтинг', 
-            'type' =>  'integer'
+            'type'    =>  'integer'
         ));
 
         // module developers link

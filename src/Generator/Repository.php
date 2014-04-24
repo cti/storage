@@ -71,20 +71,20 @@ class Repository
 
     /**
      * Create new $class instance
-     * @param  array  \$data
+     * @param array \$data
      * @return $model_class
      */
     public function create(\$data = array())
     {
         return \$this->manager->create('$model_class', array(
             'repository' => \$this,
-            'data' => \$data
+            'data'       => \$data
         ));
     }
 
     /**
      * Get Master instance
-     * @return Storage\Master
+     * @return \Storage\Master
      */
     public function getMaster()
     {

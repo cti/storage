@@ -73,7 +73,7 @@ class Model
 
             $header = array(
                 '<?php',
-                'namespace Cti\Storage\\Model;',
+                'namespace Storage\\Model;',
                 implode(PHP_EOL, $usage),
                 $this->renderComment(). PHP_EOL . 'class '.$model->getClassName() . 'Base'.PHP_EOL,
             );
@@ -124,6 +124,7 @@ COMMENT;
 
     public function renderConstructor()
     {
+        $name = $this->model->getName();
         $repository_class = $this->model->getRepositoryClass();
         return <<<BASE
     /**
@@ -138,6 +139,11 @@ COMMENT;
      */
     protected \$_changes = array();
 
+    /**
+     * create new $name
+     * @param $repository_class \$repository
+     * @param array \$data
+     */
     public function __construct(Repository \$repository, \$data = array())
     {
         \$this->_repository = \$repository;

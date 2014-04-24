@@ -16,6 +16,7 @@ class Id extends Behaviour
             $this->name => new Property(array(
                 'behaviour' => true,
                 'name' => $this->name,
+                'comment' => 'identifier',
                 'type' => 'integer',
                 'primary' => true,
             ))

@@ -78,8 +78,8 @@ class Model
         $this->name_many = String::pluralize($this->name);
         $this->class_name = String::convertToCamelCase($this->name);
         $this->class_name_many = String::pluralize($this->class_name);
-        $this->repository_class = 'Storage\Repository\\' . $this->class_name . 'Repository';
-        $this->model_class = 'Storage\Model\\' . $this->class_name . 'Base';
+        $this->repository_class = '\\Storage\Repository\\' . $this->class_name . 'Repository';
+        $this->model_class = '\\Storage\Model\\' . $this->class_name . 'Base';
         
         if(count($this->properties)) {
             $properties = $this->properties;
