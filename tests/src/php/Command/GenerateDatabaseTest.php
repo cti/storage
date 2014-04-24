@@ -6,7 +6,8 @@ class GenerateDatabaseTest extends \PHPUnit_Framework_TestCase
 {
     public function testSchemaConverter()
     {
-        return $this->assertTrue(true);
+        $this->markTestSkipped();
+
         $application = include __DIR__ . '/../../../resources/php/app.php';
         /**
          * @var $schema \Cti\Storage\Schema
