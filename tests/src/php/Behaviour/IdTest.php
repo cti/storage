@@ -19,7 +19,9 @@ class IdTest extends \PHPUnit_Framework_TestCase
         ));
 
         $test->addProperty('name', array('type' => 'string'));
-        $test->addBehaviour('id');
+        
+        // behaviour id added by default
+        // $test->addBehaviour('id');
 
         $this->assertSame($test->getPk(), array('id_test'));
         $this->assertCount(2, $test->getProperties());
