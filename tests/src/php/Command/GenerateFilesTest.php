@@ -10,7 +10,7 @@ class GenerateFilesTest extends \PHPUnit_Framework_TestCase
 {
     function testMaster()
     {
-        $application = include __DIR__ . '/../resources/php/app.php';
+        $application = include __DIR__ . '/../../../resources/php/app.php';
         $generator = $application->getConsole()->find('generate:files');
 
 

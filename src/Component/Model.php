@@ -73,6 +73,11 @@ class Model
      */
     protected $links = array();
 
+    /**
+     * @var \Cti\Core\Application
+     */
+    protected $application;
+
     function init()
     {
         $this->name_many = String::pluralize($this->name);
@@ -80,7 +85,11 @@ class Model
         $this->class_name_many = String::pluralize($this->class_name);
         $this->repository_class = '\\Storage\Repository\\' . $this->class_name . 'Repository';
         $this->model_class = '\\Storage\Model\\' . $this->class_name . 'Base';
-        
+
+        if(class_exists('Model\\' . $this->class_name)) {
+            $this->model_class = 'Model\\' . $this->class_name;
+        }
+
         if(count($this->properties)) {
             $properties = $this->properties;
             $this->properties = array();

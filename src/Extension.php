@@ -15,11 +15,10 @@ class Extension
 
         $console = $application->getConsole();
         foreach($this->getClasses('Command') as $class) {
-            $console->add($application->getManager()->get("Cti\Storage\\$class"));
+            $console->add($application->getManager()->get("Cti\\Storage\\$class"));
         }
 
         $application->register('schema', 'Cti\Storage\Schema');
-        $application->register('storage', 'Storage\Storage');
     }
 
     /**
