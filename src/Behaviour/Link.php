@@ -15,6 +15,12 @@ class Link extends Behaviour
     function init(Model $model)
     {
         $model->removeBehaviour('id');
+
+        foreach ($this->list as $foreign) {
+            if ($foreign->hasBehaviour('log') && !$model->hasBehaviour('log')) {
+                $model->addBehaviour('log');
+            }
+        }
     }
 
 
@@ -24,24 +30,26 @@ class Link extends Behaviour
      */
     function getForeignModel(Model $model)
     {
-        foreach($this->list as $variant) {
-            if($variant != $model) {
-                return $variant;
-            }
+        $models = array_values($this->list);
+        if ($models[0] == $model) {
+            return $models[1];
         }
+        return $models[0];
     }
 
     function getPk()
     {
         $result = array();
-        foreach($this->list as $model) {
-            foreach($model->getPk() as $field) {
+        foreach ($this->list as $model) {
+            foreach ($model->getPk() as $field) {
 
-                if($model->getProperty($field)->getBehaviour() instanceof Log) {
+                // log behaviour must be copied in init
+                // so link model has own log property
+                if ($model->getProperty($field)->getBehaviour() instanceof Log) {
                     continue;
                 }
 
-                if(in_array($field, $result)) {
+                if (in_array($field, $result)) {
                     continue;
                 }
 
@@ -54,7 +62,7 @@ class Link extends Behaviour
     function getProperties()
     {
         $properties = array();
-        foreach($this->getPk() as $field) {
+        foreach ($this->getPk() as $field) {
             $properties[] = $this->getProperty($field);
         }
         return $properties;
@@ -62,9 +70,11 @@ class Link extends Behaviour
 
     function getProperty($name)
     {
-        foreach($this->list as $model) {
-            if($model->hasProperty($name)) {
-                return $model->getProperty($name);
+        if (in_array($name, $this->getPk())) {
+            foreach ($this->list as $model) {
+                if ($model->hasProperty($name)) {
+                    return $model->getProperty($name);
+                }
             }
         }
     }

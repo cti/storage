@@ -217,6 +217,7 @@ class Model
                 }
             }
         }
+        sort($pk);
         return $pk;
     }
 

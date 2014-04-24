@@ -133,10 +133,6 @@ class Schema
         ));
 
         foreach($mapping as $alias => $model) {
-            if($model->hasBehaviour('log') && !$link->hasBehaviour('log')) {
-                $link->addBehaviour('log');
-            }
-
             $link->hasOne($model)->usingAlias($alias)->referencedBy($name);
             $model->registerLink($link, $relation[$alias]);
         }
