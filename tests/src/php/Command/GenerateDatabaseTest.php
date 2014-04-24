@@ -8,7 +8,7 @@ class GenerateDatabaseTest extends \PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped();
 
-        $application = include __DIR__ . '/../../../resources/php/app.php';
+        $application = getApplication();
         /**
          * @var $schema \Cti\Storage\Schema
          */

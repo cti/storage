@@ -11,12 +11,10 @@ class LinkTest extends \PHPUnit_Framework_TestCase
      */
     function testLinking()
     {
-        $application = include __DIR__ . '../../../../resources/php/app.php';
-
         /**
          * @var Schema $schema
          */
-        $schema = $application->getSchema();
+        $schema = getApplication()->getSchema();
 
         $link = $schema->getModel('person_favorite_module_link');
 

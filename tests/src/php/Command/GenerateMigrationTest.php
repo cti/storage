@@ -11,7 +11,7 @@ class GenerateMigrationTest extends \PHPUnit_Framework_TestCase
 {
     function testGenerator()
     {
-        $application = include __DIR__ . '/../../../resources/php/app.php';
+        $application = getApplication();
         $migration = $application->getConsole()->find('generate:migration');
 
         $input = new ArrayInput(array(
