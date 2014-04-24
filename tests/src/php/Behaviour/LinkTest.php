@@ -22,5 +22,8 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($link->hasBehaviour('link'));
         $this->assertSame($link->getPk(), array('id_person', 'id_module', 'v_end'));
+
+        $foreignModel = $link->getBehaviour('link')->getForeignModel($schema->getModel('person'));
+        $this->assertSame($foreignModel, $schema->getModel('module'));
     }
 }
