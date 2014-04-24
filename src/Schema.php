@@ -171,7 +171,7 @@ class Schema
             
             $filesystem->copy($file->getRealPath(), $migrations . DIRECTORY_SEPARATOR . $class_name . '.php');
 
-            if(!class_exists($class_name)) {
+            if(!class_exists($class)) {
                 include $file->getRealPath();
             }
             $this->application->getManager()->get($class)->process($this);
