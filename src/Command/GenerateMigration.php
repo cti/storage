@@ -14,7 +14,7 @@ class GenerateMigration extends Command
 {
     /**
      * @inject
-     * @var Cti\Core\Application
+     * @var \Cti\Core\Application
      */
     protected $application;
 
