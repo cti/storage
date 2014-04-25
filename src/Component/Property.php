@@ -153,7 +153,7 @@ class Property
     }
 
     /**
-     * @return boolean
+     * @return \Cti\Storage\Behaviour\Behaviour
      */
     public function getBehaviour()
     {

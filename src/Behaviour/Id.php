@@ -19,6 +19,7 @@ class Id extends Behaviour
                 'comment' => 'identifier',
                 'type' => 'integer',
                 'primary' => true,
+                'required' => true,
             ))
         );
     }

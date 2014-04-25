@@ -28,15 +28,17 @@ class DBAL {
 
 
         foreach($inputSchema->getModels() as $model) {
-//            $table = $schema->createTable($model->name);
-//            foreach($model->getProperties() as $property) {
-                /**
-                 * @var $property \Cti\Storage\Component\Property
-                 */
-//                $table->addColumn($property->name, $property->type, array(
-//                    'comment' => $property->comment,
-//                ));
-//            }
+            $table = $schema->createTable($model->getName());
+            foreach($model->getProperties() as $property) {
+                $table->addColumn($property->getName(), $property->getType(), array(
+                    'comment' => $property->getComment(),
+                    'notnull' => $property->getRequired(),
+                ));
+            }
+            $table->setPrimaryKey($model->getPk());
+            foreach($model->getIndexes() as $index) {
+                $table->addIndex($index->getFields());
+            }
         }
         return $schema;
     }

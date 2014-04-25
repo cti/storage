@@ -7,12 +7,15 @@ use Cti\Storage\Schema;
 /**
  * Migration was generated at 21.04.2014 17:14:25
  */
-class Test_20140421_171425 
+class Test_20140421_171425
 {
     public function process(Schema $schema)
     {
         $person = $schema->createModel('person', 'Пользователь', array(
-            'login' => 'Имя пользователя',
+            'login' => array(
+                'comment' => 'Имя пользователя',
+                'required' => true,
+            ),
             'salt'  => 'Соль для вычисления хэша',
             'hash'  => 'Полученный хэш',
         ));
@@ -31,8 +34,10 @@ class Test_20140421_171425
         ));
 
         $favorite_module->addProperty('rating', array(
-            'comment' => 'Рейтинг', 
-            'type'    =>  'integer'
+            'comment' => 'Рейтинг',
+            'type'    =>  'integer',
+            'max' => 100,
+            'min' => 0,
         ));
 
         // module developers link

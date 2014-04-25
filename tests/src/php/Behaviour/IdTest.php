@@ -15,7 +15,7 @@ class IdTest extends \PHPUnit_Framework_TestCase
          */
         $test = $manager->create('Cti\Storage\Component\Model', array(
             'name'    => 'test',
-            'comment' => 'test'
+            'comment' => 'test',
         ));
 
         $test->addProperty('name', array('type' => 'string'));
@@ -30,6 +30,7 @@ class IdTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($id->getType(), 'integer');
         $this->assertSame($id->getComment(), 'identifier');
+        $this->assertSame($id->getRequired(), true, "Need to be notNull field");
     }
 }
  
