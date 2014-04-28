@@ -13,7 +13,7 @@ class Reference
     public $schema;
 
     /**
-     * @var \Cti\Storage\Component\Relation
+     * @var \Cti\Storage\Component\Reference
      */
     public $reference;
 
@@ -45,7 +45,7 @@ PROPERTY;
         if($this->schema->getModel($reference->getSource())->hasBehaviour('link')) {
             $link = $this->schema->getModel($reference->getSource());
             $foreign = $link->getBehaviour('link')->getForeignModel($destination);
-            foreach($link->getRelations() as $relation) {
+            foreach($link->getOutReferences() as $relation) {
                 if($relation->getDestination() == $foreign->getName()) {
                     break;
                 }
@@ -107,7 +107,7 @@ PROPERTY;
         if($this->schema->getModel($source_name)->hasBehaviour('link')) {
             $link = $this->schema->getModel($source_name);
             $foreign = $link->getBehaviour('link')->getForeignModel($destination);
-            foreach($link->getRelations() as $relation) {
+            foreach($link->getOutReferences() as $relation) {
                 if($relation->getDestination() == $foreign->getName()) {
                     break;
                 }

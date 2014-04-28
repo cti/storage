@@ -53,11 +53,8 @@ class DBALTest extends \PHPUnit_Framework_TestCase
             foreach($table->getForeignKeys() as $key) {
                 $tableFKs[] = $key->getForeignTableName() . "-" . implode(':',$key->getColumns()) . "-" . implode(':', $key->getForeignColumns());
             }
-            foreach($model->getRelations() as $relation) {
-//                echo $model->getName() . PHP_EOL;
-//                print_r($relation->getProperties());
-//                $key = $relation->getDestination() . '-' . implode($relation->get)
-//                exit;
+            foreach($model->getReferences() as $relation) {
+
             }
         }
     }

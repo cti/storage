@@ -4,7 +4,7 @@ namespace Cti\Storage\Component;
 
 use Cti\Storage\Schema;
 
-class Relation
+class Reference
 {
     /**
      * @var string

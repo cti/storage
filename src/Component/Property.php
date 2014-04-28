@@ -233,7 +233,7 @@ class Property
     }
 
     /**
-     * @return Relation
+     * @return Reference
      */
     public function getRelation()
     {

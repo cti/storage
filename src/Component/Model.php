@@ -59,14 +59,12 @@ class Model
     protected $behaviours = array();
 
     /**
-     * @var Relation[]
+     * @var array
      */
-    protected $references = array();
-
-    /**
-     * @var Relation[]
-     */
-    protected $relations = array();
+    protected $references = array(
+        'in' => array(),
+        'out' => array(),
+    );
 
     /**
      * @var Model[]
@@ -174,14 +172,14 @@ class Model
 
     /**
      * @param mixed $parent
-     * @return Relation
+     * @return Reference
      */
     function hasOne($parent)
     {
         $parent_name = $parent instanceof Model ? $parent->name : $parent;
-        $relation = new Relation($this->name, $parent_name);
-        $this->relations[] = $relation;
-        return $relation;
+        $reference = new Reference($this->name, $parent_name);
+        $this->references['out'][] = $reference;
+        return $reference;
     }
 
     /**
@@ -336,12 +334,19 @@ class Model
     }
 
     /**
-     * @param $relation
+     * @param $reference \Cti\Storage\Component\Reference
      * @return Model
      */
-    public function addReference($relation)
+    public function addReference($reference)
     {
-        $this->references[] = $relation;
+        if ($reference->getSource() == $this->getName()) {
+            $this->references['out'][] = $reference;
+        } elseif ($reference->getDestination() == $this->getName()) {
+            $this->references['in'][] = $reference;
+        } else {
+            throw new \Exception("Invalid reference for model {$this->getName()}. Source: {$reference->getSource()},"
+                ." destination: {$reference->getDestination()}");
+        }
         return $this;
     }
 
@@ -410,19 +415,28 @@ class Model
     }
 
     /**
-     * @return \Cti\Storage\Component\Relation[]
+     * @return \Cti\Storage\Component\Reference[]
      */
     public function getReferences()
     {
-        return $this->references;
+        return array_merge($this->references['out'], $this->references['in']);
+    }
+
+
+    /**
+     * @return \Cti\Storage\Component\Reference[]
+     */
+    public function getOutReferences()
+    {
+        return $this->references['out'];
     }
 
     /**
-     * @return \Cti\Storage\Component\Relation[]
+     * @return \Cti\Storage\Component\Reference[]
      */
-    public function getRelations()
+    public function getInReferences()
     {
-        return $this->relations;
+        return $this->references['in'];
     }
 
     /**

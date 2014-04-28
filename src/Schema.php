@@ -193,7 +193,7 @@ class Schema
     function completeRelations()
     {
         foreach($this->models as $model) {
-            foreach($model->getRelations() as $relation) {
+            foreach($model->getReferences() as $relation) {
                 $relation->process($this);
             }
         }
