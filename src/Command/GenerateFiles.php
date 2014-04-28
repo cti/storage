@@ -42,20 +42,27 @@ class GenerateFiles extends Command
             ))
         );
 
-        foreach($schema->getModels() as $model) {
+        foreach($schema->getModels() as $repository) {
+
+            $path = $this->application->getPath('build php Storage Model ' . $repository->getClassName() . 'Base.php');
+            $model = $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
+                'model' => $repository
+            ));
+            $modelSource = (String)$model;
 
             $fs->dumpFile(
-                $this->application->getPath('build php Storage Model ' . $model->getClassName() . 'Base.php'),
-                $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
-                    'model' => $model
-                ))
+                $path,
+                $modelSource
             );
 
+            $path = $this->application->getPath('build php Storage Repository ' . $repository->getClassName() . 'Repository.php');
+            $repository = $this->application->getManager()->create('Cti\Storage\Generator\Repository', array(
+                'model' => $repository
+            ));
+            $repositorySource = (String)$repository;
             $fs->dumpFile(
-                $this->application->getPath('build php Storage Repository ' . $model->getClassName() . 'Repository.php'),
-                $this->application->getManager()->create('Cti\Storage\Generator\Repository', array(
-                    'model' => $model
-                ))
+                $path,
+                $repositorySource
             );
 
 //            if($model->hasOwnQuery()) {
