@@ -23,9 +23,15 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase
 
         $personOutReferences = $person->getOutReferences();
         $this->assertCount(1, $personOutReferences);
-        $this->assertEquals("person", $personOutReferences[0]->getSource());
-        $this->assertEquals("module", $personOutReferences[0]->getDestination());
-        $this->assertEquals("default_module", $personOutReferences[0]->getDestinationAlias());
+
+        $personOutReferences[0]->process($schema);
+        $outReference = $personOutReferences[0];
+        $this->assertEquals("person", $outReference->getSource());
+        $this->assertEquals("module", $outReference->getDestination());
+        $this->assertEquals("default_module", $outReference->getDestinationAlias());
+        $this->assertEquals('merge', $outReference->getStrategy());
+
+        // @todo Reference columns test
     }
 
 } 

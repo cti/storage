@@ -11,8 +11,16 @@
             <exclude>./tests/resources</exclude>
         </testsuite>
     </testsuites>
+    <filter>
+        <blacklist>
+            <directory>./vendor</directory>
+            <directory>./resources</directory>
+            <directory>./tests/resources</directory>
+            <file>./phpunit.php</file>
+        </blacklist>
+    </filter>
     <x-logging>
       <log type="coverage-html" target="build/coverage" charset="UTF-8"/>
-        <log type="coverage-clover" target="build/logs/clover.xml"/>
+        <!--<log type="coverage-clover" target="build/logs/clover.xml"/>-->
     </x-logging>
 </phpunit>

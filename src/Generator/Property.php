@@ -130,7 +130,7 @@ RELATION;
         $finder = array();
         $reader = array();
 
-        foreach($relation->properties as $property) {
+        foreach($relation->getProperties() as $property) {
 
             $clear[] = "\$this->" . $property->getSetter() . '(null);';
 

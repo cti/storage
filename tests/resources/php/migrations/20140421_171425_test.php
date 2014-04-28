@@ -51,6 +51,7 @@ class Test_20140421_171425
             ->hasOne('module')
             ->usingAlias('default_module')
             ->referencedBy('default_user')
+            ->setStrategy('merge')
         ;
 
         // module owner
