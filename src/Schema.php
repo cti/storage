@@ -54,6 +54,15 @@ class Schema
         );
     }
 
+    public function removeModel($name)
+    {
+        if (empty($this->models[$name])) {
+            throw new \Exception("Model $name not found in schema");
+        }
+        unset($this->models[$name]);
+    }
+
+
     /**
      * @return Model[]
      */

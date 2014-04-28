@@ -22,8 +22,6 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('string', $login->getType());
         $this->assertTrue($login->getRequired());
 
-//        $default_module = $model->getProperty('default_module');
-
         // type check
         $model = $schema->getModel('person_favorite_module_link');
         $rating = $model->getProperty('rating');
@@ -31,6 +29,22 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(100, $rating->getMax());
         $this->assertEquals(0, $rating->getMin());
         $this->assertFalse($rating->getPrimary());
+
+        $model->addProperty("test", array(
+            "comment" => 'test',
+            "type" => 'integer'
+        ));
+
+        // test property creation and removing
+        $property = $model->getProperty("test");
+        $this->assertNotEmpty($property);
+        $this->assertEquals("test", $property->getComment());
+        $this->assertEquals("integer", $property->getType());
+        $this->assertEquals($model, $property->getModel());
+
+        $model->removeProperty("test");
+        $this->setExpectedException("Exception");
+        $model->getProperty("test");
     }
 
 }

@@ -241,11 +241,21 @@ class Model
                     $config['name'] = $name;
                 }
             }
+            $config['model'] = $this;
             $property = new Property($config);
         }
 
         return $this->properties[$property->getName()] = $property;
     }
+
+    public function removeProperty($name)
+    {
+        if (empty($this->properties[$name])) {
+            throw new \Exception("Model {$this->getName()} doesn't have property $name");
+        }
+        unset($this->properties[$name]);
+    }
+
 
     /**
      * @return Property[]
