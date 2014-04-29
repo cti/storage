@@ -3,6 +3,7 @@
 namespace Cti\Storage\Behaviour;
 
 use Cti\Storage\Component\Model;
+use Cti\Storage\Component\Reference;
 
 class Link extends Behaviour
 {
@@ -12,11 +13,15 @@ class Link extends Behaviour
      */
     protected $list = array();
 
+    /**
+     * @var Reference[]
+     */
+    protected $references = array();
+
     function init(Model $model)
     {
         $model->removeBehaviour('id');
         $model->removeSequence();
-
         foreach ($this->list as $foreign) {
             if ($foreign->hasBehaviour('log') && !$model->hasBehaviour('log')) {
                 $model->addBehaviour('log');
@@ -24,6 +29,10 @@ class Link extends Behaviour
         }
     }
 
+    public function registerReference($modelName, $reference)
+    {
+        $this->references[$modelName] = $reference;
+    }
 
     /**
      * @param Model $model
@@ -54,7 +63,11 @@ class Link extends Behaviour
                     continue;
                 }
 
-                $result[] = $field;
+                // Take a reference to that model. We will receive real field's name.
+                $reference = $this->references[$model->getName()];
+                $name = $reference->getDestinationAlias() != $reference->getDestination() ? $field . '_' . $reference->getDestinationAlias(): $field;
+
+                $result[] = $name;
             }
         }
         return $result;
@@ -62,20 +75,26 @@ class Link extends Behaviour
 
     function getProperties()
     {
-        $properties = array();
-        foreach ($this->getPk() as $field) {
-            $properties[] = $this->getProperty($field);
-        }
-        return $properties;
+        return array();
     }
 
     function getProperty($name)
     {
         if (in_array($name, $this->getPk())) {
-            foreach ($this->list as $model) {
-                if ($model->hasProperty($name)) {
-                    return $model->getProperty($name);
+            foreach($this->references as $reference) {
+                $properties = $reference->getProperties();
+                if (isset($properties[$name])) {
+                    return $properties[$name];
                 }
+            }
+        }
+    }
+
+    public function makeReferencedFieldsRequired()
+    {
+        foreach($this->references as $reference) {
+            foreach($reference->getProperties() as $property) {
+                $property->setRequired(true);
             }
         }
     }

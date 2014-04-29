@@ -87,7 +87,7 @@ class Property
                 case 3:
                     $params = array('name' => $params[0], 'type' => $params[1], 'comment' => $params[2]);
                     break;
-                default: 
+                default:
                     throw new Exception("Error Processing property ");
             }
         }
@@ -120,7 +120,7 @@ class Property
 
         if (isset($params['setter'])) {
             $this->setter = $params['setter'];
-        } else {    
+        } else {
             $this->setter = 'set'.String::convertToCamelCase($this->name);
         }
 
@@ -262,6 +262,14 @@ class Property
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @param boolean $required
+     */
+    public function setRequired($required)
+    {
+        $this->required = $required;
     }
 
 

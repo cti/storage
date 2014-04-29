@@ -44,7 +44,7 @@ class Reference
     {
         $this->source = $source;
         $this->destination = $destination;
-        
+
         $this->referenced_by = $source;
         $this->destination_alias = $destination;
     }
@@ -73,7 +73,7 @@ class Reference
      * @param $strategy
      * @return $this
      */
-    function setStrategy($strategy) 
+    function setStrategy($strategy)
     {
         $this->strategy = $strategy;
         return $this;
@@ -90,7 +90,8 @@ class Reference
 
         foreach($destination->getPk() as $key) {
             $property = $destination->getProperty($key);
-            if(!$property->getBehaviour()) {
+            $behaviour = $property->getBehaviour();
+            if (!($behaviour instanceof \Cti\Storage\Behaviour\Log)) {
                 $name = $this->getDestinationAlias() != $this->getDestination() ? $key . '_' . $this->getDestinationAlias(): $key;
                 $this->properties[$name] = $source->addProperty($name, new Property(array(
                     'name' => $name,

@@ -31,7 +31,16 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("default_module", $outReference->getDestinationAlias());
         $this->assertEquals('merge', $outReference->getStrategy());
 
-        // @todo Reference columns test
+        $outReferenceProperties = $outReference->getProperties();
+        $this->assertCount(1, $outReferenceProperties);
+
+        $personModuleLink = $outReferenceProperties['id_module_default_module'];
+        $this->assertEquals('id_module', $personModuleLink->getForeignName());
+
+        $pfml = $schema->getModel("person_favorite_module_link");
+        foreach($pfml->getOutReferences() as $reference) {
+            // @todo Expand reference test
+        }
     }
 
 } 

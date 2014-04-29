@@ -137,13 +137,14 @@ class Schema
             )
         );
 
-        $link->addBehaviour('link', array(
+        $behaviour = $link->addBehaviour('link', array(
             'list' => $list
         ));
 
         foreach($mapping as $alias => $model) {
-            $link->hasOne($model)->usingAlias($alias)->referencedBy($name);
+            $reference = $link->hasOne($model)->usingAlias($alias)->referencedBy($name);
             $model->registerLink($link, $relation[$alias]);
+            $behaviour->registerReference($model->getName(), $reference);
         }
 
         return $this->models[$name] = $link;
@@ -193,8 +194,12 @@ class Schema
     function completeRelations()
     {
         foreach($this->models as $model) {
-            foreach($model->getReferences() as $relation) {
+            foreach($model->getOutReferences() as $relation) {
                 $relation->process($this);
+            }
+            $link = $model->getBehaviour('link');
+            if ($link) {
+                $link->makeReferencedFieldsRequired();
             }
         }
     }
