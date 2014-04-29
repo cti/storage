@@ -1,6 +1,6 @@
 {
-    "name": "cti/sandbox",
-    "description": "Sandbox module",
+    "name": "cti/storage",
+    "description": "Storage",
     "license": "MIT",
     "authors": [
         {

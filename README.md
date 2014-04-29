@@ -1,7 +1,20 @@
-# Sandbox
+# Storage
 
-[![License](https://poser.pugx.org/cti/saprfc/license.png)](https://packagist.org/packages/cti/saprfc)
-[![Build Status](https://travis-ci.org/cti/sandbox.png)](https://travis-ci.org/cti/sandbox)
-[![Coverage Status](https://coveralls.io/repos/cti/sandbox/badge.png?branch=master)](https://coveralls.io/r/cti/sandbox?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/cti/storage/v/stable.png)](https://packagist.org/packages/cti/storage)
+[![Total Downloads](https://poser.pugx.org/cti/storage/downloads.png)](https://packagist.org/packages/cti/storage)
+[![License](https://poser.pugx.org/cti/storage/license.png)](https://packagist.org/packages/cti/storage)
+[![Build Status](https://travis-ci.org/cti/storage.png)](https://travis-ci.org/cti/storage)
+[![Coverage Status](https://coveralls.io/repos/cti/storage/badge.png?branch=master)](https://coveralls.io/r/cti/storage?branch=master)
 
-This is sandbox, do not use it!
+Storage project is in beta.  
+Do not use it!
+
+# Installation
+Using composer.
+```json
+{
+    "require": {
+        "cti/storage": "*"    
+    }
+}
+```
