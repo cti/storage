@@ -459,9 +459,10 @@ class Model
 
     public function createSequence()
     {
-        if (!empty($this->getSequence())) {
+        if ((bool)$this->getSequence()) {
             throw new \Exception("Model {$this->getName()} already have sequence");
         }
+
         $sequence_name = "sq_" . $this->getName();
         $this->sequence = new Sequence($sequence_name, $this);
     }
