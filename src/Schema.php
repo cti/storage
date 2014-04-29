@@ -198,4 +198,17 @@ class Schema
             }
         }
     }
+
+    /**
+     * @return \Cti\Storage\Component\Sequence[]
+     */
+    public function getSequences()
+    {
+        $sequences = array();
+        foreach($this->getModels() as $model) {
+            $sequence = $model->getSequence();
+            $sequences[$sequence->getName()] = $sequence;
+        }
+        return $sequences;
+    }
 }

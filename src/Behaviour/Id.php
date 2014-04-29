@@ -22,6 +22,9 @@ class Id extends Behaviour
                 'required' => true,
             ))
         );
+        if (!$model->getSequence()) {
+            $model->createSequence();
+        }
     }
 
     public function getPk()

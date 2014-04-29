@@ -76,6 +76,11 @@ class Model
      */
     protected $application;
 
+    /**
+     * @var \Cti\Storage\Component\Sequence
+     */
+    protected $sequence;
+
     function init()
     {
         $this->name_many = String::pluralize($this->name);
@@ -446,6 +451,21 @@ class Model
     {
         return $this->repository_class;
     }
+
+    public function getSequence()
+    {
+        return $this->sequence;
+    }
+
+    public function createSequence()
+    {
+        if (!empty($this->getSequence())) {
+            throw new \Exception("Model {$this->getName()} already have sequence");
+        }
+        $sequence_name = "sq_" . $this->getName();
+        $this->sequence = new Sequence($sequence_name, $this);
+    }
+
 
 
 }
