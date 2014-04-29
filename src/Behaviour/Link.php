@@ -15,6 +15,7 @@ class Link extends Behaviour
     function init(Model $model)
     {
         $model->removeBehaviour('id');
+        $model->removeSequence();
 
         foreach ($this->list as $foreign) {
             if ($foreign->hasBehaviour('log') && !$model->hasBehaviour('log')) {

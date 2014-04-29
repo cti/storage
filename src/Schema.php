@@ -207,7 +207,9 @@ class Schema
         $sequences = array();
         foreach($this->getModels() as $model) {
             $sequence = $model->getSequence();
-            $sequences[$sequence->getName()] = $sequence;
+            if ($sequence) {
+                $sequences[$sequence->getName()] = $sequence;
+            }
         }
         return $sequences;
     }

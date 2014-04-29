@@ -22,15 +22,9 @@ class Sequence
      */
     protected $name;
 
-    public function __construct($name, Model $model)
+    public function __construct($name)
     {
-        $this->model = $model;
         $this->name = $name;
-    }
-
-    public function getModel()
-    {
-        return $this->model;
     }
 
     public function getName()
