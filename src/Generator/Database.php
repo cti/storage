@@ -27,22 +27,6 @@ class Database {
         $this->fromSchema = $fromSchema;
     }
 
-    /**
-     * @param $value bool
-     */
-    public function setTestMode($value)
-    {
-        $this->testMode = $value;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isInTestMode()
-    {
-        return $this->testMode === true;
-    }
-
     public function migrate()
     {
         if (empty($this->toSchema)) {
@@ -52,11 +36,6 @@ class Database {
             throw new \Exception("From schema not defined in Generator\\Database");
         }
         $sql = $this->fromSchema->getMigrateToSql($this->toSchema, $this->dbal->getDatabasePlatform());
-        if (!$this->isInTestMode()) {
-            foreach($sql as $query) {
-                $this->dbal->executeQuery($query);
-            }
-        }
         return $sql;
     }
 } 

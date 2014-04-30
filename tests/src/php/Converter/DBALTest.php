@@ -54,7 +54,6 @@ class DBALTest extends \PHPUnit_Framework_TestCase
                 $tableFKs[] = $key->getForeignTableName() . "-" . implode(':', $key->getColumns()) . "-" . implode(':', $key->getForeignColumns());
             }
 
-            // @todo Make relations check
             foreach ($model->getOutReferences() as $reference) {
                 $localProperties = array_keys($reference->getProperties());
                 $remoteProperties = array();
@@ -63,6 +62,11 @@ class DBALTest extends \PHPUnit_Framework_TestCase
                 }
                 $key = $reference->getDestination() . '-' . implode(':', $localProperties) . '-' . implode(':', $remoteProperties);
                 $this->assertContains($key, $tableFKs);
+            }
+
+            $sequence = $model->getSequence();
+            if ($sequence) {
+                $this->assertNotNull($dbalSchema->getSequence($sequence->getName()));
             }
         }
     }

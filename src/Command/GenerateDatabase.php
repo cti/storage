@@ -43,9 +43,6 @@ class GenerateDatabase extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ($input->getOption('test') === true) {
-            $this->generator->setTestMode(true);
-        }
         /**
          * @var $schema \Cti\Storage\Schema
          */
@@ -54,7 +51,11 @@ class GenerateDatabase extends Command
         $dbalFromSchema = $this->dbal->getSchemaManager()->createSchema();
         $this->generator->setToSchema($dbalToSchema);
         $this->generator->setFromSchema($dbalFromSchema);
-        echo implode("\n",$this->generator->migrate());
+        $sql = implode("\n",$this->generator->migrate());
+        echo $sql;
+        if ($input->getOption('test') != true) {
+            $this->dbal->executeQuery($sql);
+        }
     }
 
 

@@ -53,6 +53,11 @@ class DBAL {
                 $table->addForeignKeyConstraint($destination, $localProperties, $foreignProperties);
             }
         }
+
+        foreach($inputSchema->getSequences() as $sequence) {
+            $schema->createSequence($sequence->getName());
+        }
+
         return $schema;
     }
 }
