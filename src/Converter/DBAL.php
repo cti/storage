@@ -40,6 +40,19 @@ class DBAL {
                 $table->addIndex($index->getFields());
             }
         }
+
+        foreach($inputSchema->getModels() as $model) {
+            $table = $schema->getTable($model->getName());
+            foreach($model->getOutReferences() as $reference) {
+                $foreignProperties = array();
+                foreach($reference->getProperties() as $property) {
+                    $foreignProperties[] = $property->getForeignName();
+                }
+                $localProperties = array_keys($reference->getProperties());
+                $destination = $schema->getTable($reference->getDestination());
+                $table->addForeignKeyConstraint($destination, $localProperties, $foreignProperties);
+            }
+        }
         return $schema;
     }
 }

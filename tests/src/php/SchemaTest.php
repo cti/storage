@@ -18,7 +18,5 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $schema->removeModel('test');
         $this->setExpectedException('Exception', 'Model test not found in schema');
         $schema->removeModel('test');
-
-
     }
 } 
