@@ -108,7 +108,7 @@ class Property
             $this->type = $params['type'];
         } else {
             if (substr($this->name, 0, 3) == 'dt_') {
-                $this->type = 'date';
+                $this->type = 'datetime';
             } elseif (substr($this->name, 0, 3) == 'id_') {
                 $this->type = 'integer';
             } elseif (substr($this->name, 0, 3) == 'is_') {
