@@ -55,13 +55,18 @@ class DBALTest extends \PHPUnit_Framework_TestCase
             }
 
             foreach ($model->getOutReferences() as $reference) {
+                $remoteModel = $schema->getModel($reference->getDestination());
                 $localProperties = array_keys($reference->getProperties());
                 $remoteProperties = array();
                 foreach($reference->getProperties() as $property) {
                     $remoteProperties[] = $property->getForeignName();
                 }
                 $key = $reference->getDestination() . '-' . implode(':', $localProperties) . '-' . implode(':', $remoteProperties);
-                $this->assertContains($key, $tableFKs);
+                if ($remoteModel->getBehaviour('log')) {
+                    $this->assertNotContains($key, $tableFKs);
+                } else {
+                    $this->assertContains($key, $tableFKs);
+                }
             }
 
             $sequence = $model->getSequence();

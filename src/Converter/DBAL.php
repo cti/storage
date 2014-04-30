@@ -44,12 +44,16 @@ class DBAL {
         foreach($inputSchema->getModels() as $model) {
             $table = $schema->getTable($model->getName());
             foreach($model->getOutReferences() as $reference) {
+                if ($inputSchema->getModel($reference->getDestination())->getBehaviour("log")) {
+                    continue;
+                }
+                $destination = $schema->getTable($reference->getDestination());
                 $foreignProperties = array();
                 foreach($reference->getProperties() as $property) {
                     $foreignProperties[] = $property->getForeignName();
                 }
                 $localProperties = array_keys($reference->getProperties());
-                $destination = $schema->getTable($reference->getDestination());
+
                 $table->addForeignKeyConstraint($destination, $localProperties, $foreignProperties);
             }
         }

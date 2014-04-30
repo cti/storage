@@ -19,7 +19,16 @@ class DBALTest extends \PHPUnit_Framework_TestCase
          */
         $dbal = $manager->get('Cti\Storage\Adapter\DBAL');
 
-        $dbnow = $dbal->fetchColumn("select current_timestamp");
+        if ($dbal->getDriver()->getName() == 'pdo_sqlite') {
+            $query = "select current_timestamp";
+
+        } elseif ($dbal->getDriver()->getName() == 'oci8') {
+            $query = "select sysdate from dual";
+
+        } else {
+            throw new \Exception("Undefined driver {$dbal->getDriver()->getName()}");
+        }
+        $dbnow = $dbal->fetchColumn($query);
         $this->assertNotEmpty($dbnow);
     }
 

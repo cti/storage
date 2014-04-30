@@ -3,3 +3,4 @@
 composer.lock
 build
 tests/build
+tests/resources/php/local.config.php

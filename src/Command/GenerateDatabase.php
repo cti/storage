@@ -51,10 +51,12 @@ class GenerateDatabase extends Command
         $dbalFromSchema = $this->dbal->getSchemaManager()->createSchema();
         $this->generator->setToSchema($dbalToSchema);
         $this->generator->setFromSchema($dbalFromSchema);
-        $sql = implode("\n",$this->generator->migrate());
-        echo $sql;
+        $queries = $this->generator->migrate();
+        echo implode(";\n",$queries) . ';';
         if ($input->getOption('test') != true) {
-            $this->dbal->executeQuery($sql);
+            foreach($queries as $query) {
+                $this->dbal->executeQuery($query);
+            }
         }
     }
 
