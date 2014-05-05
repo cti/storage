@@ -19,6 +19,10 @@ class DBAL extends \Doctrine\DBAL\Connection {
         } elseif ($config['driver'] == 'sqlite') {
             $config['driver'] = 'pdo_sqlite';
             $driver = new \Doctrine\DBAL\Driver\PDOSqlite\Driver();
+        } elseif ($config['driver'] == 'postgres') {
+            $config['driver'] = 'pdo_pgsql';
+            unset($config['driver']);
+            $driver = new \Doctrine\DBAL\Driver\PDOPgSql\Driver();
         } else {
             throw new \Exception("Unknown driver \"" . $config['driver'] . "\" for database in config");
         }
