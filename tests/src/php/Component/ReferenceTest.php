@@ -8,7 +8,7 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase
         /**
          * @var $schema \Cti\Storage\Schema
          */
-        $schema = getApplication()->getSchema();
+        $schema = getApplication()->getStorage()->getSchema();
         $person = $schema->getModel('person');
 
         $personInReferences = $person->getInReferences();

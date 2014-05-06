@@ -12,7 +12,7 @@ class GenerateDatabase extends Command
 {
     /**
      * @inject
-     * @var \Cti\Core\Application
+     * @var \Build\Application
      */
     protected $application;
     /**
@@ -46,7 +46,7 @@ class GenerateDatabase extends Command
         /**
          * @var $schema \Cti\Storage\Schema
          */
-        $schema = $this->application->getSchema();
+        $schema = $this->application->getStorage()->getSchema();
         $dbalToSchema = $this->dbalConverter->convert($schema);
         $dbalFromSchema = $this->dbal->getSchemaManager()->createSchema();
         $this->generator->setToSchema($dbalToSchema);

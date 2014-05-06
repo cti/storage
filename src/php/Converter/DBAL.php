@@ -9,11 +9,6 @@ namespace Cti\Storage\Converter;
 class DBAL {
 
     /**
-     * @inject
-     * @var \Cti\Core\Application
-     */
-    protected $application;
-    /**
      * @var \Doctrine\DBAL\Schema\Schema
      */
     protected $schema;

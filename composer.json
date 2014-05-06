@@ -10,7 +10,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Cti\\Storage\\" : "src/"
+            "Cti\\Storage\\" : "src/php/"
         }
     },
     "require": {

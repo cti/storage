@@ -10,7 +10,7 @@ class DBALTest extends \PHPUnit_Framework_TestCase
         /**
          * @var $schema \Cti\Storage\Schema
          */
-        $schema = $application->getSchema();
+        $schema = $application->getStorage()->getSchema();
         /**
          * @var $converter \Cti\Storage\Converter\DBAL
          */

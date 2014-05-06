@@ -26,7 +26,7 @@ class GenerateMigrationTest extends \PHPUnit_Framework_TestCase
         $finder
             ->files()
             ->name("*.php")
-            ->in($application->getPath('resources php migrations'));
+            ->in($application->getProject()->getPath('resources php migrations'));
 
 
         $found = false;

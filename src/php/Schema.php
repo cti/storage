@@ -21,7 +21,7 @@ class Schema
 
     /**
      * @inject
-     * @var \Cti\Core\Application
+     * @var \Build\Application
      */
     protected $application;
 
@@ -156,7 +156,8 @@ class Schema
     function processMigrations()
     {
         $filesystem = new Filesystem;
-        $migrations = $this->application->getPath('build php Storage Migration');
+        $project = $this->application->getProject();
+        $migrations = $project->getPath('build php Storage Migration');
         if($filesystem->exists($migrations)) {
             $filesystem->remove($migrations);
         }
@@ -167,7 +168,7 @@ class Schema
         $finder
             ->files()
             ->name("*.php")
-            ->in($this->application->getPath('resources php migrations'));
+            ->in($project->getPath('resources php migrations'));
 
         foreach($finder as $file) {
 

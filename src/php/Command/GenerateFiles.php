@@ -14,7 +14,7 @@ class GenerateFiles extends Command
 {
     /**
      * @inject
-     * @var \Cti\Core\Application
+     * @var \Build\Application
      */
     protected $application;
 
@@ -31,12 +31,12 @@ class GenerateFiles extends Command
         /**
          * @var $schema Schema
          */
-        $schema = $this->application->getSchema();
+        $schema = $this->application->getStorage()->getSchema();
 
         $fs = new Filesystem();
 
         $fs->dumpFile(
-            $this->application->getPath('build php Storage Master.php'), 
+            $this->application->getProject()->getPath('build php Storage Master.php'),
             $this->application->getManager()->create('Cti\Storage\Generator\Master', array(
                 'schema' => $schema
             ))
@@ -44,7 +44,7 @@ class GenerateFiles extends Command
 
         foreach($schema->getModels() as $repository) {
 
-            $path = $this->application->getPath('build php Storage Model ' . $repository->getClassName() . 'Base.php');
+            $path = $this->application->getProject()->getPath('build php Storage Model ' . $repository->getClassName() . 'Base.php');
             $model = $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
                 'model' => $repository
             ));
@@ -55,7 +55,7 @@ class GenerateFiles extends Command
                 $modelSource
             );
 
-            $path = $this->application->getPath('build php Storage Repository ' . $repository->getClassName() . 'Repository.php');
+            $path = $this->application->getProject()->getPath('build php Storage Repository ' . $repository->getClassName() . 'Repository.php');
             $repository = $this->application->getManager()->create('Cti\Storage\Generator\Repository', array(
                 'model' => $repository
             ));

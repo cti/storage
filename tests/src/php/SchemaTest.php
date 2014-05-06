@@ -9,7 +9,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         /**
          * @var $schema \Cti\Storage\Schema
          */
-        $schema = $application->getSchema();
+        $schema = $application->getStorage()->getSchema();
         $this->assertNotEmpty($schema->getModel('person'));
         $schema->createModel('test', "Тестовая модель", array(
             'text' => 'Текст'

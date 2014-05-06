@@ -14,7 +14,7 @@ class GenerateMigration extends Command
 {
     /**
      * @inject
-     * @var \Cti\Core\Application
+     * @var \Build\Application
      */
     protected $application;
 
@@ -34,7 +34,7 @@ class GenerateMigration extends Command
 
         $timestamp = time();
 
-        $filename = $this->application->getPath('resources php migrations ' . date('Ymd_His', $timestamp) . '_' . $id . '.php');
+        $filename = $this->application->getProject()->getPath('resources php migrations ' . date('Ymd_His', $timestamp) . '_' . $id . '.php');
         $migration = $this->application->getManager()->create('Cti\Storage\Generator\Migration', array(
             'class' => $class,
             'timestamp' => $timestamp

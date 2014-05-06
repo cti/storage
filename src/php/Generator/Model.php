@@ -19,7 +19,7 @@ class Model
 
     /**
      * @inject
-     * @var \Cti\Core\Application
+     * @var \Build\Application
      */
     public $application;
 

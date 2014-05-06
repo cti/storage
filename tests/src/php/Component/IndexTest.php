@@ -9,7 +9,7 @@ class IndexTest extends \PHPUnit_Framework_TestCase {
         /**
          * @var $schema \Cti\Storage\Schema
          */
-        $schema = $application->getSchema();
+        $schema = $application->getStorage()->getSchema();
         foreach($schema->getModels() as $model) {
             $indexes = $model->getIndexes();
             // only person must have indexes

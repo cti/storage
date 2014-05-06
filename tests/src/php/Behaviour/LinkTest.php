@@ -14,7 +14,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Schema $schema
          */
-        $schema = getApplication()->getSchema();
+        $schema = getApplication()->getStorage()->getSchema();
 
         $link = $schema->getModel('person_favorite_module_link');
 

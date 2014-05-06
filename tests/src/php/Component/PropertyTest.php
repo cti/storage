@@ -12,7 +12,7 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
         /**
          * @var $schema Schema
          */
-        $schema = $application->getSchema();
+        $schema = $application->getStorage()->getSchema();
         $model = $schema->getModel('person');
 
         // comment, required and string type check

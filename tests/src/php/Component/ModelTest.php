@@ -16,7 +16,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
     public function __construct()
     {
         $this->application = getApplication();
-        $this->schema = $this->application->getSchema();
+        $this->schema = $this->application->getStorage()->getSchema();
         parent::__construct();
     }
 

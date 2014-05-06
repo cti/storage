@@ -11,7 +11,7 @@ class SequenceTest extends \PHPUnit_Framework_TestCase
         /**
          * @var $schema Schema
          */
-        $schema = $application->getSchema();
+        $schema = $application->getStorage()->getSchema();
         $sequences = $schema->getSequences();
         $this->assertCount(2, $sequences);
         $this->assertArrayHasKey('sq_person', $sequences);
