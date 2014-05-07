@@ -4,10 +4,15 @@ php:
   - 5.4
   - 5.5
 
+addons:
+  postgresql: "9.3"
+
 before_script:
   - composer selfupdate
   - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - composer install --dev --no-interaction
+  - psql -c 'create database cti_storage_tests;' -U postgres;
+  - cp tests/resources/php/travis.config.php tests/resources/php/local.config.php
 
 script:
   - php vendor/bin/phpunit -c phpunit.xml.dist
