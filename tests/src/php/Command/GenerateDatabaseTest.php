@@ -39,11 +39,11 @@ class GenerateDatabaseTest extends \PHPUnit_Framework_TestCase
 
     public function getExpectedMigrateSql()
     {
-        if ($this->adapter->getDatabasePlatform()->getName() == 'oracle') {
+        if ($this->adapter->isOracle()) {
             return str_replace("\r","",
 "CREATE SEQUENCE sq_person START WITH 1 MINVALUE 1 INCREMENT BY 1;
 CREATE SEQUENCE sq_module START WITH 1 MINVALUE 1 INCREMENT BY 1;
-CREATE TABLE person (id_person NUMBER(10) NOT NULL, v_end TIMESTAMP(0) NOT NULL, id_module_default_module NUMBER(10) DEFAULT NULL, hash VARCHAR2(255) DEFAULT NULL, login VARCHAR2(255) NOT NULL, salt VARCHAR2(255) DEFAULT NULL, v_start TIMESTAMP(0) NOT NULL, PRIMARY KEY(id_person, v_end));
+CREATE TABLE person (id_person NUMBER(10) NOT NULL, v_end DATE NOT NULL, id_module_default_module NUMBER(10) DEFAULT NULL, hash VARCHAR2(255) DEFAULT NULL, login VARCHAR2(255) NOT NULL, salt VARCHAR2(255) DEFAULT NULL, v_start DATE NOT NULL, PRIMARY KEY(id_person, v_end));
 CREATE INDEX IDX_34DCD176AA08CB10 ON person (login);
 CREATE INDEX IDX_34DCD176E29C4A61 ON person (id_module_default_module);
 COMMENT ON COLUMN person.id_person IS 'identifier';
@@ -55,12 +55,12 @@ CREATE TABLE module (id_module NUMBER(10) NOT NULL, id_person_owner NUMBER(10) D
 COMMENT ON COLUMN module.id_module IS 'identifier';
 COMMENT ON COLUMN module.id_person_owner IS 'owner link';
 COMMENT ON COLUMN module.name IS 'Наименование';
-CREATE TABLE person_favorite_module_link (id_module_favorite_module NUMBER(10) NOT NULL, id_person NUMBER(10) NOT NULL, v_end TIMESTAMP(0) NOT NULL, rating NUMBER(10) DEFAULT NULL, v_start TIMESTAMP(0) NOT NULL, PRIMARY KEY(id_module_favorite_module, id_person, v_end));
+CREATE TABLE person_favorite_module_link (id_module_favorite_module NUMBER(10) NOT NULL, id_person NUMBER(10) NOT NULL, v_end DATE NOT NULL, rating NUMBER(10) DEFAULT NULL, v_start DATE NOT NULL, PRIMARY KEY(id_module_favorite_module, id_person, v_end));
 CREATE INDEX IDX_ABC434EACDFA5ACF ON person_favorite_module_link (id_module_favorite_module);
 COMMENT ON COLUMN person_favorite_module_link.id_module_favorite_module IS 'favorite_module link';
 COMMENT ON COLUMN person_favorite_module_link.id_person IS 'person link';
 COMMENT ON COLUMN person_favorite_module_link.rating IS 'Рейтинг';
-CREATE TABLE module_developer_link (id_module NUMBER(10) NOT NULL, id_person_developer NUMBER(10) NOT NULL, v_end TIMESTAMP(0) NOT NULL, v_start TIMESTAMP(0) NOT NULL, PRIMARY KEY(id_module, id_person_developer, v_end));
+CREATE TABLE module_developer_link (id_module NUMBER(10) NOT NULL, id_person_developer NUMBER(10) NOT NULL, v_end DATE NOT NULL, v_start DATE NOT NULL, PRIMARY KEY(id_module, id_person_developer, v_end));
 CREATE INDEX IDX_B32214A82A1393C5 ON module_developer_link (id_module);
 COMMENT ON COLUMN module_developer_link.id_module IS 'module link';
 COMMENT ON COLUMN module_developer_link.id_person_developer IS 'developer link';
@@ -68,7 +68,7 @@ ALTER TABLE person ADD CONSTRAINT FK_34DCD176E29C4A61 FOREIGN KEY (id_module_def
 ALTER TABLE person_favorite_module_link ADD CONSTRAINT FK_ABC434EACDFA5ACF FOREIGN KEY (id_module_favorite_module) REFERENCES module (id_module);
 ALTER TABLE module_developer_link ADD CONSTRAINT FK_B32214A82A1393C5 FOREIGN KEY (id_module) REFERENCES module (id_module);"
             );
-        } elseif ($this->adapter->getDatabasePlatform()->getName() == 'sqlite') {
+        } elseif ($this->adapter->isSQLite()) {
             return str_replace("\r","",
 "CREATE TABLE person (id_person INTEGER NOT NULL, v_end DATETIME NOT NULL, id_module_default_module INTEGER DEFAULT NULL, hash VARCHAR(255) DEFAULT NULL, login VARCHAR(255) NOT NULL, salt VARCHAR(255) DEFAULT NULL, v_start DATETIME NOT NULL, PRIMARY KEY(id_person, v_end));
 CREATE INDEX IDX_34DCD176AA08CB10 ON person (login);
@@ -80,7 +80,7 @@ CREATE TABLE module_developer_link (id_module INTEGER NOT NULL, id_person_develo
 CREATE INDEX IDX_B32214A82A1393C5 ON module_developer_link (id_module);"
             );
 
-        } elseif ($this->adapter->getDatabasePlatform()->getName() == 'postgresql') {
+        } elseif ($this->adapter->isPostgres()) {
             return str_replace("\r","",
 "CREATE SEQUENCE sq_person INCREMENT BY 1 MINVALUE 1 START 1;
 CREATE SEQUENCE sq_module INCREMENT BY 1 MINVALUE 1 START 1;

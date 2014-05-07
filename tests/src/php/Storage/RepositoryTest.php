@@ -103,7 +103,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertLessThanOrEqual($now, strtotime($old['v_start']));
 
         $this->assertGreaterThanOrEqual(strtotime($new['v_start']), strtotime($old['v_end']));
-//        $this->assertGreaterThan(time() + 5000*365*24*3600, strtotime($new['v_end'])); // 5000 years forward
+
         $endDate = new \DateTime($new['v_end']);
         $startDate = new \DateTime("9999-12-31 23:59:59");
         $this->assertEquals(0, $startDate->diff($endDate)->s);

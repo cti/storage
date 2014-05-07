@@ -2,18 +2,26 @@
 
 namespace Cti\Storage\Adapter;
 
+use \Doctrine\DBAL\Portability\Connection;
 
-class DBAL extends \Doctrine\DBAL\Connection {
+
+class DBAL extends Connection {
 
     protected $user;
     protected $password;
 
     public function __construct($config)
     {
+        // keys must be lowercase
+        $config['portability'] = Connection::PORTABILITY_FIX_CASE;
+        $config['fetch_case'] = \PDO::CASE_LOWER;
+
         if ($config['driver'] == 'oracle') {
             $config['charset'] = 'AL32UTF8';
             $config['driver'] = 'oci8';
             $config['dbname'] = $config['tns'];
+
+
             unset($config['tns']);
             $driver = new \Doctrine\DBAL\Driver\OCI8\Driver();
         } elseif ($config['driver'] == 'sqlite') {
@@ -27,7 +35,20 @@ class DBAL extends \Doctrine\DBAL\Connection {
             throw new \Exception("Unknown driver \"" . $config['driver'] . "\" for database in config");
         }
         parent::__construct($config, $driver);
+        $this->initSession();
         $this->beginTransaction();
+    }
+
+    /**
+     * Inits session params of database
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function initSession()
+    {
+        if ($this->isOracle()) {
+            $this->executeQuery("alter session set nls_date_format='YYYY-MM-DD hh24:mi:ss'");
+        }
+
     }
 
     public function isPostgres()
