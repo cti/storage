@@ -40,12 +40,24 @@ class DBAL extends \Doctrine\DBAL\Connection {
         return $this->getDatabasePlatform()->getName() == 'oracle';
     }
 
+    public function isSQLite()
+    {
+        return $this->getDatabasePlatform()->getName() == 'sqlite';
+    }
+
     public function fetchNextvalFromSequence($sq_name)
     {
         if ($this->isOracle()) {
             $query = "select $sq_name.nextval from dual";
         } elseif ($this->isPostgres()) {
             $query = "select nextval('$sq_name')";
+        } elseif ($this->isSQLite()) {
+            //sqlite has no sequences. get max(id) + 1 from table
+            $table_name = str_replace('sq_', '', $sq_name);
+            $id_field = 'id_' . $table_name;
+            $query = "select max($id_field) from $table_name";
+            $nextval = $this->fetchColumn($query);
+            return (!$nextval ? 1 : $nextval + 1);
         } else {
             $platform_name = $this->getDatabasePlatform()->getName();
             throw new \Exception("Can't get nextval for DB type: $platform_name");
@@ -59,6 +71,8 @@ class DBAL extends \Doctrine\DBAL\Connection {
             $query = "select sysdate from dual";
         } elseif ($this->isPostgres()) {
             $query = "select to_char(clock_timestamp(), 'YYYY-MM-DD HH24:MI:SS')";
+        } elseif ($this->isSQLite()) {
+            $query = "select date('now')";
         } else {
             $platform_name = $this->getDatabasePlatform()->getName();
             throw new \Exception("Can't get nextval for DB type: $platform_name");
@@ -69,12 +83,20 @@ class DBAL extends \Doctrine\DBAL\Connection {
 
     public function disableConstraints()
     {
-        $this->executeQuery("SET CONSTRAINTS ALL DEFERRED");
+        if ($this->isSQLite()) {
+            $this->executeQuery("PRAGMA foreign_keys = OFF");
+        } elseif ($this->isPostgres()) {
+            $this->executeQuery("SET CONSTRAINTS ALL DEFERRED");
+        }
     }
 
     public function enableConstraints()
     {
-        $this->executeQuery("SET CONSTRAINTS ALL IMMEDIATE");
+        if ($this->isSQLite()) {
+            $this->executeQuery("PRAGMA foreign_keys = ON");
+        } elseif ($this->isPostgres()) {
+            $this->executeQuery("SET CONSTRAINTS ALL IMMEDIATE");
+        }
     }
 
 }
