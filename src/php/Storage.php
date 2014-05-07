@@ -33,8 +33,9 @@ class Storage extends Project implements Bootstrap
      */
     protected $adapter;
 
-    public function init()
+    public function init(\Cti\Core\Module\Cache $cache)
     {
+        parent::init($cache);
         $this->path = dirname(dirname(__DIR__));
     }
 
@@ -81,5 +82,13 @@ class Storage extends Project implements Bootstrap
         foreach($this->getClasses('Command') as $class) {
             $console->add($manager->get($class));
         }
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAvailableNamespaces()
+    {
+        return array('Command');
     }
 }
