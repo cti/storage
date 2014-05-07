@@ -33,6 +33,8 @@ class GenerateDatabaseTest extends \PHPUnit_Framework_TestCase
         ob_end_clean();
 
         $this->assertEquals($this->getExpectedMigrateSql(), $sql);
+        $this->adapter->rollBack();
+        $this->adapter->beginTransaction();
     }
 
     public function getExpectedMigrateSql()

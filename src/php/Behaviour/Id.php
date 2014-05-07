@@ -20,6 +20,7 @@ class Id extends Behaviour
                 'type' => 'integer',
                 'primary' => true,
                 'required' => true,
+                'sequence' => true,
             ))
         );
         if (!$model->getSequence()) {

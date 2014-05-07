@@ -139,6 +139,8 @@ COMMENT;
      */
     protected \$_changes = array();
 
+    protected \$unsaved = false;
+
     /**
      * create new $name
      * @param $repository_class \$repository
@@ -149,6 +151,10 @@ COMMENT;
         \$this->_repository = \$repository;
         foreach(\$data as \$k => \$v) {
             \$this->\$k = \$v;
+            \$this->_changes[\$k] = array(
+                'old' => null,
+                'new' => \$v,
+            );
         }
     }
 
@@ -194,9 +200,10 @@ BASE;
             }
         }
         if(count(\$changes)) {
-            \$this->getRepository()->save(\$this, \$changes);
+            \$this->getRepository()->save(\$this, \$changes, \$this->unsaved);
             \$this->_changes = array();
         }
+        \$this->unsaved = false;
     }
 
     /**
@@ -204,7 +211,7 @@ BASE;
      */
     public function delete()
     {
-        \$this->getRepository()->delete(\$this);
+        \$this->getRepository()->delete(\$this, \$this->unsaved);
     }
 
     /**

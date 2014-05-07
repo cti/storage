@@ -26,7 +26,7 @@ class DBALTest extends \PHPUnit_Framework_TestCase
             $query = "select sysdate from dual";
 
         } elseif ($dbal->getDriver()->getName() == 'pdo_pgsql') {
-            $query = "select 'now'::timestamp";
+            $query = "select clock_timestamp()";
         } else {
             throw new \Exception("Undefined driver {$dbal->getDriver()->getName()}");
         }

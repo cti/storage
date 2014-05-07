@@ -64,14 +64,13 @@ PROPERTY;
 
 PROPERTY;
 
-
         $result .= <<<PROPERTY
     /**
      * Set $name
      * @param $type
      * @return $model_class
      */
-    $access function $setter($$name)
+    public function $setter($$name)
     {
         if(!isset(\$this->_changes['$name'])) {
             \$this->_changes['$name'] = array(

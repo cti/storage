@@ -27,5 +27,54 @@ class DBAL extends \Doctrine\DBAL\Connection {
             throw new \Exception("Unknown driver \"" . $config['driver'] . "\" for database in config");
         }
         parent::__construct($config, $driver);
+        $this->beginTransaction();
     }
+
+    public function isPostgres()
+    {
+        return $this->getDatabasePlatform()->getName() == 'postgresql';
+    }
+
+    public function isOracle()
+    {
+        return $this->getDatabasePlatform()->getName() == 'oracle';
+    }
+
+    public function fetchNextvalFromSequence($sq_name)
+    {
+        if ($this->isOracle()) {
+            $query = "select $sq_name.nextval from dual";
+        } elseif ($this->isPostgres()) {
+            $query = "select nextval('$sq_name')";
+        } else {
+            $platform_name = $this->getDatabasePlatform()->getName();
+            throw new \Exception("Can't get nextval for DB type: $platform_name");
+        }
+        return $this->fetchColumn($query);
+    }
+
+    public function fetchNow()
+    {
+        if ($this->isOracle()) {
+            $query = "select sysdate from dual";
+        } elseif ($this->isPostgres()) {
+            $query = "select to_char(clock_timestamp(), 'YYYY-MM-DD HH24:MI:SS')";
+        } else {
+            $platform_name = $this->getDatabasePlatform()->getName();
+            throw new \Exception("Can't get nextval for DB type: $platform_name");
+        }
+        $now = $this->fetchColumn($query);
+        return $now;
+    }
+
+    public function disableConstraints()
+    {
+        $this->executeQuery("SET CONSTRAINTS ALL DEFERRED");
+    }
+
+    public function enableConstraints()
+    {
+        $this->executeQuery("SET CONSTRAINTS ALL IMMEDIATE");
+    }
+
 }
