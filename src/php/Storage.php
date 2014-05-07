@@ -17,10 +17,15 @@ class Storage extends Project implements Bootstrap
     protected $schema;
 
     /**
-     * @inject
      * @var \Storage\Master
      */
     protected $master;
+
+    /**
+     * @inject
+     * @var \Cti\Di\Manager
+     */
+    protected $manager;
 
     /**
      * @inject
@@ -38,6 +43,9 @@ class Storage extends Project implements Bootstrap
      */
     public function getMaster()
     {
+        if (!$this->master) {
+            $this->master = $this->manager->get('Storage\\Master');
+        }
         return $this->master;
     }
 
