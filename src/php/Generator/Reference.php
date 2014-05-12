@@ -86,6 +86,9 @@ PROPERTY;
 
         $source_model_class = $source->getModelClass();
         $source_name = $reference->getSource();
+
+        $repository_getter = 'get' . String::pluralize(String::convertToCamelCase($source->getName()));
+
         $result = <<<PROPERTY
     /**
      * get $property_name
@@ -94,7 +97,7 @@ PROPERTY;
     public function $getter()
     {
         if(is_null(\$this->$property_name)) {
-            \$this->$property_name = \$this->getRepository()->getMaster()->findAll('$source_name', array(
+            \$this->$property_name = \$this->getRepository()->getMaster()->{$repository_getter}()->findAll(array(
                 $finder
             ));
         }

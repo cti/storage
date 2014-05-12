@@ -36,6 +36,40 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->moduleRepository = $this->master->getModules();
     }
 
+    public function testFind()
+    {
+        $this->markTestSkipped();
+        $admin = $this->personRepository->create(array(
+            'login' => 'admin',
+            'salt' => '123',
+            'hash' => crypt('password', '123'),
+        ));
+        $admin->save();
+
+        unset($admin);
+
+        $admin = $this->personRepository->findOne(array(
+            'login' => 'admin'
+        ));
+        $this->assertNotNull($admin);
+        $this->assertEquals('123', $admin->getSalt());
+
+        $persons = $this->personRepository->findAll(array(
+            'login' => 'admin'
+        ));
+        $this->assertCount(1, $persons);
+
+        $persons = $this->personRepository->findAll(array(
+            'login' => 'undefined'
+        ));
+        $this->assertCount(0, $persons);
+
+        $persons = $this->personRepository->findOne(array(
+            'login' => 'undefined'
+        ));
+        $this->assertNull($persons);
+    }
+
     public function testCreate()
     {
         /**
