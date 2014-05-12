@@ -2,13 +2,13 @@
 namespace Cti\Storage;
 
 use Build\Application;
-use Cti\Core\Application\Bootstrap;
+use Cti\Core\Application\Bootloader;
 use Cti\Core\Module\Console;
 use Cti\Core\Module\Project;
 use Cti\Di\Manager;
 use Cti\Di\Reflection;
 
-class Storage extends Project implements Bootstrap
+class Storage extends Project implements Bootloader
 {
     /**
      * @inject
