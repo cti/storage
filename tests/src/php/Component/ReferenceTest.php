@@ -24,8 +24,8 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase
         $personOutReferences = $person->getOutReferences();
         $this->assertCount(1, $personOutReferences);
 
-        $personOutReferences[0]->process($schema);
-        $outReference = $personOutReferences[0];
+        $outReference = array_shift($personOutReferences);
+        $outReference->process($schema);
         $this->assertEquals("person", $outReference->getSource());
         $this->assertEquals("module", $outReference->getDestination());
         $this->assertEquals("default_module", $outReference->getDestinationAlias());

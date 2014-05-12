@@ -102,22 +102,4 @@ class DBAL extends Connection {
         return $now;
     }
 
-    public function disableConstraints()
-    {
-        if ($this->isSQLite()) {
-            $this->executeQuery("PRAGMA foreign_keys = OFF");
-        } elseif ($this->isPostgres()) {
-            $this->executeQuery("SET CONSTRAINTS ALL DEFERRED");
-        }
-    }
-
-    public function enableConstraints()
-    {
-        if ($this->isSQLite()) {
-            $this->executeQuery("PRAGMA foreign_keys = ON");
-        } elseif ($this->isPostgres()) {
-            $this->executeQuery("SET CONSTRAINTS ALL IMMEDIATE");
-        }
-    }
-
 }

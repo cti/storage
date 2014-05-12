@@ -183,7 +183,7 @@ class Model
     {
         $parent_name = $parent instanceof Model ? $parent->name : $parent;
         $reference = new Reference($this->name, $parent_name);
-        $this->references['out'][] = $reference;
+        $this->references['out'][$reference->getDestination()] = $reference;
         return $reference;
     }
 
@@ -345,9 +345,9 @@ class Model
     public function addReference($reference)
     {
         if ($reference->getSource() == $this->getName()) {
-            $this->references['out'][] = $reference;
+            $this->references['out'][$reference->getDestination()] = $reference;
         } elseif ($reference->getDestination() == $this->getName()) {
-            $this->references['in'][] = $reference;
+            $this->references['in'][$reference->getSource()] = $reference;
         } else {
             throw new \Exception("Invalid reference for model {$this->getName()}. Source: {$reference->getSource()},"
                 ." destination: {$reference->getDestination()}");
@@ -424,7 +424,12 @@ class Model
      */
     public function getReferences()
     {
-        return array_merge($this->references['out'], $this->references['in']);
+        /**
+         * In references property we have "table_name=>reference" array.
+         * There can be same table in IN and in OUT, and merge will remove some reference.
+         * Array_values used.
+         */
+        return array_merge(array_values($this->references['out']), array_values($this->references['in']));
     }
 
 

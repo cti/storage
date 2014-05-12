@@ -31,7 +31,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $this->master = getApplication()->getStorage()->getMaster();
         $this->dbal = getApplication()->getStorage()->getAdapter();
-        $this->syncDatabase();
+        \DatabaseManager::syncDatabase();
         $this->personRepository = $this->master->getPersons();
         $this->moduleRepository = $this->master->getModules();
     }
@@ -71,7 +71,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($row);
         $this->assertNotNull($row['id_module']);
         $this->assertArrayNotHasKey('v_end', $row);
-        $this->clearTables();
+        \DatabaseManager::clearTables();
     }
 
     public function testUpdate()
@@ -125,7 +125,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Frontend', $module['name']);
         $this->assertEquals($firstId, $module['id_module']);
 
-        $this->clearTables();
+        \DatabaseManager::clearTables();
 
     }
 
@@ -166,7 +166,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $rows = $this->dbal->fetchAll("select * from module");
         $this->assertCount(0, $rows);
 
-        $this->clearTables();
+        \DatabaseManager::clearTables();
     }
 
     public function testRemoveUnsavedModel()
@@ -178,38 +178,5 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         ));
         $this->setExpectedException("Exception","Model \\Storage\\Model\\PersonBase can't be deleted. It is unsaved");
         $admin->delete();
-    }
-
-
-    /**
-     * To use models and repos we need to have database
-     */
-    protected function syncDatabase()
-    {
-        $generator = getApplication()->getConsole()->find("generate:database");
-
-        $input = new StringInput("generate:database");
-        $output = new NullOutput();
-        ob_start();
-        $generator->run($input, $output);
-        ob_end_clean();
-
-        /**
-         * Clear tables in database
-         */
-        $this->dbal->disableConstraints();
-        foreach($this->dbal->getSchemaManager()->listTables() as $table) {
-            $this->dbal->executeQuery("delete from {$table->getName()}");
-        }
-        $this->dbal->enableConstraints();
-    }
-
-    public function clearTables()
-    {
-        foreach(array('person','module') as $table) {
-            $this->dbal->executeQuery("delete from $table");
-        }
-        $this->dbal->commit();
-        $this->dbal->beginTransaction();
     }
 }

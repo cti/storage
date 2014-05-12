@@ -34,6 +34,11 @@ class Link extends Behaviour
         $this->references[$modelName] = $reference;
     }
 
+    public function getReferences()
+    {
+        return $this->references;
+    }
+
     /**
      * @param Model $model
      * @return Model

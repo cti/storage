@@ -23,18 +23,4 @@ class MasterTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($personRepository);
         $this->assertEquals("Storage\\Repository\\PersonRepository", get_class($personRepository));
     }
-
-    /**
-     * To use models and repos we need to have database
-     */
-    protected function syncDatabase()
-    {
-        $generator = getApplication()->getConsole()->find("generate:database");
-
-        $input = new StringInput("generate:database");
-        $output = new NullOutput();
-        ob_start();
-        $generator->run($input, $output);
-        ob_end_clean();
-    }
 }
