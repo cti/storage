@@ -51,10 +51,10 @@ class GenerateFiles extends Command
         foreach($schema->getModels() as $repositoryGenerator) {
 
             $path = $this->application->getProject()->getPath('build php Storage Model ' . $repositoryGenerator->getClassName() . 'Base.php');
-            $model = $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
+            $modelGenerator = $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
                 'model' => $repositoryGenerator
             ));
-            $modelSource = (String)$model;
+            $modelSource = $modelGenerator->getCode();
 
             $fs->dumpFile(
                 $path,

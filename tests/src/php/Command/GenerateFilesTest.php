@@ -23,14 +23,6 @@ class GenerateFilesTest extends \PHPUnit_Framework_TestCase
 
         $output = new NullOutput;
         $generator->run($input, $output);
-        return;
-
-        $master =  new Master;
-        $this->assertNotNull($master);
-
-        $this->assertTrue(method_exists($master, 'getModules'));
-        $this->assertTrue(method_exists($master, 'getPersons'));
-
     }
 }
  
