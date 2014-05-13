@@ -28,4 +28,34 @@ class DatabaseManager
         $dbal->commit();
         $dbal->beginTransaction();
     }
+
+    /**
+     * Create fake records (Admin in persons, Backend in modules)
+     */
+    public static function generateFakeRecords()
+    {
+        $master = getApplication()->getStorage()->getMaster();
+        $admin = $master->getPersons()->create(array(
+            'hash' => '123',
+            'login' => 'admin',
+            'salt' => '123',
+        ))->save();
+
+        $backend = $master->getModules()->create(array(
+            'id_person_owner' => $admin->getIdPerson(),
+            'name' => 'Backend',
+        ))->save();
+
+        $user = $master->getPersons()->create(array(
+            'hash' => '123',
+            'login' => 'user',
+            'salt' => '321',
+            'id_module_default_module' => $backend->getIdModule()
+        ))->save();
+        sleep(1);
+        $user->setSalt('123456');
+        $user->save();
+
+
+    }
 } 

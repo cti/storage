@@ -30,6 +30,12 @@ class {$model->getClassName()}Repository
      */
     protected $fields = array();
 
+    /**
+     * Container for loaded or saved models
+     * @var {$model->getModelClass()}[]
+     */
+    protected $map = array();
+
     public function __construct()
     {
         $this->fields = array_flip(array('{implode("', '", $fields)}'));
@@ -59,61 +65,168 @@ class {$model->getClassName()}Repository
         return $this->master;
     }
 
+    /**
+     * Save model into database and repository registry
+     * @param {$model->getModelClass()} $model
+     * @param array $data
+     * @param boolean @unsaved
+     */
     public function save({$model->getModelClass()} $model, $data, $unsaved)
     {
         if ($unsaved) {
-        {if $model->getBehaviour('id')?}
-
+{if $model->getBehaviour('id')?}
             $id = $this->database->fetchNextvalFromSequence('sq_{$model->getName()}');
             $data['id_{$model->getName()}'] = $id;
             $model->{$model->getProperty("id_{$model->getName()}")->getSetter()}($id);
-        {/if}
-        {if $model->getBehaviour('log')?}
-
+{/if}
+{if $model->getBehaviour('log')?}
             $now = $this->database->fetchNow();
             $data['v_start'] = $now;
             $data['v_end'] = '9999-12-31 23:59:59';
             $model->setVStart($data['v_start']);
             $model->setVEnd($data['v_end']);
-        {/if}
-
+{/if}
             $this->database->insert('{$model->getName()}', $data);
         } else {
-        {if $model->getBehaviour('log')?}
-
+{if $model->getBehaviour('log')?}
             $now = $this->database->fetchNow();
             /**
              * Update dt_end in old version
+             * 2 models can't be in one second, and we will finish old,version in past time
+             * And new version will have current time in start time
              */
+            $secondBefore = date('Y-m-d H:i:s', strtotime($now) - 1);
             $this->database->update('{$model->getName()}', array('v_end' => $now), $model->getPrimaryKey());
             /**
              * Insert new version into database
              */
             $model->setVStart($now);
             $this->database->insert('{$model->getName()}', $model->asArray());
-        {else}
-
+            /**
+             * Remove old model from map, key can be another
+             */
+            $old_key = array_search($model, $this->map);
+            unset($this->map[$old_key]);
+{else}
             $this->database->update('{$model->getName()}', $data, $model->getPrimaryKey());
-        {/if}
-
+{/if}
         }
+        $this->map[$this->makeKey($model)] = $model;
     }
 
-    public function delete({$model->getModelClass()} $model, $unsaved)
+    /**
+     * @param {$model->getModelClass()} $model
+     */
+    public function delete({$model->getModelClass()} $model)
     {
-        if ($unsaved) {
-            throw new \Exception("Model {$model->getModelClass()} can't be deleted. It is unsaved");
-        }
-    {if $model->getBehaviour('log')?}
-
+{if $model->getBehaviour('log')?}
         $now = date('Y-m-d H:i:s', strtotime($this->database->fetchNow()));
         $this->database->update('{$model->getName()}', array('v_end' => $now), $model->getPrimaryKey());
         $model->setVEnd($now);
-    {else}
+{else}
 
         $this->database->delete('{$model->getName()}', $model->getPrimaryKey());
-    {/if}
+{/if}
 
     }
 
+    public function makeKey({$model->getModelClass()} ${$model->getName()})
+    {
+        return implode(':', array(
+{foreach $model->getPk() as $fieldName}
+            ${$model->getName()}->{$model->getProperty($fieldName)->getGetter()}(),
+{/foreach}
+        ));
+    }
+{var $log = $model->getBehaviour('log')}
+
+    /**
+     * @param array $params
+     * @param String $mode
+     * @return {$model->getModelClass()}[]
+     */
+    public function find($params, $mode = 'many')
+    {
+        $query = "SELECT * from {$model->getName()} where ";
+        $where = array("1=1");
+        $queryParams = array();
+
+        if (isset($params['condition'])) {
+            foreach($params['condition'] as $key => $value) {
+                $where[] = "$key = :$key";
+                $queryParams[$key] = $value;
+            }
+        }
+{if $log?}
+        $where[] = ":_version_date between v_start and v_end";
+        $queryParams['_version_date'] = $params['version_date'];
+{/if}
+
+        $query .= implode(" AND ", $where);
+        if ($mode === 'many') {
+            $rows = $this->database->fetchAll($query, $queryParams);
+            $models = array();
+            foreach($rows as $row) {
+                $models[] = $this->manager->create('{$model->getModelClass()}', array(
+                    'repository' => $this,
+                    'data' => $row,
+                ));
+            }
+            return $models;
+        } elseif ($mode === 'one') {
+            $row = $this->database->fetchAssoc($query, $queryParams);
+            return $this->manager->create('{$model->getModelClass()}', array(
+                'repository' => $this,
+                'data' => $row,
+            ));
+        }
+    }
+
+    /**
+     * @param array $condition
+{if $log?}
+     * @param String $version_date
+{/if}
+     * @return {$model->getModelClass()}
+
+     */
+    public function findOne($condition = array(){if $log?}, $version_date = null{/if})
+    {
+{if $log?}
+        if (is_null($version_date)) {
+            $version_date = $this->database->fetchNow();
+        }
+{/if}
+        return $this->find(array(
+            'condition' => $condition,
+{if $log?}
+            'version_date' => $version_date,
+{/if}
+        ), 'one');
+    }
+
+    /**
+     * @param array $condition
+{if $log?}
+     * @param String $version_date
+{/if}
+     * @return {$model->getModelClass()}[]
+     */
+    public function findAll($condition = array(){if $log?}, $version_date = null{/if})
+    {
+{if $log?}
+        /**
+         * By default we will
+         */
+        if (is_null($version_date)) {
+            $version_date = date('Y-m-d H:i:s', strtotime($this->database->fetchNow()) + 1);
+        }
+{/if}
+        return $this->find(array(
+            'condition' => $condition,
+{if $log?}
+            'version_date' => $version_date,
+{/if}
+        ), 'many');
+    }
 }

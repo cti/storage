@@ -61,8 +61,10 @@ class {$model->getClassName()}Base
 
     /**
      * create new {$model->getName()}
+
      * @param {$model->getRepositoryClass()} $repository
      * @param array $data
+     * @param boolean $unsaved
      */
     public function __construct(Repository $repository, $data = array(), $unsaved = false)
     {
@@ -132,7 +134,7 @@ class {$model->getClassName()}Base
     /**
      * Set {$name}
 
-     * @param {$foreignModel->getClassName()}
+     * @param {$foreignModel->getClassName()} ${$name}
 
      * @return {$model->getModelClass()}
 
@@ -171,9 +173,53 @@ class {$model->getClassName()}Base
      */
     public function save()
     {
-
+        $changes = array();
+        if ($this->_unsaved === true) {
+            $changes = $this->asArray();
+        } else {
+            foreach($this->_changes as $k => $change) {
+                if ($change['old'] != $change['new']) {
+                    $changes[$k] = $change['new'];
+                }
+            }
+        }
+        if (count($changes)) {
+            $this->getRepository()->save($this, $changes, $this->_unsaved);
+            $this->_changes = array();
+        }
+        $this->_unsaved = false;
+        return $this;
     }
 
+    /**
+     * Delete model from database and repository storage
+     */
+    public function delete()
+    {
+        if (!$this->_unsaved) {
+            throw new \Exception("Model {$model->getName()} is unsaved. Delete forbidden.");
+        }
+        $this->getRepository()->delete($this);
+    }
 
+    /**
+     * Get primary key of model
+     */
+    public function getPrimaryKey()
+    {
+        return array(
+{foreach $model->getPk() as $fieldName}
+            '{$fieldName}' => $this->{$model->getProperty($fieldName)->getGetter()}(),
+{/foreach}
+        );
+    }
 
+    public function asArray()
+    {
+        return array(
+{foreach $model->getProperties() as $property}
+            '{$property->getName()}' => $this->{$property->getGetter()}(),
+{/foreach}
+        );
+    }
 }
