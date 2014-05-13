@@ -7,6 +7,7 @@ use Cti\Core\Module\Console;
 use Cti\Core\Module\Project;
 use Cti\Di\Manager;
 use Cti\Di\Reflection;
+use Cti\Core\Module\Fenom;
 
 class Storage extends Project implements Bootloader
 {
@@ -75,6 +76,7 @@ class Storage extends Project implements Bootloader
     {
         $initializer = $application->getManager()->getInitializer();
         $initializer->before('Cti\Core\Module\Console', array($this, 'registerCommands'));
+        $initializer->after('Cti\Core\Module\Fenom', array($this, 'registerFenomSource'));
     }
 
     public function registerCommands(Console $console, Manager $manager)
@@ -82,6 +84,11 @@ class Storage extends Project implements Bootloader
         foreach($this->getClasses('Command') as $class) {
             $console->add($manager->get($class));
         }
+    }
+
+    public function registerFenomSource(Fenom $fenom)
+    {
+        $fenom->addSource($this->getPath('resources fenom'));
     }
 
     /**

@@ -18,6 +18,12 @@ class GenerateFiles extends Command
      */
     protected $application;
 
+    /**
+     * @inject
+     * @var \Cti\Core\Module\Fenom
+     */
+    protected $fenom;
+
     protected function configure()
     {
         $this
@@ -37,16 +43,16 @@ class GenerateFiles extends Command
 
         $fs->dumpFile(
             $this->application->getProject()->getPath('build php Storage Master.php'),
-            $this->application->getManager()->create('Cti\Storage\Generator\Master', array(
+            $this->fenom->render("master", array(
                 'schema' => $schema
             ))
         );
 
-        foreach($schema->getModels() as $repository) {
+        foreach($schema->getModels() as $repositoryGenerator) {
 
-            $path = $this->application->getProject()->getPath('build php Storage Model ' . $repository->getClassName() . 'Base.php');
+            $path = $this->application->getProject()->getPath('build php Storage Model ' . $repositoryGenerator->getClassName() . 'Base.php');
             $model = $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
-                'model' => $repository
+                'model' => $repositoryGenerator
             ));
             $modelSource = (String)$model;
 
@@ -55,11 +61,12 @@ class GenerateFiles extends Command
                 $modelSource
             );
 
-            $path = $this->application->getProject()->getPath('build php Storage Repository ' . $repository->getClassName() . 'Repository.php');
-            $repository = $this->application->getManager()->create('Cti\Storage\Generator\Repository', array(
-                'model' => $repository
+            $path = $this->application->getProject()->getPath('build php Storage Repository ' . $repositoryGenerator->getClassName() . 'Repository.php');
+            $repositoryGenerator = $this->application->getManager()->create('Cti\Storage\Generator\Repository', array(
+                'model' => $repositoryGenerator
             ));
-            $repositorySource = (String)$repository;
+
+            $repositorySource = $repositoryGenerator->getCode();
             $fs->dumpFile(
                 $path,
                 $repositorySource
