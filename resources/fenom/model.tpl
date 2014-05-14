@@ -196,7 +196,7 @@ class {$model->getClassName()}Base
      */
     public function delete()
     {
-        if (!$this->_unsaved) {
+        if ($this->_unsaved) {
             throw new \Exception("Model {$model->getName()} is unsaved. Delete forbidden.");
         }
         $this->getRepository()->delete($this);

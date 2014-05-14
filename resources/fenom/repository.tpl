@@ -148,6 +148,7 @@ class {$model->getClassName()}Repository
      */
     public function delete({$model->getModelClass()} $model)
     {
+        $this->unregisterModel($model);
 {if $model->getBehaviour('log')?}
         $now = date('Y-m-d H:i:s', strtotime($this->database->fetchNow()));
         $this->database->update('{$model->getName()}', array('v_end' => $now), $model->getPrimaryKey());
@@ -156,7 +157,6 @@ class {$model->getClassName()}Repository
 
         $this->database->delete('{$model->getName()}', $model->getPrimaryKey());
 {/if}
-        $this->unregisterModel($model);
     }
 
     /**

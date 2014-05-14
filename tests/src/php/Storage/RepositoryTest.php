@@ -29,6 +29,15 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->dbal = getApplication()->getStorage()->getAdapter();
     }
 
+    private function getRepositoryMap($repository)
+    {
+        $mapProperty = Reflection::getReflectionProperty(get_class($repository), 'map');
+        $mapProperty->setAccessible(true);
+        $map = $mapProperty->getValue($repository);
+        $mapProperty->setAccessible(false);
+        return $map;
+    }
+
     public function testCreate()
     {
         /**
@@ -87,10 +96,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Test repository store for models
          */
-        $mapProperty = Reflection::getReflectionProperty(get_class($this->personRepository), 'map');
-        $mapProperty->setAccessible(true);
-        $map = $mapProperty->getValue($this->personRepository);
-        $mapProperty->setAccessible(false);
+        $map = $this->getRepositoryMap($this->personRepository);
 
         $modelKey = $this->personRepository->makeKey($adminModel);
         $this->assertEquals($adminModel->getIdPerson().':'.$adminModel->getVEnd(), $modelKey);
@@ -151,19 +157,45 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $foundWithFindAll = array_shift($records);
         $this->assertEquals('test_salt', $foundWithFindAll->getSalt());
 
-        $mapProperty = Reflection::getReflectionProperty(get_class($this->personRepository), 'map');
-        $mapProperty->setAccessible(true);
-        $map = $mapProperty->getValue($this->personRepository);
+        $map = $this->getRepositoryMap($this->personRepository);
         $this->assertCount(1, $map);
-        $mapProperty->setAccessible(false);
-
         \DatabaseManager::clearTables();
     }
 
     public function testDelete()
     {
-        $this->markTestSkipped();
+        /**
+         * Log models delete test
+         */
         \DatabaseManager::generateFakeRecords();
+        $admin = $this->personRepository->findOne(array(
+            'login' => 'admin'
+        ));
+        $admin->delete();
+        $map = $this->getRepositoryMap($this->personRepository);
+        $this->assertCount(0, $map);
+
+        $rows = $this->dbal->fetchAll("select * from person where login = 'admin'");
+        $this->assertCount(1, $rows);
+        $adminRow = $rows[0];
+        $this->assertLessThanOrEqual(time(), strtotime($adminRow['v_end']));
+
+        /**
+         * Delete test for model without log behaviour
+         */
+        $newModule = $this->moduleRepository->create(array(
+            'name' => 'Name'
+        ));
+        $newModule->save();
+
+        $map = $this->getRepositoryMap($this->moduleRepository);
+        $this->assertCount(1, $map);
+        $newModule->delete();
+        $map = $this->getRepositoryMap($this->moduleRepository);
+        $this->assertCount(0, $map);
+
+        $rows = $this->dbal->fetchAll("select * from module");
+        $this->assertCount(1, $rows); // there is 1 backend module
         \DatabaseManager::clearTables();
     }
 } 
