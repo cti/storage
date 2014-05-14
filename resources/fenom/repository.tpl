@@ -65,6 +65,35 @@ class {$model->getClassName()}Repository
         return $this->master;
     }
 
+{var $name = $model->getName()}
+    /**
+     * Register model to repository map
+     * @param {$model->getModelClass()} ${$name}
+     */
+    public function registerModel({$model->getModelClass()} ${$name})
+    {
+        $this->map[$this->makeKey(${$name})] = ${$name};
+    }
+
+    /**
+     * Delete model from repository map
+     * @param {$model->getModelClass()} ${$name}
+     */
+    public function unregisterModel({$model->getModelClass()} ${$name})
+    {
+        unset($this->map[$this->makeKey(${$name})]);
+    }
+
+    public function getModelFromMap($key)
+    {
+        return $this->map[$key];
+    }
+
+    public function keyExists($key)
+    {
+        return !empty($this->map[$key]);
+    }
+
     /**
      * Save model into database and repository registry
      * @param {$model->getModelClass()} $model
@@ -111,7 +140,7 @@ class {$model->getClassName()}Repository
             $this->database->update('{$model->getName()}', $data, $model->getPrimaryKey());
 {/if}
         }
-        $this->map[$this->makeKey($model)] = $model;
+        $this->registerModel($model);
     }
 
     /**
@@ -127,11 +156,22 @@ class {$model->getClassName()}Repository
 
         $this->database->delete('{$model->getName()}', $model->getPrimaryKey());
 {/if}
-
+        $this->unregisterModel($model);
     }
 
-    public function makeKey({$model->getModelClass()} ${$model->getName()})
+    /**
+     * @param mixed ${$model->getName()}
+     * @return String
+     */
+    public function makeKey(${$model->getName()})
     {
+        if (is_array(${$model->getName()})) {
+            return implode(':', array(
+{foreach $model->getPk() as $fieldName}
+                ${$model->getName()}['{$fieldName}'],
+{/foreach}
+            ));
+        }
         return implode(':', array(
 {foreach $model->getPk() as $fieldName}
             ${$model->getName()}->{$model->getProperty($fieldName)->getGetter()}(),
@@ -167,18 +207,31 @@ class {$model->getClassName()}Repository
             $rows = $this->database->fetchAll($query, $queryParams);
             $models = array();
             foreach($rows as $row) {
-                $models[] = $this->manager->create('{$model->getModelClass()}', array(
-                    'repository' => $this,
-                    'data' => $row,
-                ));
+                $key = $this->makeKey($row);
+                if ($this->keyExists($key)) {
+                    $models[] = $this->getModelFromMap($key);
+                } else {
+                    $model = $this->manager->create('{$model->getModelClass()}', array(
+                        'repository' => $this,
+                        'data' => $row,
+                    ));
+                    $this->registerModel($model);
+                    $models[] = $model;
+                }
             }
             return $models;
         } elseif ($mode === 'one') {
             $row = $this->database->fetchAssoc($query, $queryParams);
-            return $this->manager->create('{$model->getModelClass()}', array(
+            $key = $this->makeKey($row);
+            if ($this->keyExists($key)) {
+                return $this->getModelFromMap($key);
+            }
+            $model = $this->manager->create('{$model->getModelClass()}', array(
                 'repository' => $this,
                 'data' => $row,
             ));
+            $this->registerModel($model);
+            return $model;
         }
     }
 

@@ -2,6 +2,7 @@
 
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
+use Cti\Di\Reflection;
 
 class DatabaseManager
 {
@@ -34,6 +35,7 @@ class DatabaseManager
      */
     public static function generateFakeRecords()
     {
+        $dbal = getApplication()->getStorage()->getAdapter();
         $master = getApplication()->getStorage()->getMaster();
         $admin = $master->getPersons()->create(array(
             'hash' => '123',
@@ -52,9 +54,27 @@ class DatabaseManager
             'salt' => '321',
             'id_module_default_module' => $backend->getIdModule()
         ))->save();
-        sleep(1);
         $user->setSalt('123456');
         $user->save();
+
+        /**
+         * Move old models start time to the past
+         */
+        $dbal->executeQuery("update person set v_start = :past where login = :login and v_end < '9999-12-31 23:59:59'",array(
+            'past' => date("Y-m-d H:i:s", time() - 5000),
+            'login' => 'user',
+        ));
+
+        /**
+         * Clear repositories maps
+         */
+
+        foreach(array($master->getModules(), $master->getPersons()) as $repo) {
+            $mapProperty = Reflection::getReflectionProperty(get_class($repo), 'map');
+            $mapProperty->setAccessible(true);
+            $mapProperty->setValue($repo, array());
+            $mapProperty->setAccessible(false);
+        }
 
 
     }

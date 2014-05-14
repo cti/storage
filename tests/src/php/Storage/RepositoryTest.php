@@ -121,10 +121,10 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Test getting of old person model
          */
-        $secondAgo = date('Y-m-d H:i:s', strtotime($this->dbal->fetchNow()) - 1);
+        $minuteAgo = date('Y-m-d H:i:s', strtotime($this->dbal->fetchNow()) - 60);
         $models = $this->personRepository->findAll(array(
             'login' => 'user'
-        ), $secondAgo);
+        ), $minuteAgo);
         $this->assertCount(1, $models);
         $oldPerson = $models[0];
         $this->assertEquals('321', $oldPerson->getSalt());
@@ -134,7 +134,28 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testSyncFindWithMap()
     {
-        $this->markTestSkipped();
+        \DatabaseManager::generateFakeRecords();
+        $admin = $this->personRepository->findOne(array(
+            'login' => 'admin'
+        ));
+        $admin->setSalt("test_salt");
+
+        $secondInstanceOfAdmin = $this->personRepository->findOne(array(
+            'login' => 'admin'
+        ));
+        $this->assertEquals('test_salt', $secondInstanceOfAdmin->getSalt());
+
+        $records = $this->personRepository->findAll(array(
+            'login' => 'admin'
+        ));
+        $foundWithFindAll = array_shift($records);
+        $this->assertEquals('test_salt', $foundWithFindAll->getSalt());
+
+        $mapProperty = Reflection::getReflectionProperty(get_class($this->personRepository), 'map');
+        $mapProperty->setAccessible(true);
+        $map = $mapProperty->getValue($this->personRepository);
+        $this->assertCount(1, $map);
+        $mapProperty->setAccessible(false);
 
         \DatabaseManager::clearTables();
     }
