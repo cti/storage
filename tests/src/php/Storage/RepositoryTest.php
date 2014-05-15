@@ -127,10 +127,10 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Test getting of old person model
          */
-        $minuteAgo = date('Y-m-d H:i:s', strtotime($this->dbal->fetchNow()) - 60);
+        $pastTime = date('Y-m-d H:i:s', strtotime($this->dbal->fetchNow()) - 6000);
         $models = $this->personRepository->findAll(array(
             'login' => 'user'
-        ), $minuteAgo);
+        ), $pastTime);
         $this->assertCount(1, $models);
         $oldPerson = $models[0];
         $this->assertEquals('321', $oldPerson->getSalt());

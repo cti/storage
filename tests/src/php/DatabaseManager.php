@@ -60,9 +60,20 @@ class DatabaseManager
         /**
          * Move old models start time to the past
          */
-        $dbal->executeQuery("update person set v_start = :past where login = :login and v_end < '9999-12-31 23:59:59'",array(
-            'past' => date("Y-m-d H:i:s", time() - 5000),
-            'login' => 'user',
+
+        $now = $dbal->fetchNow();
+
+        $veryPastTime = date("Y-m-d H:i:s", time() - 10000);
+        $pastTime = date("Y-m-d H:i:s", time() - 5001);
+        $startTime = date("Y-m-d H:i:s", time() - 5000);
+
+        $dbal->executeQuery("update person set v_start = :very_past, v_end = :past where v_end < '9999-12-31 23:59:59'",array(
+            'very_past' => $veryPastTime,
+            'past' => $pastTime,
+        ));
+        $dbal->executeQuery("update person set v_start = :start where v_end > :now", array(
+            'start' => $startTime,
+            'now' => $now,
         ));
 
         /**

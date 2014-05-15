@@ -125,7 +125,7 @@ class {$model->getClassName()}Repository
              * And new version will have current time in start time
              */
             $secondBefore = date('Y-m-d H:i:s', strtotime($now) - 1);
-            $this->database->update('{$model->getName()}', array('v_end' => $now), $model->getPrimaryKey());
+            $this->database->update('{$model->getName()}', array('v_end' => $secondBefore), $model->getPrimaryKey());
             /**
              * Insert new version into database
              */
@@ -281,5 +281,37 @@ class {$model->getClassName()}Repository
             'version_date' => $version_date,
 {/if}
         ), 'many');
+    }
+
+    /**
+     * @param array $condition
+     */
+    public function findByPk($condition)
+    {
+        if (!$condition) {
+            throw new \Exception("Need condition to find model by PK");
+        }
+        $where = array();
+        foreach($condition as $k => $v) {
+            $where[] = "$k = :$k";
+        }
+        $query = "select * from {$name} where " . implode(' and ', $where);
+        $row = $this->database->fetchAssoc($query, $condition);
+        if (!$row) {
+            return null;
+        } else {
+            $key = $this->makeKey($row);
+            if ($this->keyExists($key)) {
+                return $this->getModelFromMap($key);
+            } else {
+                $model = $this->manager->create('{$model->getModelClass()}', array(
+                    'repository' => $this,
+                    'data' => $row,
+                ));
+                $this->registerModel($model);
+                return $model;
+            }
+        }
+
     }
 }
