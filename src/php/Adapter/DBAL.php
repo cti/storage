@@ -88,18 +88,20 @@ class DBAL extends Connection {
 
     public function fetchNow()
     {
-        if ($this->isOracle()) {
-            $query = "select sysdate from dual";
-        } elseif ($this->isPostgres()) {
-            $query = "select to_char(clock_timestamp(), 'YYYY-MM-DD HH24:MI:SS')";
-        } elseif ($this->isSQLite()) {
-            $query = "select date('now')";
-        } else {
-            $platform_name = $this->getDatabasePlatform()->getName();
-            throw new \Exception("Can't get nextval for DB type: $platform_name");
+        if(!isset($this->now)) {
+            if ($this->isOracle()) {
+                $query = "select sysdate from dual";
+            } elseif ($this->isPostgres()) {
+                $query = "select to_char(clock_timestamp(), 'YYYY-MM-DD HH24:MI:SS')";
+            } elseif ($this->isSQLite()) {
+                $query = "select date('now')";
+            } else {
+                $platform_name = $this->getDatabasePlatform()->getName();
+                throw new \Exception("Can't get nextval for DB type: $platform_name");
+            }
+            $this->now = $this->fetchColumn($query);
         }
-        $now = $this->fetchColumn($query);
-        return $now;
+        return $this->now;
     }
 
 }

@@ -11,6 +11,8 @@ class Test_20140421_171425
 {
     public function process(Schema $schema)
     {
+        $schema->setNamespace('public');
+
         $person = $schema->createModel('person', 'Пользователь', array(
             'login' => array(
                 'comment' => 'Имя пользователя',
@@ -60,5 +62,12 @@ class Test_20140421_171425
             ->usingAlias('owner')
             ->referencedBy('own_module')
         ;
+
+        // isolate model
+//        $exchange = $schema->createModel('exchange', 'Точка обмена', array(
+//            'key' => 'Ключ',
+//            'value' => 'Значение'
+//        ));
+//        $exchange->setNamespace('other');
     }
 }

@@ -26,6 +26,12 @@ class Schema
     protected $application;
 
     /**
+     * default model namespace
+     * @var string
+     */
+    protected $namespace;
+
+    /**
      * model list
      * @var Model[]
      */
@@ -46,12 +52,14 @@ class Schema
      */
     public function createModel($name, $comment, $properties = array())
     {
-        return $this->models[$name] = $this->manager->create('Cti\Storage\Component\Model', array(
+        $this->models[$name] = $this->manager->create('Cti\Storage\Component\Model', array(
                 'name' => $name,
                 'comment' => $comment, 
                 'properties' => $properties
             )
         );
+        $this->models[$name]->setNamespace($this->getNamespace());
+        return $this->models[$name];
     }
 
     public function removeModel($name)
@@ -218,5 +226,21 @@ class Schema
             }
         }
         return $sequences;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNamespace()
+    {
+        return $this->namespace;
+    }
+
+    /**
+     * @param string $namespace
+     */
+    public function setNamespace($namespace)
+    {
+        $this->namespace = $namespace;
     }
 }

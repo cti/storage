@@ -11,6 +11,11 @@ class Model
     /**
      * @var string
      */
+    protected $namespace;
+
+    /**
+     * @var string
+     */
     protected $name;
 
     /**
@@ -474,5 +479,21 @@ class Model
     public function removeSequence()
     {
         $this->sequence = null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNamespace()
+    {
+        return $this->namespace;
+    }
+
+    /**
+     * @param string $namespace
+     */
+    public function setNamespace($namespace)
+    {
+        $this->namespace = $namespace;
     }
 }

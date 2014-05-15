@@ -63,9 +63,10 @@ class DatabaseManager
 
         $now = $dbal->fetchNow();
 
-        $veryPastTime = date("Y-m-d H:i:s", time() - 10000);
-        $pastTime = date("Y-m-d H:i:s", time() - 5001);
-        $startTime = date("Y-m-d H:i:s", time() - 5000);
+        $time = strtotime($now);
+        $veryPastTime = date("Y-m-d H:i:s", $time - 10000);
+        $pastTime = date("Y-m-d H:i:s", $time - 5001);
+        $startTime = date("Y-m-d H:i:s", $time - 5000);
 
         $dbal->executeQuery("update person set v_start = :very_past, v_end = :past where v_end < '9999-12-31 23:59:59'",array(
             'very_past' => $veryPastTime,
