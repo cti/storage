@@ -10,34 +10,10 @@ use \Storage\Model\ModuleBase as Module;
 class {$model->getClassName()}Base
 {
 {foreach $model->getProperties() as $property}
-    /**
-     * {$property->getComment()}
-
-     * @var {$property->getType()}
-
-     */
-     protected ${$property->getName()};
-
-{if $property->getRelation()?}
-{var $relation = $property->getRelation()}
-{var $foreignModel = $schema->getModel($relation->getDestination())}
-{var $name = $relation->getDestinationAlias() ? $relation->getDestinationAlias() : $foreignModel->getName()}
-    /**
-     * {$name} property
-     * @var {$foreignModel->getClassName()}
-
-     */
-     protected ${$name};
-{/if}
+{include 'model/property.tpl'}
 {/foreach}
 {foreach $model->getReferences() as $reference}
-{var $source = $schema->getModel($reference->getSource())}
-{var $rb = $reference->getReferencedBy()}
-    /**
-     * @var {$source->getModelClass()}[]
-
-     */
-     protected ${$rb|pluralize};
+// references are temporary disabled
 {/foreach}
 
     /**
@@ -76,83 +52,37 @@ class {$model->getClassName()}Base
     }
 
 {foreach $model->getProperties() as $property}
-{var $name = $property->getName()}
-    /**
-     * {$property->getComment()}
+{include 'model/setter_and_getter.tpl'}
 
-     * @return {$property->getType()}
-
-     */
-    public function {$property->getGetter()}()
-    {
-       return $this->{$name};
-    }
-
-    /**
-     * Set {$name}
-
-     * @param {$property->getType()}
-
-     * @return {$model->getModelClass()}
-
-     */
-    public function {$property->getSetter()}(${$name})
-    {
-        if (!isset($this->_changes['{$name}'])) {
-            $this->_changes['{$name}'] = array(
-                'old' => $this->{$name}
-            );
-        }
-        $this->_changes['{$name}']['new'] = ${$name};
-        $this->{$name} = ${$name};
-        return $this;
-    }
-
-{if $property->getRelation()?}
-{var $relation = $property->getRelation()}
-{var $foreignModel = $schema->getModel($relation->getDestination())}
-{var $name = $relation->getDestinationAlias() ? $relation->getDestinationAlias() : $foreignModel->getName()}
-    /**
-     * Get {$name}
-
-     * @return {$foreignModel->getClassName()}
-
-     */
-    public function get{$name|camelcase}()
-    {
-        if (!$this->{$name}) {
-            $master = $this->getRepository()->getMaster();
-            $this->{$name} = $master->getRepository('{$relation->getDestination()}')->findByPk(array(
-    {foreach $relation->getProperties() as $relationProperty}
-                '{$relationProperty->getForeignName()}' => $this->{$relationProperty->getGetter()}(),
-    {/foreach}
-            ));
-        }
-        return $this->{$name};
-    }
-
-    /**
-     * Set {$name}
-
-     * @param {$foreignModel->getClassName()} ${$name}
-
-     * @return {$model->getModelClass()}
-
-     */
-    public function set{$name|camelcase}({$foreignModel->getClassName()} ${$name} = null)
-    {
-    {foreach $relation->getProperties() as $relationProperty}
-
-        $this->{$relationProperty->getSetter()}(null);
-    {/foreach}
-
-        if (${$name}) {
-{foreach $relation->getProperties() as $relationProperty}
-            $this->{$relationProperty->getSetter()}(${$name}->{$foreignModel->getProperty($relationProperty->getForeignName())->getGetter()}());
 {/foreach}
-        }
-        return $this;
+{foreach $model->getInReferences() as $reference}
+{var $linkModel = $schema->getModel($reference->getSource())}
+{var $oppositeModel = $generator->getOppositeModel($linkModel)}
+{if $linkModel->getBehaviour('link')}
+
+    public function get{$linkModel->getClassName()|pluralize}()
+    {
+        $linkRepository = $this->getRepository()->getMaster()->get{$linkModel->getClassName()|pluralize}();
+        return $linkRepository->findAll($this->getPrimaryKey());
     }
+
+    public function get{$linkModel->getClassName()}({$oppositeModel->getModelClass()} ${$oppositeModel->getName()})
+    {
+        $linkRepository = $this->getRepository()->getMaster()->get{$linkModel->getClassName()|pluralize}();
+        return $linkRepository->findOne(array_merge($this->getPrimaryKey(), ${$oppositeModel->getName()}->getPrimaryKey()));
+    }
+
+    public function add{$linkModel->getClassName()}({$oppositeModel->getModelClass()} ${$oppositeModel->getName()}, $data = array())
+    {
+        if ($this->get{$linkModel->getClassName()}(${$oppositeModel->getName()})) {
+            throw new \Exception("{$oppositeModel->getName()} already linked to {$model->getName()}");
+        }
+        $linkRepository = $this->getRepository()->getMaster()->get{$linkModel->getClassName()|pluralize}();
+        $data = array_merge($data, $this->getPrimaryKey());
+        $data = array_merge($data, ${$oppositeModel->getName()}->getPrimaryKey());
+        return $linkRepository->create($data)->save();
+    }
+
 
 {/if}
 {/foreach}

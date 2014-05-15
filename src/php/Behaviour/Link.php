@@ -29,6 +29,11 @@ class Link extends Behaviour
         }
     }
 
+    public function getList()
+    {
+        return $this->list;
+    }
+
     public function registerReference($modelName, $reference)
     {
         $this->references[$modelName] = $reference;

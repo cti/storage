@@ -55,6 +55,18 @@ class {$model->getClassName()}Repository
             'unsaved' => true,
         ));
     }
+{var $link = $model->getBehaviour('link')}
+{if $link?}
+{var $list = array_values($link->getList())}
+{var $firstModel = $list[0]}
+{var $secondModel = $list[1]}
+    public function createLink({$firstModel->getModelClass()} ${$firstModel->getName()}, {$secondModel->getModelClass()} ${$secondModel->getName()}, $data = array())
+    {
+        $data = array_merge($data, ${$firstModel->getName()}->getPrimaryKey());
+        $data = array_merge($data, ${$secondModel->getName()}->getPrimaryKey());
+        return $this->create($data);
+    }
+{/if}
 
     /**
      * Get Master instance

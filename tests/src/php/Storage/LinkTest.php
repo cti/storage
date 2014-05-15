@@ -14,6 +14,11 @@ class LinkTest extends \PHPUnit_Framework_TestCase
     protected $moduleRepository;
 
     /**
+     * @var \Storage\Repository\PersonFavoriteModuleLinkRepository
+     */
+    protected $favoriteModuleLinkRepository;
+
+    /**
      * @var \Cti\Storage\Adapter\DBAL
      */
     protected $dbal;
@@ -24,6 +29,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
         $master = getApplication()->getStorage()->getMaster();
         $this->personRepository = $master->getPersons();
         $this->moduleRepository = $master->getModules();
+        $this->favoriteModuleLinkRepository = $master->getPersonFavoriteModuleLinks();
         $this->dbal = getApplication()->getStorage()->getAdapter();
     }
 
@@ -64,14 +70,30 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     public function testManyToManyCreate()
     {
+        $this->markTestSkipped();
         \DatabaseManager::generateFakeRecords();
-        
+
+        $admin = $this->personRepository->findOne(array(
+            'login' => 'admin'
+        ));
+
+        $backend = $this->moduleRepository->findOne(array(
+            'name' => 'Backend'
+        ));
+
+        $link = $this->favoriteModuleLinkRepository->createLink($admin, $backend);
+        $this->assertNotNull($link);
+
+        $modules = $admin->getFavoriteModules();
+        $this->assertContains($modules, $backend);
+
 
         \DatabaseManager::clearTables();
     }
 
     public function testManyToManyFind()
     {
+        $this->markTestSkipped();
         \DatabaseManager::generateFakeRecords();
 
         \DatabaseManager::clearTables();
@@ -79,6 +101,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 
     public function testManyToManyDelete()
     {
+        $this->markTestSkipped();
         \DatabaseManager::generateFakeRecords();
 
         \DatabaseManager::clearTables();

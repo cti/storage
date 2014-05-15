@@ -25,8 +25,23 @@ class Model
     {
         $code = $this->fenom->render('model', array(
             'model' => $this->model,
-            'schema' => $this->schema
+            'schema' => $this->schema,
+            'generator' => $this,
         ));
         return $code;
     }
+
+    /**
+     * @param \Cti\Storage\Component\Model $linkModel
+     */
+    public function getOppositeModel($linkModel)
+    {
+        foreach($linkModel->getReferences() as $reference) {
+            if ($reference->getDestination() != $this->model->getName()) {
+                return $this->schema->getModel($reference->getDestination());
+            }
+        }
+    }
+
+
 }
