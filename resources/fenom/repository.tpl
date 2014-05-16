@@ -62,8 +62,13 @@ class {$model->getClassName()}Repository
 {var $secondModel = $list[1]}
     public function createLink({$firstModel->getModelClass()} ${$firstModel->getName()}, {$secondModel->getModelClass()} ${$secondModel->getName()}, $data = array())
     {
-        $data = array_merge($data, ${$firstModel->getName()}->getPrimaryKey());
-        $data = array_merge($data, ${$secondModel->getName()}->getPrimaryKey());
+{foreach $model->getReferences() as $reference}
+{var $remoteModel = $schema->getModel($reference->getDestination())}
+{foreach $reference->getProperties() as $property}
+{var $remoteProperty = $remoteModel->getProperty($property->getForeignName())}
+        $data['{$property->getName()}'] = ${$remoteModel->getName()}->{$remoteProperty->getGetter()}();
+{/foreach}
+{/foreach}
         return $this->create($data);
     }
 {/if}
@@ -173,6 +178,7 @@ class {$model->getClassName()}Repository
 
     /**
      * @param mixed ${$model->getName()}
+
      * @return String
      */
     public function makeKey(${$model->getName()})
@@ -234,6 +240,9 @@ class {$model->getClassName()}Repository
             return $models;
         } elseif ($mode === 'one') {
             $row = $this->database->fetchAssoc($query, $queryParams);
+            if (!$row) {
+                return null;
+            }
             $key = $this->makeKey($row);
             if ($this->keyExists($key)) {
                 return $this->getModelFromMap($key);

@@ -56,35 +56,8 @@ class {$model->getClassName()}Base
 
 {/foreach}
 {foreach $model->getInReferences() as $reference}
-{var $linkModel = $schema->getModel($reference->getSource())}
-{var $oppositeModel = $generator->getOppositeModel($linkModel)}
-{if $linkModel->getBehaviour('link')}
+{include 'model/reference.tpl'}
 
-    public function get{$linkModel->getClassName()|pluralize}()
-    {
-        $linkRepository = $this->getRepository()->getMaster()->get{$linkModel->getClassName()|pluralize}();
-        return $linkRepository->findAll($this->getPrimaryKey());
-    }
-
-    public function get{$linkModel->getClassName()}({$oppositeModel->getModelClass()} ${$oppositeModel->getName()})
-    {
-        $linkRepository = $this->getRepository()->getMaster()->get{$linkModel->getClassName()|pluralize}();
-        return $linkRepository->findOne(array_merge($this->getPrimaryKey(), ${$oppositeModel->getName()}->getPrimaryKey()));
-    }
-
-    public function add{$linkModel->getClassName()}({$oppositeModel->getModelClass()} ${$oppositeModel->getName()}, $data = array())
-    {
-        if ($this->get{$linkModel->getClassName()}(${$oppositeModel->getName()})) {
-            throw new \Exception("{$oppositeModel->getName()} already linked to {$model->getName()}");
-        }
-        $linkRepository = $this->getRepository()->getMaster()->get{$linkModel->getClassName()|pluralize}();
-        $data = array_merge($data, $this->getPrimaryKey());
-        $data = array_merge($data, ${$oppositeModel->getName()}->getPrimaryKey());
-        return $linkRepository->create($data)->save();
-    }
-
-
-{/if}
 {/foreach}
 
     /**

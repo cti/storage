@@ -447,11 +447,37 @@ class Model
     }
 
     /**
+     * @param String $modelName
+     * @return \Cti\Storage\Component\Reference
+     */
+    public function getOutReference($modelName)
+    {
+        foreach($this->references['out'] as $reference) {
+            if ($reference->getDestination() == $modelName) {
+                return $reference;
+            }
+        }
+    }
+
+    /**
      * @return \Cti\Storage\Component\Reference[]
      */
     public function getInReferences()
     {
         return $this->references['in'];
+    }
+
+    /**
+     * @param String $modelName
+     * @return \Cti\Storage\Component\Reference
+     */
+    public function getInReference($modelName)
+    {
+        foreach($this->references['in'] as $reference) {
+            if ($reference->getSource() == $modelName) {
+                return $reference;
+            }
+        }
     }
 
     /**

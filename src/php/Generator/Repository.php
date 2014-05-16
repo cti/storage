@@ -17,6 +17,12 @@ class Repository
      */
     protected $model;
 
+    /**
+     * @inject
+     * @var \Cti\Storage\Schema
+     */
+    protected $schema;
+
     public function getCode()
     {
         $fields = array();
@@ -26,6 +32,7 @@ class Repository
         $code = $this->fenom->render('repository', array(
             'model' => $this->model,
             'fields' => $fields,
+            'schema' => $this->schema,
         ));
         return $code;
     }
