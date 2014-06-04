@@ -34,6 +34,8 @@ class Storage extends Project implements Bootloader
      */
     protected $adapter;
 
+    public $prefix = '\Cti\Storage\\';
+
     public function init(\Cti\Core\Module\Cache $cache)
     {
         parent::init($cache);

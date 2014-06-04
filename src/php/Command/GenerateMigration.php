@@ -42,5 +42,6 @@ class GenerateMigration extends Command
 
         $fs = new Filesystem();
         $fs->dumpFile($filename, $migration);
+        echo 'Migration created. ' . $filename . PHP_EOL;
     }
 }

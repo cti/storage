@@ -26,6 +26,12 @@ class Schema
     protected $application;
 
     /**
+     * @inject
+     * @var \Cti\Storage\Converter\SchemaToArray
+     */
+    protected $schemaToArrayConverter;
+
+    /**
      * default model namespace
      * @var string
      */
@@ -243,4 +249,10 @@ class Schema
     {
         $this->namespace = $namespace;
     }
+
+    public function asArray()
+    {
+        return $this->schemaToArrayConverter->convert($this);
+    }
+
 }
