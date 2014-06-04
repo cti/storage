@@ -2,6 +2,7 @@
 
 ini_set('display_errors', 'on');
 error_reporting(E_ALL);
+define("TEST_ENVIRONMENT", true);
 
 $loader = include __DIR__.'/vendor/autoload.php';
 
