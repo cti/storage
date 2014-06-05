@@ -44,8 +44,8 @@ class {$model->getClassName()}Base
         $this->_repository = $repository;
         foreach($data as $k => $v) {
             $this->$k = $v;
-            $this->_unsaved = $unsaved;
         }
+        $this->_unsaved = $unsaved;
     }
 
 {foreach $model->getProperties() as $property}

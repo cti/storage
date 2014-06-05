@@ -59,6 +59,4 @@ class GenerateDatabase extends Command
             }
         }
     }
-
-
 }
