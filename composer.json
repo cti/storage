@@ -1,6 +1,6 @@
 {
     "name": "cti/storage",
-    "description": "Storage",
+    "description": "Database abstraction",
     "license": "MIT",
     "authors": [
         {
