@@ -24,7 +24,6 @@ class ShowSchema extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $schema = $this->application->getStorage()->getSchema();
-        $schema->asArray();
-//        echo json_encode($schema->asArray());
+        echo json_encode($schema->asArray());
     }
 } 
