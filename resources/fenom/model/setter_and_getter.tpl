@@ -36,7 +36,7 @@
     /**
      * Get {$name}
 
-     * @return {$foreignModel->getClassName()}
+     * @return {$foreignModel->getClassName()}Base
 
      */
     public function get{$name|camelcase}()
@@ -55,12 +55,12 @@
     /**
      * Set {$name}
 
-     * @param {$foreignModel->getClassName()} ${$name}
+     * @param {$foreignModel->getClassName()}Base ${$name}
 
      * @return {$model->getModelClass()}
 
      */
-    public function set{$name|camelcase}({$foreignModel->getClassName()} ${$name} = null)
+    public function set{$name|camelcase}({$foreignModel->getClassName()}Base ${$name} = null)
     {
         $this->{$name} = ${$name};
 
