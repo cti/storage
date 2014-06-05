@@ -22,8 +22,8 @@ class SchemaToArray
     protected function modelAsArray(Model $model) {
         $result = array(
             'pk' => $model->getPk(),
-            'has_log' => boolval($model->getBehaviour('log')),
-            'is_link' => boolval($model->getBehaviour('link')),
+            'has_log' => (bool) $model->getBehaviour('log'),
+            'is_link' => (bool) $model->getBehaviour('link'),
             'properties' => array(),
             'references' => array(),
         );
