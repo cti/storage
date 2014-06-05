@@ -90,8 +90,7 @@ class Property
                     $params = array('name' => $params[0], 'type' => $params[1], 'comment' => $params[2]);
                     break;
                 default:
-                    var_dump($params);
-                    throw new Exception("Error Processing property ");
+                    throw new Exception("Error Processing property" . PHP_EOL . var_export($params, true));
             }
         }
         $this->name = $params['name'];
