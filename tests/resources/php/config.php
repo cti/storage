@@ -3,8 +3,10 @@ return array(
     'Cti\Storage\Adapter\DBAL' => array(
         'user' => 'test',
         'password' => 'test',
-        'memory' => true,
-        'driver' => 'sqlite',
+        'host' => 'pg1',
+        'port' => '5432',
+        'dbname' => 'test',
+        'driver' => 'postgres',
     ),
     'Cti\Core\Application\Generator' => array(
         'modules' => array(
