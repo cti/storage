@@ -5,6 +5,7 @@ namespace Storage;
 use OutOfRangeException;
 
 {include 'blocks/comment.tpl'}
+
 class Master
 {
     /**

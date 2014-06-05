@@ -1,6 +1,6 @@
 {var $name = $property->getName()}
     /**
-     * {$property->getComment()}
+     * Get {$property->getComment()}
 
      * @return {$property->getType()}
 
@@ -62,19 +62,19 @@
      */
     public function set{$name|camelcase}({$foreignModel->getClassName()} ${$name} = null)
     {
-    {foreach $relation->getProperties() as $relationProperty}
+        $this->{$name} = ${$name};
 
+{foreach $relation->getProperties() as $relationProperty}
         $this->{$relationProperty->getSetter()}(null);
-    {/foreach}
+{/foreach}
 
         if (${$name}) {
 {foreach $relation->getProperties() as $relationProperty}
             $this->{$relationProperty->getSetter()}(${$name}->{$foreignModel->getProperty($relationProperty->getForeignName())->getGetter()}());
 {/foreach}
         }
-        $this->{$name} = null;
+
         return $this;
     }
-
 {/if}
 {/if}

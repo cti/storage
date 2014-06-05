@@ -6,15 +6,15 @@ use Storage\Repository\{$model->getClassName()}Repository as Repository;
 use \Storage\Model\ModuleBase as Module;
 
 {include 'blocks/comment.tpl'}
+
 class {$model->getClassName()}Base
 {
 {foreach $model->getProperties() as $property}
 {include 'model/property.tpl'}
 {/foreach}
 {foreach $model->getReferences() as $reference}
-// references are temporary disabled
+{include 'model/property_reference.tpl'}
 {/foreach}
-
     /**
      * model repository
      * @var {$model->getRepositoryClass()} 
@@ -56,7 +56,6 @@ class {$model->getClassName()}Base
 {include 'model/reference.tpl'}
 
 {/foreach}
-
     /**
      * Get model repository
      * @return {$model->getRepositoryClass()} 

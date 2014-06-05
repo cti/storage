@@ -4,7 +4,7 @@
      * @var {$property->getType()}
 
      */
-     protected ${$property->getName()};
+    protected ${$property->getName()};
 
 {if $property->getRelation()?}
 {var $relation = $property->getRelation()}
@@ -15,5 +15,6 @@
      * @var {$foreignModel->getClassName()}
 
      */
-     protected ${$name};
+    protected ${$name};
+
 {/if}
