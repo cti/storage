@@ -200,6 +200,7 @@ class Schema
                 include $file->getRealPath();
             }
             $this->application->getManager()->get($class)->process($this);
+            $this->setNamespace(null);
         }
     }
 

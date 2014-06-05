@@ -3,6 +3,7 @@
 namespace Cti\Storage\Component;
 
 use Cti\Core\String;
+use Cti\Storage\Exception;
 
 class Property
 {
@@ -84,10 +85,12 @@ class Property
         if(isset($params[0])) {
             // numeric keys
             switch(count($params)) {
+                case 4:
                 case 3:
                     $params = array('name' => $params[0], 'type' => $params[1], 'comment' => $params[2]);
                     break;
                 default:
+                    var_dump($params);
                     throw new Exception("Error Processing property ");
             }
         }
