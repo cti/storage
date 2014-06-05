@@ -3,7 +3,6 @@
 namespace Storage\Repository;
 
 {include 'blocks/comment.tpl'}
-
 class {$model->getClassName()}Repository
 {
     /**
@@ -95,6 +94,7 @@ class {$model->getClassName()}Repository
     /**
      * Delete model from repository map
      * @param {$model->getModelClass()} ${$name}
+
      */
     public function unregisterModel({$model->getModelClass()} ${$name})
     {

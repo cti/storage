@@ -17,5 +17,3 @@
      */
      protected ${$name};
 {/if}
-
-

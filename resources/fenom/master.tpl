@@ -16,7 +16,7 @@ class Master
 {foreach $schema->getModels() as $model}
     /**
      * Get {$model->getClassName()} repository
-     * @return {$model->getRepositoryClass()}
+     * @return {$model->getRepositoryClass()} 
      */
     public function get{$model->getClassNameMany()}()
     {
@@ -44,5 +44,4 @@ class Master
         $method = $map[$name];
         return $this->$method();
     }
-
 }

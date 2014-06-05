@@ -6,7 +6,6 @@ use Storage\Repository\{$model->getClassName()}Repository as Repository;
 use \Storage\Model\ModuleBase as Module;
 
 {include 'blocks/comment.tpl'}
-
 class {$model->getClassName()}Base
 {
 {foreach $model->getProperties() as $property}
@@ -18,8 +17,7 @@ class {$model->getClassName()}Base
 
     /**
      * model repository
-     * @var {$model->getRepositoryClass()}
-
+     * @var {$model->getRepositoryClass()} 
      */
     protected $_repository;
 
@@ -36,8 +34,7 @@ class {$model->getClassName()}Base
     protected $_unsaved = false;
 
     /**
-     * create new {$model->getName()}
-
+     * {$model->getClassName()} constructor
      * @param {$model->getRepositoryClass()} $repository
      * @param array $data
      * @param boolean $unsaved
@@ -62,7 +59,7 @@ class {$model->getClassName()}Base
 
     /**
      * Get model repository
-     * @return {$model->getRepositoryClass()}
+     * @return {$model->getRepositoryClass()} 
      */
     public function getRepository()
     {
@@ -71,8 +68,7 @@ class {$model->getClassName()}Base
 
     /**
      * Save item in repository
-     * @return {$model->getModelClass()}
-
+     * @return {$model->getModelClass()} 
      */
     public function save()
     {
@@ -106,7 +102,7 @@ class {$model->getClassName()}Base
     }
 
     /**
-     * Get primary key of model
+     * Get model primary key
      */
     public function getPrimaryKey()
     {
@@ -117,6 +113,10 @@ class {$model->getClassName()}Base
         );
     }
 
+    /**
+     * Convert model to array
+     * @return array
+     */
     public function asArray()
     {
         return array(

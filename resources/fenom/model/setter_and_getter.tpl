@@ -11,7 +11,7 @@
     }
 
     /**
-     * Set {$name}
+     * Set {$property->getComment()}
 
      * @param {$property->getType()}
 
@@ -29,7 +29,6 @@
         $this->{$name} = ${$name};
         return $this;
     }
-
 {if $property->getRelation()?}
 {var $relation = $property->getRelation()}
 {var $foreignModel = $schema->getModel($relation->getDestination())}
