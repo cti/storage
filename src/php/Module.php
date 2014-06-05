@@ -30,7 +30,6 @@ class Module extends Project implements Bootloader
         $init = $application->getManager()->getInitializer();
         $init->after('Cti\Core\Module\Console', array($this, 'registerCommands'));
         $init->after('Cti\Core\Module\Fenom', array($this, 'addSource'));
-
     }
 
     public function registerCommands(Console $console, Application $application)

@@ -212,6 +212,16 @@ class Model
         $this->links[$alias] = $parent;
     }
 
+    public function setPk($array)
+    {
+        foreach($array as $k) {
+            if(!$this->hasProperty($k)) {
+                throw new Exception(sprintf('Property %s not found!', $k));
+            }
+        }
+        $this->pk = $array;
+    }
+
     /**
      * @return array
      */
