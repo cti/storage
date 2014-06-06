@@ -48,29 +48,34 @@ class GenerateFiles extends Command
             ))
         );
 
-        foreach($schema->getModels() as $repositoryGenerator) {
+        foreach($schema->getModels() as $model) {
 
-            $path = $this->application->getProject()->getPath('build php Storage Model ' . $repositoryGenerator->getClassName() . 'Base.php');
             $modelGenerator = $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
-                'model' => $repositoryGenerator
+                'model' => $model
             ));
             $modelSource = $modelGenerator->getCode();
+            $path = $this->application->getProject()->getPath('build php Storage Model ' . $model->getClassName() . 'Base.php');
+            $fs->dumpFile($path, $modelSource);
 
-            $fs->dumpFile(
-                $path,
-                $modelSource
-            );
-
-            $path = $this->application->getProject()->getPath('build php Storage Repository ' . $repositoryGenerator->getClassName() . 'Repository.php');
             $repositoryGenerator = $this->application->getManager()->create('Cti\Storage\Generator\Repository', array(
-                'model' => $repositoryGenerator
+                'model' => $model
             ));
 
             $repositorySource = $repositoryGenerator->getCode();
-            $fs->dumpFile(
-                $path,
-                $repositorySource
-            );
+            $path = $this->application->getProject()->getPath('build php Storage Repository ' . $model->getClassName() . 'Repository.php');
+            $fs->dumpFile($path, $repositorySource);
+
+            $coffeeGenerator = $this->application->getManager()->create('Cti\Storage\Generator\Coffee', array(
+                'model' => $model
+            ));
+
+            $generatedSource = $coffeeGenerator->getGeneratedCode();
+            $path = $this->application->getProject()->getPath('build coffee Model Generated ' . $model->getClassName() . '.coffee');
+            $fs->dumpFile($path, $generatedSource);
+
+            $modelSource = $coffeeGenerator->getModelCode();
+            $path = $this->application->getProject()->getPath('build coffee Model ' . $model->getClassName() . '.coffee');
+            $fs->dumpFile($path, $modelSource);
 
 //            if($model->hasOwnQuery()) {
 //                $fs->dumpFile(

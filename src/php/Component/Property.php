@@ -141,6 +141,14 @@ class Property
         }
     }
 
+    public function getJavascriptType()
+    {
+        if($this->type == 'datetime') {
+            return 'date';
+        }
+        return $this->type;
+    }
+
     /**
      * @param array $override
      * @return Property

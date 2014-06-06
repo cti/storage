@@ -5,6 +5,7 @@ namespace Cti\Storage;
 use Build\Application;
 use Cti\Core\Application\Bootloader;
 use Cti\Core\Module\Cache;
+use Cti\Core\Module\Coffee;
 use Cti\Core\Module\Console;
 use Cti\Core\Module\Fenom;
 use Cti\Core\Module\Project;
@@ -29,7 +30,9 @@ class Module extends Project implements Bootloader
     {
         $init = $application->getManager()->getInitializer();
         $init->after('Cti\Core\Module\Console', array($this, 'registerCommands'));
-        $init->after('Cti\Core\Module\Fenom', array($this, 'addSource'));
+        $init->after('Cti\Core\Module\Fenom', array($this, 'addFenomSource'));
+        $init->after('Cti\Core\Module\Coffee', array($this, 'addCoffeeSource'));
+
     }
 
     public function registerCommands(Console $console, Application $application)
@@ -39,10 +42,14 @@ class Module extends Project implements Bootloader
         }
     }
 
-    public function addSource(Fenom $fenom)
+    public function addFenomSource(Fenom $fenom)
     {
         $fenom->addSource($this->getPath('resources fenom'));
+    }
 
+    public function addCoffeeSource(Coffee $coffee)
+    {
+        $coffee->addSource($this->application->getProject()->getPath('build coffee'));
     }
 
     public function getSchema()
