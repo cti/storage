@@ -37,7 +37,6 @@
      * Get {$name}
 
      * @return {$foreignModel->getClassName()}Base
-
      */
     public function get{$name|camelcase}()
     {
