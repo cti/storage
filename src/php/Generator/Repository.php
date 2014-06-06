@@ -29,7 +29,7 @@ class Repository
         foreach($this->model->getProperties() as $property) {
             $fields[] = $property->getName();
         }
-        $code = $this->fenom->render('repository', array(
+        $code = $this->fenom->render('php repository', array(
             'model' => $this->model,
             'fields' => $fields,
             'schema' => $this->schema,

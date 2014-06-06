@@ -2,7 +2,7 @@
 
 namespace Storage\Repository;
 
-{include 'blocks/comment.tpl'}
+{include 'php/blocks/comment.tpl'}
 
 class {$model->getClassName()}Repository
 {

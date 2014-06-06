@@ -4,7 +4,7 @@ namespace Storage;
 
 use OutOfRangeException;
 
-{include 'blocks/comment.tpl'}
+{include 'php/blocks/comment.tpl'}
 
 class Master
 {
