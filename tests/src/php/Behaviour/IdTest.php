@@ -29,7 +29,7 @@ class IdTest extends \PHPUnit_Framework_TestCase
         $id = $test->getProperty('id_test');
 
         $this->assertSame($id->getType(), 'integer');
-        $this->assertSame($id->getComment(), 'identifier');
+        $this->assertSame($id->getComment(), 'Identifier');
         $this->assertSame($id->getRequired(), true, "Need to be notNull field");
     }
 }

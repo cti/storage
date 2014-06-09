@@ -25,7 +25,7 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                     'pk' => array('id_person', 'v_end'),
                     'properties' => array(
                         'id_person' => array(
-                            'comment' => 'identifier',
+                            'comment' => 'Identifier',
                             'type' => 'integer',
                             'required' => true,
                         ),
@@ -45,7 +45,7 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                             'required' => false,
                         ),
                         'id_module_default_module' => array(
-                            'comment' => 'default_module link',
+                            'comment' => 'Default_module link',
                             'type' => 'integer',
                             'required' => false,
                         ),
@@ -74,7 +74,7 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                     'pk' => array('id_module'),
                     'properties' => array(
                         'id_module' => array(
-                            'comment' => 'identifier',
+                            'comment' => 'Identifier',
                             'type' => 'integer',
                             'required' => true,
                         ),
@@ -84,7 +84,7 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                             'required' => false,
                         ),
                         'id_person_owner' => array(
-                            'comment' => 'owner link',
+                            'comment' => 'Owner link',
                             'type' => 'integer',
                             'required' => false,
                         )
@@ -104,12 +104,12 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                     'is_link' => true,
                     'properties' => array(
                         'id_person' => array(
-                            'comment' => 'person link',
+                            'comment' => 'Person link',
                             'type' => 'integer',
                             'required' => true,
                         ),
                         'id_module_favorite_module' => array(
-                            'comment' => 'favorite_module link',
+                            'comment' => 'Favorite_module link',
                             'type' => 'integer',
                             'required' => true,
                         ),
@@ -148,12 +148,12 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                     'is_link' => true,
                     'properties' => array(
                         'id_module' => array(
-                            'comment' => 'module link',
+                            'comment' => 'Module link',
                             'type' => 'integer',
                             'required' => true,
                         ),
                         'id_person_developer' => array(
-                            'comment' => 'developer link',
+                            'comment' => 'Developer link',
                             'type' => 'integer',
                             'required' => true,
                         ),
