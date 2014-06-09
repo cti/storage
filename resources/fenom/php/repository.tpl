@@ -2,6 +2,8 @@
 
 namespace Storage\Repository;
 
+{include 'php/model/model_use.tpl'}
+
 {include 'php/blocks/comment.tpl'}
 
 class {$model->getClassName()}Repository
@@ -32,7 +34,7 @@ class {$model->getClassName()}Repository
 
     /**
      * Container for loaded or saved models
-     * @var {$model->getModelClass()}[]
+     * @var {$model->getClassName()}[]
      */
     protected $map = array();
 
@@ -42,9 +44,9 @@ class {$model->getClassName()}Repository
     }
 
     /**
-     * Create new Person instance
+     * Create new {$model->getName()} instance
      * @param array $data
-     * @return {$model->getModelClass()}
+     * @return {$model->getClassName()}
 
      */
     public function create($data = array())
@@ -52,7 +54,7 @@ class {$model->getClassName()}Repository
         return $this->manager->create('{$model->getModelClass()}', array(
             'repository' => $this,
             'data' => $data,
-            'unsaved' => true,
+            'saved' => false,
         ));
     }
 {var $link = $model->getBehaviour('link')}
@@ -60,7 +62,16 @@ class {$model->getClassName()}Repository
 {var $list = array_values($link->getList())}
 {var $firstModel = $list[0]}
 {var $secondModel = $list[1]}
-    public function createLink({$firstModel->getModelClass()} ${$firstModel->getName()}, {$secondModel->getModelClass()} ${$secondModel->getName()}, $data = array())
+    /**
+     * Create new {$model->getName()} instance
+     * @param {$firstModel->getClassName()} ${$firstModel->getName()}
+
+     * @param {$secondModel->getClassName()} ${$secondModel->getName()}
+
+     * @return {$model->getClassName()}
+
+     */
+    public function createLink({$firstModel->getClassName()} ${$firstModel->getName()}, {$secondModel->getClassName()} ${$secondModel->getName()}, $data = array())
     {
 {foreach $model->getReferences() as $reference}
 {var $remoteModel = $schema->getModel($reference->getDestination())}
@@ -85,20 +96,20 @@ class {$model->getClassName()}Repository
 {var $name = $model->getName()}
     /**
      * Register model in repository map
-     * @param {$model->getModelClass()} ${$name}
+     * @param {$model->getClassName()} ${$name}
 
      */
-    public function registerModel({$model->getModelClass()} ${$name})
+    public function registerModel({$model->getClassName()} ${$name})
     {
         $this->map[$this->makeKey(${$name})] = ${$name};
     }
 
     /**
      * Delete model from repository map
-     * @param {$model->getModelClass()} ${$name}
+     * @param {$model->getClassName()} ${$name}
 
      */
-    public function unregisterModel({$model->getModelClass()} ${$name})
+    public function unregisterModel({$model->getClassName()} ${$name})
     {
         unset($this->map[$this->makeKey(${$name})]);
     }
@@ -115,13 +126,13 @@ class {$model->getClassName()}Repository
 
     /**
      * Save model into database and repository registry
-     * @param {$model->getModelClass()} $model
+     * @param {$model->getClassName()} $model
      * @param array $data
-     * @param boolean @unsaved
+     * @param boolean @saved
      */
-    public function save({$model->getModelClass()} $model, $data, $unsaved)
+    public function save({$model->getClassName()} $model, $data, $saved)
     {
-        if ($unsaved) {
+        if (!$saved) {
 {if $model->getBehaviour('id')?}
             $id = $this->database->fetchNextvalFromSequence('sq_{$model->getName()}');
             $data['id_{$model->getName()}'] = $id;
@@ -163,9 +174,9 @@ class {$model->getClassName()}Repository
     }
 
     /**
-     * @param {$model->getModelClass()} $model
+     * @param {$model->getClassName()} $model
      */
-    public function delete({$model->getModelClass()} $model)
+    public function delete({$model->getClassName()} $model)
     {
         $this->unregisterModel($model);
 {if $model->getBehaviour('log')?}
@@ -203,7 +214,7 @@ class {$model->getClassName()}Repository
     /**
      * @param array $params
      * @param String $mode
-     * @return {$model->getModelClass()}[]
+     * @return {$model->getClassName()}[]
      */
     public function find($params, $mode = 'many')
     {
@@ -234,6 +245,7 @@ class {$model->getClassName()}Repository
                     $model = $this->manager->create('{$model->getModelClass()}', array(
                         'repository' => $this,
                         'data' => $row,
+                        'saved' => true,
                     ));
                     $this->registerModel($model);
                     $models[] = $model;
@@ -252,6 +264,7 @@ class {$model->getClassName()}Repository
             $model = $this->manager->create('{$model->getModelClass()}', array(
                 'repository' => $this,
                 'data' => $row,
+                'saved' => true,
             ));
             $this->registerModel($model);
             return $model;
@@ -263,7 +276,7 @@ class {$model->getClassName()}Repository
 {if $log?}
      * @param String $version_date
 {/if}
-     * @return {$model->getModelClass()}
+     * @return {$model->getClassName()}
 
      */
     public function findOne($condition = array(){if $log?}, $version_date = null{/if})
@@ -286,7 +299,7 @@ class {$model->getClassName()}Repository
 {if $log?}
      * @param String $version_date
 {/if}
-     * @return {$model->getModelClass()}[]
+     * @return {$model->getClassName()}[]
      */
     public function findAll($condition = array(){if $log?}, $version_date = null{/if})
     {
@@ -330,6 +343,7 @@ class {$model->getClassName()}Repository
                 $model = $this->manager->create('{$model->getModelClass()}', array(
                     'repository' => $this,
                     'data' => $row,
+                    'saved' => true,
                 ));
                 $this->registerModel($model);
                 return $model;

@@ -8,7 +8,7 @@ class LogTest extends \PHPUnit_Framework_TestCase
 {
     function testLog()
     {
-        $manager = new Manager();
+        $manager = getApplication()->getManager();
 
         /**
          * @var \Cti\Storage\Component\Model $model

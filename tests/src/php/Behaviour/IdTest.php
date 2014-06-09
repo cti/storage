@@ -8,7 +8,7 @@ class IdTest extends \PHPUnit_Framework_TestCase
 {
     function testId()
     {
-        $manager = new Manager();
+        $manager = getApplication()->getManager();
 
         /**
          * @var \Cti\Storage\Component\Model $test

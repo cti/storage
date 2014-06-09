@@ -37,7 +37,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
         $returnedModel = $this->schema->getModel("test");
 
         $this->assertNotEmpty($returnedModel);
-        $this->assertEquals("\\Storage\\Model\\TestBase", $returnedModel->getModelClass());
+        $this->assertEquals("Storage\\Model\\TestBase", $returnedModel->getModelClass());
     }
 
     public function testHasOne()
