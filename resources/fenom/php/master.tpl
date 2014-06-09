@@ -25,6 +25,16 @@ class Master
     }
 
 {/foreach}
+    /**
+     * create new instance
+     * @param  string $name model name
+     * @param  array  $data
+     * @return mixed
+     */
+    public function create($name, $data)
+    {
+        return $this->getRepository($name)->create($data);
+    }
 
     /**
      * Get repository by model nick
