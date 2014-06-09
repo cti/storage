@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-class GenerateFiles extends Command
+class GenerateStorage extends Command
 {
     /**
      * @inject
@@ -27,7 +27,7 @@ class GenerateFiles extends Command
     protected function configure()
     {
         $this
-            ->setName('generate:files')
+            ->setName('generate:storage')
             ->setDescription('Generate php classes')
         ;
     }
