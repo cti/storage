@@ -96,7 +96,7 @@ class Reference
                 $this->properties[$name] = $source->addProperty($name, new Property(array(
                     'name' => $name,
                     'foreignName' => $key,
-                    'comment' => $this->getDestinationAlias().' link',
+                    'comment' => ucfirst($this->getDestinationAlias()).' link',
                     'type' => $property->getType(),
                     'relation' => $this,
                     'readonly' => true,
