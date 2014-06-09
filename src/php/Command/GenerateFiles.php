@@ -43,7 +43,7 @@ class GenerateFiles extends Command
 
         $fs->dumpFile(
             $this->application->getProject()->getPath('build php Storage Master.php'),
-            $this->fenom->render("php master", array(
+            $this->fenom->render("master", array(
                 'schema' => $schema
             ))
         );

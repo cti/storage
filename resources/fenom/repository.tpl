@@ -2,9 +2,9 @@
 
 namespace Storage\Repository;
 
-{include 'php/model/model_use.tpl'}
+{include 'model/model_use.tpl'}
 
-{include 'php/blocks/comment.tpl'}
+{include 'blocks/comment.tpl'}
 
 class {$model->getClassName()}Repository
 {

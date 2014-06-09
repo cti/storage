@@ -23,7 +23,7 @@ class Model
 
     public function getCode()
     {
-        $code = $this->fenom->render('php model', array(
+        $code = $this->fenom->render('model', array(
             'model' => $this->model,
             'schema' => $this->schema,
             'generator' => $this,

@@ -10,7 +10,7 @@ return array(
     ),
     'Cti\Core\Application\Generator' => array(
         'modules' => array(
-            'storage' => 'Cti\Storage\Module'
+            'Cti\Storage\Storage'
         )
     ),
     'Cti\Core\Module\Project' => array(

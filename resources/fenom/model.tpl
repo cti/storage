@@ -2,18 +2,18 @@
 
 namespace Storage\Model;
 
-{include 'php/model/model_use.tpl'}
+{include 'model/model_use.tpl'}
 use Storage\Repository\{$model->getClassName()}Repository as Repository;
 
-{include 'php/blocks/comment.tpl'}
+{include 'blocks/comment.tpl'}
 
 class {$model->getClassName()}Base
 {
 {foreach $model->getProperties() as $property}
-{include 'php/model/property.tpl'}
+{include 'model/property.tpl'}
 {/foreach}
 {foreach $model->getReferences() as $reference}
-{include 'php/model/property_reference.tpl'}
+{include 'model/property_reference.tpl'}
 {/foreach}
     /**
      * model repository
@@ -49,11 +49,11 @@ class {$model->getClassName()}Base
     }
 
 {foreach $model->getProperties() as $property}
-{include 'php/model/setter_and_getter.tpl'}
+{include 'model/setter_and_getter.tpl'}
 
 {/foreach}
 {foreach $model->getInReferences() as $reference}
-{include 'php/model/reference.tpl'}
+{include 'model/reference.tpl'}
 
 {/foreach}
     /**
