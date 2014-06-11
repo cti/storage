@@ -2,6 +2,8 @@
 
 namespace Storage;
 
+use Cti\Di\Manager;
+use Cti\Storage\Adapter\DBAL;
 use OutOfRangeException;
 
 {include 'blocks/comment.tpl'}
@@ -10,9 +12,15 @@ class Master
 {
     /**
      * @inject
-     * @var \Cti\Di\Manager
+     * @var Manager
      */
     protected $manager;
+
+    /**
+     * @inject
+     * @var DBAL
+     */
+    protected $database;
 
     /**
      * create new instance
@@ -76,5 +84,13 @@ class Master
         }
         $method = $map[$name];
         return $this->$method();
+    }
+
+    /**
+     * @return DBAL
+     */
+    public function getDatabase()
+    {
+        return $this->database;
     }
 }

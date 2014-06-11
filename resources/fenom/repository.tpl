@@ -3,6 +3,7 @@
 namespace Storage\Repository;
 
 {include 'model/model_use.tpl'}
+use Cti\Storage\Adapter\DBAL;
 
 {include 'blocks/comment.tpl'}
 
@@ -16,7 +17,7 @@ class {$model->getClassName()}Repository
 
     /**
      * @inject
-     * @var \Cti\Storage\Adapter\DBAL
+     * @var DBAL
      */
     protected $database;
 
@@ -218,22 +219,28 @@ class {$model->getClassName()}Repository
      */
     public function find($params, $mode = 'many')
     {
-        $query = "SELECT * from {$model->getName()} where ";
-        $where = array("1=1");
-        $queryParams = array();
+        if(isset($params['query'])) {
+            $query = $params['query'];
+            $queryParams = isset($params['condition']) ? $params['condition'] : array();
 
-        if (isset($params['condition'])) {
-            foreach($params['condition'] as $key => $value) {
-                $where[] = "$key = :$key";
-                $queryParams[$key] = $value;
+        } else {
+            $query = "SELECT * from {$model->getName()} where ";
+            $where = array("1=1");
+            $queryParams = array();
+
+            if (isset($params['condition'])) {
+                foreach($params['condition'] as $key => $value) {
+                    $where[] = "$key = :$key";
+                    $queryParams[$key] = $value;
+                }
             }
-        }
 {if $log?}
-        $where[] = ":_version_date between v_start and v_end";
-        $queryParams['_version_date'] = $params['version_date'];
+            $where[] = ":_version_date between v_start and v_end";
+            $queryParams['_version_date'] = $params['version_date'];
 {/if}
+            $query .= implode(" AND ", $where);
+        }
 
-        $query .= implode(" AND ", $where);
         if ($mode === 'many') {
             $rows = $this->database->fetchAll($query, $queryParams);
             $models = array();
@@ -269,6 +276,19 @@ class {$model->getClassName()}Repository
             $this->registerModel($model);
             return $model;
         }
+    }
+
+    /**
+     * @param string $where
+     * @param array  $condition
+     * @return {$model->getClassName()}[]
+     */
+    public function findWhere($where, $condition = array())
+    {
+        return $this->find(array(
+            'query' => 'select * from {$model->getName()} where ' . $where,
+            'condition' => $condition,
+        ), 'many');
     }
 
     /**
@@ -350,5 +370,13 @@ class {$model->getClassName()}Repository
             }
         }
 
+    }
+
+    /**
+     * @return DBAL
+     */
+    public function getDatabase()
+    {
+        return $this->database;
     }
 }

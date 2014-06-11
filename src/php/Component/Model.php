@@ -100,6 +100,11 @@ class Model
             $this->model_class = 'Model\\' . $this->class_name;
         }
 
+        $repository_file = $this->application->getProject()->getPath('src php Repository ' . $this->class_name . '.php');
+        if(file_exists($repository_file)) {
+            $this->repository_class = 'Repository\\' . $this->class_name;
+        }
+
         if(count($this->properties)) {
             $properties = $this->properties;
             $this->properties = array();
