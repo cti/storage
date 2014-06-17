@@ -56,12 +56,13 @@ class Schema
      * @param array $properties
      * @return Model
      */
-    public function createModel($name, $comment, $properties = array())
+    public function createModel($name, $comment, $properties = array(), $pk = array())
     {
         $this->models[$name] = $this->manager->create('Cti\Storage\Component\Model', array(
                 'name' => $name,
                 'comment' => $comment, 
-                'properties' => $properties
+                'properties' => $properties,
+                'pk' => $pk,
             )
         );
         $this->models[$name]->setNamespace($this->getNamespace());
