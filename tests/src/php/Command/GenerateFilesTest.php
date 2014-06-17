@@ -14,11 +14,11 @@ class GenerateFilesTest extends \PHPUnit_Framework_TestCase
         /**
          * @var $generator \Cti\Storage\Command\GenerateFiles
          */
-        $generator = $application->getConsole()->find('generate:files');
+        $generator = $application->getConsole()->find('generate:storage');
 
 
         $input = new ArrayInput(array(
-            'command' => 'generate:files',
+            'command' => 'generate:storage',
         ));
 
         $output = new NullOutput;

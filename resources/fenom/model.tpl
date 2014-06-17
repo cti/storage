@@ -2,22 +2,22 @@
 
 namespace Storage\Model;
 
+{include 'model/model_use.tpl'}
 use Storage\Repository\{$model->getClassName()}Repository as Repository;
-use \Storage\Model\ModuleBase as Module;
 
-{include 'php/blocks/comment.tpl'}
+{include 'blocks/comment.tpl'}
 
 class {$model->getClassName()}Base
 {
 {foreach $model->getProperties() as $property}
-{include 'php/model/property.tpl'}
+{include 'model/property.tpl'}
 {/foreach}
 {foreach $model->getReferences() as $reference}
-{include 'php/model/property_reference.tpl'}
+{include 'model/property_reference.tpl'}
 {/foreach}
     /**
      * model repository
-     * @var {$model->getRepositoryClass()} 
+     * @var Repository
      */
     protected $_repository;
 
@@ -28,37 +28,37 @@ class {$model->getClassName()}Base
      protected $_changes = array();
 
     /**
-     * unsaved state
+     * saved state
      * @var boolean
      */
-    protected $_unsaved = false;
+    protected $_saved = false;
 
     /**
      * {$model->getClassName()} constructor
-     * @param {$model->getRepositoryClass()} $repository
+     * @param Repository $repository
      * @param array $data
-     * @param boolean $unsaved
+     * @param boolean $saved
      */
-    public function __construct(Repository $repository, $data = array(), $unsaved = false)
+    public function __construct(Repository $repository, $data = array(), $saved = false)
     {
         $this->_repository = $repository;
         foreach($data as $k => $v) {
             $this->$k = $v;
         }
-        $this->_unsaved = $unsaved;
+        $this->_saved = $saved;
     }
 
 {foreach $model->getProperties() as $property}
-{include 'php/model/setter_and_getter.tpl'}
+{include 'model/setter_and_getter.tpl'}
 
 {/foreach}
 {foreach $model->getInReferences() as $reference}
-{include 'php/model/reference.tpl'}
+{include 'model/reference.tpl'}
 
 {/foreach}
     /**
      * Get model repository
-     * @return {$model->getRepositoryClass()} 
+     * @return Repository 
      */
     public function getRepository()
     {
@@ -67,12 +67,12 @@ class {$model->getClassName()}Base
 
     /**
      * Save item in repository
-     * @return {$model->getModelClass()} 
+     * @return {$model->getClassName()} 
      */
     public function save()
     {
         $changes = array();
-        if ($this->_unsaved === true) {
+        if (!$this->_saved) {
             $changes = $this->asArray();
         } else {
             foreach($this->_changes as $k => $change) {
@@ -82,10 +82,10 @@ class {$model->getClassName()}Base
             }
         }
         if (count($changes)) {
-            $this->getRepository()->save($this, $changes, $this->_unsaved);
+            $this->getRepository()->save($this, $changes, $this->_saved);
             $this->_changes = array();
         }
-        $this->_unsaved = false;
+        $this->_saved = true;
         return $this;
     }
 
@@ -94,14 +94,15 @@ class {$model->getClassName()}Base
      */
     public function delete()
     {
-        if ($this->_unsaved) {
-            throw new \Exception("Model {$model->getName()} is unsaved. Delete forbidden.");
+        if (!$this->_saved) {
+            throw new \Exception("Model {$model->getName()} is saved. Delete forbidden.");
         }
         $this->getRepository()->delete($this);
     }
 
     /**
      * Get model primary key
+     * @return array
      */
     public function getPrimaryKey()
     {

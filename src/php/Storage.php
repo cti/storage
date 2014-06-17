@@ -34,7 +34,7 @@ class Storage extends Project implements Bootloader
      */
     protected $adapter;
 
-    public $prefix = '\Cti\Storage\\';
+    public $prefix = 'Cti\Storage\\';
 
     public function init(\Cti\Core\Module\Cache $cache)
     {
@@ -77,7 +77,7 @@ class Storage extends Project implements Bootloader
     public function boot(Application $application)
     {
         $initializer = $application->getManager()->getInitializer();
-        $initializer->before('Cti\Core\Module\Console', array($this, 'registerCommands'));
+        $initializer->after('Cti\Core\Module\Console', array($this, 'registerCommands'));
         $initializer->after('Cti\Core\Module\Fenom', array($this, 'registerFenomSource'));
     }
 

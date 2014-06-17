@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-class GenerateFiles extends Command
+class GenerateStorage extends Command
 {
     /**
      * @inject
@@ -27,7 +27,7 @@ class GenerateFiles extends Command
     protected function configure()
     {
         $this
-            ->setName('generate:files')
+            ->setName('generate:storage')
             ->setDescription('Generate php classes')
         ;
     }
@@ -43,34 +43,39 @@ class GenerateFiles extends Command
 
         $fs->dumpFile(
             $this->application->getProject()->getPath('build php Storage Master.php'),
-            $this->fenom->render("php master", array(
+            $this->fenom->render("master", array(
                 'schema' => $schema
             ))
         );
 
-        foreach($schema->getModels() as $repositoryGenerator) {
+        foreach($schema->getModels() as $model) {
 
-            $path = $this->application->getProject()->getPath('build php Storage Model ' . $repositoryGenerator->getClassName() . 'Base.php');
             $modelGenerator = $this->application->getManager()->create('Cti\Storage\Generator\Model', array(
-                'model' => $repositoryGenerator
+                'model' => $model
             ));
             $modelSource = $modelGenerator->getCode();
+            $path = $this->application->getProject()->getPath('build php Storage Model ' . $model->getClassName() . 'Base.php');
+            $fs->dumpFile($path, $modelSource);
 
-            $fs->dumpFile(
-                $path,
-                $modelSource
-            );
-
-            $path = $this->application->getProject()->getPath('build php Storage Repository ' . $repositoryGenerator->getClassName() . 'Repository.php');
             $repositoryGenerator = $this->application->getManager()->create('Cti\Storage\Generator\Repository', array(
-                'model' => $repositoryGenerator
+                'model' => $model
             ));
 
             $repositorySource = $repositoryGenerator->getCode();
-            $fs->dumpFile(
-                $path,
-                $repositorySource
-            );
+            $path = $this->application->getProject()->getPath('build php Storage Repository ' . $model->getClassName() . 'Repository.php');
+            $fs->dumpFile($path, $repositorySource);
+
+            $coffeeGenerator = $this->application->getManager()->create('Cti\Storage\Generator\Coffee', array(
+                'model' => $model
+            ));
+
+            $generatedSource = $coffeeGenerator->getGeneratedCode();
+            $path = $this->application->getProject()->getPath('build coffee Model Generated ' . $model->getClassName() . '.coffee');
+            $fs->dumpFile($path, $generatedSource);
+
+            $modelSource = $coffeeGenerator->getModelCode();
+            $path = $this->application->getProject()->getPath('build coffee Model ' . $model->getClassName() . '.coffee');
+            $fs->dumpFile($path, $modelSource);
 
 //            if($model->hasOwnQuery()) {
 //                $fs->dumpFile(

@@ -180,6 +180,10 @@ class Schema
 
         $finder = new Finder();
 
+        if(!is_dir($project->getPath('resources php migrations'))) {
+            return true;
+        }
+
         $finder
             ->files()
             ->name("*.php")

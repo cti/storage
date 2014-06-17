@@ -77,7 +77,8 @@ class Model
     protected $links = array();
 
     /**
-     * @var \Cti\Core\Application
+     * @inject
+     * @var \Build\Application
      */
     protected $application;
 
@@ -91,11 +92,17 @@ class Model
         $this->name_many = String::pluralize($this->name);
         $this->class_name = String::convertToCamelCase($this->name);
         $this->class_name_many = String::pluralize($this->class_name);
-        $this->repository_class = '\\Storage\Repository\\' . $this->class_name . 'Repository';
-        $this->model_class = '\\Storage\Model\\' . $this->class_name . 'Base';
+        $this->repository_class = 'Storage\Repository\\' . $this->class_name . 'Repository';
+        $this->model_class = 'Storage\Model\\' . $this->class_name . 'Base';
 
-        if(class_exists('Model\\' . $this->class_name)) {
+        $model_file = $this->application->getProject()->getPath('src php Model ' . $this->class_name . '.php');
+        if(file_exists($model_file)) {
             $this->model_class = 'Model\\' . $this->class_name;
+        }
+
+        $repository_file = $this->application->getProject()->getPath('src php Repository ' . $this->class_name . '.php');
+        if(file_exists($repository_file)) {
+            $this->repository_class = 'Repository\\' . $this->class_name;
         }
 
         if(count($this->properties)) {
@@ -531,5 +538,25 @@ class Model
     public function setNamespace($namespace)
     {
         $this->namespace = $namespace;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUsageList()
+    {
+        $result = array($this->name);
+        foreach($this->references as $src => $list) {
+            foreach($list as $reference) {
+                if(!in_array($reference->getSource(), $result)) {
+                    $result[] = $reference->getSource();
+                }
+                if(!in_array($reference->getDestination(), $result)) {
+                    $result[] = $reference->getDestination();
+                }
+            }
+        }
+        sort($result);
+        return $result;
     }
 }

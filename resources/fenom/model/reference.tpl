@@ -2,7 +2,7 @@
 {var $oppositeModel = $generator->getOppositeModel($linkModel)}
 {if $linkModel->getBehaviour('link')}
     /**
-     * @return {$linkModel->getModelClass()}[]
+     * @return {$linkModel->getClassName()}[]
      */
     public function get{$linkModel->getClassName()|pluralize}()
     {
@@ -15,12 +15,12 @@
     }
 
     /**
-     * @param {$oppositeModel->getModelClass()}
+     * @param {$oppositeModel->getClassName()}
 
-     * @return {$linkModel->getModelClass()}
+     * @return {$linkModel->getClassName()}
 
      */
-    public function get{$linkModel->getClassName()}({$oppositeModel->getModelClass()} ${$oppositeModel->getName()})
+    public function get{$linkModel->getClassName()}({$oppositeModel->getClassName()} ${$oppositeModel->getName()})
     {
         $linkRepository = $this->getRepository()->getMaster()->get{$linkModel->getClassName()|pluralize}();
         return $linkRepository->findOne(array(
@@ -34,14 +34,14 @@
     }
 
     /**
-     * @param {$oppositeModel->getModelClass()} ${$oppositeModel->getName()}
+     * @param {$oppositeModel->getClassName()} ${$oppositeModel->getName()}
 
      * @param array $data
-     * @return {$linkModel->getModelClass()}
+     * @return {$linkModel->getClassName()}
 
      * @throws \Exception
      */
-    public function add{$linkModel->getClassName()}({$oppositeModel->getModelClass()} ${$oppositeModel->getName()}, $data = array())
+    public function add{$linkModel->getClassName()}({$oppositeModel->getClassName()} ${$oppositeModel->getName()}, $data = array())
     {
         if ($this->get{$linkModel->getClassName()}(${$oppositeModel->getName()})) {
             throw new \Exception("{$oppositeModel->getName()} already linked to {$model->getName()}");

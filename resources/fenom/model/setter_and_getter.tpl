@@ -15,7 +15,7 @@
 
      * @param {$property->getType()}
 
-     * @return {$model->getModelClass()}
+     * @return {$model->getClassName()}
 
      */
     public function {$property->getSetter()}(${$name})
@@ -23,6 +23,7 @@
         if (!isset($this->_changes['{$name}'])) {
             $this->_changes['{$name}'] = array(
                 'old' => $this->{$name}
+
             );
         }
         $this->_changes['{$name}']['new'] = ${$name};
@@ -36,7 +37,8 @@
     /**
      * Get {$name}
 
-     * @return {$foreignModel->getClassName()}Base
+     * @return {$foreignModel->getClassName()}
+
      */
     public function get{$name|camelcase}()
     {
@@ -54,12 +56,12 @@
     /**
      * Set {$name}
 
-     * @param {$foreignModel->getClassName()}Base ${$name}
+     * @param {$foreignModel->getClassName()} ${$name}
 
-     * @return {$model->getModelClass()}
+     * @return {$model->getClassName()}
 
      */
-    public function set{$name|camelcase}({$foreignModel->getClassName()}Base ${$name} = null)
+    public function set{$name|camelcase}({$foreignModel->getClassName()} ${$name} = null)
     {
         $this->{$name} = ${$name};
 

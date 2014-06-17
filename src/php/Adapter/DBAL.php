@@ -86,9 +86,9 @@ class DBAL extends Connection {
         return $this->fetchColumn($query);
     }
 
-    public function fetchNow()
+    public function fetchNow($force = false)
     {
-        if(!isset($this->now)) {
+        if(!isset($this->now) || $force) {
             if ($this->isOracle()) {
                 $query = "select sysdate from dual";
             } elseif ($this->isPostgres()) {
@@ -99,9 +99,12 @@ class DBAL extends Connection {
                 $platform_name = $this->getDatabasePlatform()->getName();
                 throw new \Exception("Can't get nextval for DB type: $platform_name");
             }
-            $this->now = $this->fetchColumn($query);
+            $now = $this->fetchColumn($query);
+            if($force) {
+                return $now;
+            }
+            $this->now = $now;
         }
         return $this->now;
     }
-
 }
