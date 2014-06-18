@@ -65,18 +65,6 @@ class GenerateStorage extends Command
             $path = $this->application->getProject()->getPath('build php Storage Repository ' . $model->getClassName() . 'Repository.php');
             $fs->dumpFile($path, $repositorySource);
 
-            $coffeeGenerator = $this->application->getManager()->create('Cti\Storage\Generator\Coffee', array(
-                'model' => $model
-            ));
-
-            $generatedSource = $coffeeGenerator->getGeneratedCode();
-            $path = $this->application->getProject()->getPath('build coffee Model Generated ' . $model->getClassName() . '.coffee');
-            $fs->dumpFile($path, $generatedSource);
-
-            $modelSource = $coffeeGenerator->getModelCode();
-            $path = $this->application->getProject()->getPath('build coffee Model ' . $model->getClassName() . '.coffee');
-            $fs->dumpFile($path, $modelSource);
-
 //            if($model->hasOwnQuery()) {
 //                $fs->dumpFile(
 //                    $this->application->getPath('build php Storage Query ' . $model->class_name . 'Select.php'),
