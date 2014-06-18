@@ -3,13 +3,17 @@ namespace Cti\Storage;
 
 use Build\Application;
 use Cti\Core\Application\Bootloader;
+use Cti\Core\Application\Warmer;
 use Cti\Core\Module\Console;
 use Cti\Core\Module\Project;
 use Cti\Di\Manager;
 use Cti\Di\Reflection;
 use Cti\Core\Module\Fenom;
 
-class Storage extends Project implements Bootloader
+/**
+ * @dependsOn Cti\Core\Module\Fenom
+ */
+class Storage extends Project implements Bootloader, Warmer
 {
     /**
      * @inject
@@ -78,7 +82,17 @@ class Storage extends Project implements Bootloader
     {
         $initializer = $application->getManager()->getInitializer();
         $initializer->after('Cti\Core\Module\Console', array($this, 'registerCommands'));
-        $initializer->after('Cti\Core\Module\Fenom', array($this, 'registerFenomSource'));
+        $application->getFenom()->addSource($this->getPath('resources fenom'));
+    }
+
+    /**
+     * warm application
+     * @param Application $application
+     * @return mixed
+     */
+    public function warm(Application $application)
+    {
+        $application->getConsole()->execute('generate:storage');
     }
 
     public function registerCommands(Console $console, Manager $manager)
@@ -86,11 +100,6 @@ class Storage extends Project implements Bootloader
         foreach($this->getClasses('Command') as $class) {
             $console->add($manager->get($class));
         }
-    }
-
-    public function registerFenomSource(Fenom $fenom)
-    {
-        $fenom->addSource($this->getPath('resources fenom'));
     }
 
     /**
