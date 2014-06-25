@@ -12,9 +12,6 @@ class {$model->getClassName()}Base
 {foreach $model->getProperties() as $property}
 {include 'model/property.tpl'}
 {/foreach}
-{foreach $model->getReferences() as $reference}
-// include 'model/property_reference.tpl' disabled
-{/foreach}
     /**
      * model repository
      * @var Repository

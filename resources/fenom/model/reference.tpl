@@ -62,15 +62,12 @@
      * @return {$linkModel->getClassName()}[]
      */
     public function get{$linkModel->getClassName()|pluralize}() {
-        if(!$this->{$linkModel->getName()|pluralize}) {
-            $query = array(
+        $query = array(
 {foreach $reference->getProperties() as $property}
-                '{$property->getName()}' => $this->{$model->getProperty($property->getForeignName())->getGetter()}(),
+            '{$property->getName()}' => $this->{$model->getProperty($property->getForeignName())->getGetter()}(),
 {/foreach}
-            );
-            ${$linkModel->getName()}_repository = $this->getRepository()->getMaster()->get{$linkModel->getClassName()|pluralize}();
-            $this->{$linkModel->getName()|pluralize} = ${$linkModel->getName()}_repository->find($query, 'many');
-        }
-        return $this->{$linkModel->getName()|pluralize};
+        );
+        ${$linkModel->getName()}_repository = $this->getRepository()->getMaster()->get{$linkModel->getClassName()|pluralize}();
+        return ${$linkModel->getName()}_repository->find($query, 'many');
     }
 {/if}

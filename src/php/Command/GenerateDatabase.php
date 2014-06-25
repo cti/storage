@@ -39,7 +39,8 @@ class GenerateDatabase extends Command
         $this
             ->setName('generate:database')
             ->setDescription("Generate all storage stuff in database")
-            ->addOption('test');
+            ->addOption('test')
+            ->addOption('commit');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -74,8 +75,10 @@ class GenerateDatabase extends Command
             foreach($queries as $query) {
                 $this->dbal->executeQuery($query);
             }
+            if ($input->getOption('commit') == true) {
+                $this->dbal->commit();
+            }
         }
-        $this->dbal->commit();
 
     }
 }
