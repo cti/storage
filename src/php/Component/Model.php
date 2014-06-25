@@ -543,16 +543,22 @@ class Model
     /**
      * @return array
      */
-    public function getUsageList()
+    public function getUsageList($schema)
     {
         $result = array($this->name);
         foreach($this->references as $src => $list) {
             foreach($list as $reference) {
-                if(!in_array($reference->getSource(), $result)) {
-                    $result[] = $reference->getSource();
-                }
-                if(!in_array($reference->getDestination(), $result)) {
-                    $result[] = $reference->getDestination();
+                foreach(array($reference->getSource(), $reference->getDestination()) as $name) {
+                    if(!in_array($name, $result)) {
+                        $result[] = $name;
+                    }
+                    $model = $schema->getModel($name);
+                    if($model->hasBehaviour('link')) {
+                        $foreignNick = $model->getBehaviour('link')->getForeignModel($this)->getName();
+                        if(!in_array($foreignNick, $result)) {
+                            $result[] = $foreignNick;
+                        }
+                    }
                 }
             }
         }

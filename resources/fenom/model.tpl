@@ -13,7 +13,7 @@ class {$model->getClassName()}Base
 {include 'model/property.tpl'}
 {/foreach}
 {foreach $model->getReferences() as $reference}
-{include 'model/property_reference.tpl'}
+// include 'model/property_reference.tpl' disabled
 {/foreach}
     /**
      * model repository
