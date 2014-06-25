@@ -20,6 +20,10 @@ class Test_20140421_171425
             ),
             'salt'  => 'Соль для вычисления хэша',
             'hash'  => 'Полученный хэш',
+            'status' => array(
+                'type' => 'char',
+                'comment' => 'Статус'
+            )
         ));
 
         $person->createIndex('login');

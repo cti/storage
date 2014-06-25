@@ -25,10 +25,16 @@ class DBAL {
         foreach($inputSchema->getModels() as $model) {
             $table = $schema->createTable($model->getName());
             foreach($model->getProperties() as $property) {
-                $table->addColumn($property->getName(), $property->getType(), array(
+                $params = array(
                     'comment' => $property->getComment(),
                     'notnull' => $property->getRequired(),
-                ));
+                );
+                $type = $property->getType();
+                if ($type === 'char') {
+                    $type = 'string';
+                    $params['length'] = 1;
+                }
+                $table->addColumn($property->getName(), $type , $params);
             }
             $table->setPrimaryKey($model->getPk());
             foreach($model->getIndexes() as $index) {

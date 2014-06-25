@@ -198,4 +198,17 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $rows); // there is 1 backend module
         \DatabaseManager::clearTables();
     }
+
+    public function testTypeFails()
+    {
+        $this->setExpectedException('Doctrine\DBAL\DBALException');
+        $adminModel = $this->personRepository->create(array(
+            'login' => 'admin',
+            'salt' => '123',
+            'hash' => crypt('123', '123'),
+            'status' => 'Only_one_char_can_be_in_that_string'
+        ));
+        $adminModel->save();
+        \DatabaseManager::clearTables();
+    }
 } 

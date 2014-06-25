@@ -8,9 +8,6 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
     {
         $schema = getApplication()->getStorage()->getSchema();
         $array = $schema->asArray();
-//        var_export($array);
-//        var_export($this->getResultArray());
-//        exit;
         $this->assertEquals($this->getResultArray(), $array);
 
     }
@@ -59,6 +56,11 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                             'type' => 'datetime',
                             'required' => true,
                         ),
+                        'status' => array(
+                            'comment' => 'Статус',
+                            'type' => 'char',
+                            'required' => false,
+                        )
                     ),
                     'references' => array(
                         array(

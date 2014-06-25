@@ -43,7 +43,7 @@ class GenerateDatabaseTest extends \PHPUnit_Framework_TestCase
             return str_replace("\r","",
 "CREATE SEQUENCE sq_person START WITH 1 MINVALUE 1 INCREMENT BY 1;
 CREATE SEQUENCE sq_module START WITH 1 MINVALUE 1 INCREMENT BY 1;
-CREATE TABLE person (id_person NUMBER(10) NOT NULL, v_end DATE NOT NULL, id_module_default_module NUMBER(10) DEFAULT NULL, hash VARCHAR2(255) DEFAULT NULL, login VARCHAR2(255) NOT NULL, salt VARCHAR2(255) DEFAULT NULL, v_start DATE NOT NULL, PRIMARY KEY(id_person, v_end));
+CREATE TABLE person (id_person NUMBER(10) NOT NULL, v_end DATE NOT NULL, id_module_default_module NUMBER(10) DEFAULT NULL, hash VARCHAR2(255) DEFAULT NULL, login VARCHAR2(255) NOT NULL, salt VARCHAR2(255) DEFAULT NULL, status VARCHAR(1) DEFAULT NULL, v_start DATE NOT NULL, PRIMARY KEY(id_person, v_end));
 CREATE INDEX IDX_34DCD176AA08CB10 ON person (login);
 CREATE INDEX IDX_34DCD176E29C4A61 ON person (id_module_default_module);
 COMMENT ON COLUMN person.id_person IS 'Identifier';
@@ -51,6 +51,7 @@ COMMENT ON COLUMN person.id_module_default_module IS 'Default_module link';
 COMMENT ON COLUMN person.hash IS 'Полученный хэш';
 COMMENT ON COLUMN person.login IS 'Имя пользователя';
 COMMENT ON COLUMN person.salt IS 'Соль для вычисления хэша';
+COMMENT ON COLUMN person.status IS 'Статус';
 CREATE TABLE module (id_module NUMBER(10) NOT NULL, id_person_owner NUMBER(10) DEFAULT NULL, name VARCHAR2(255) DEFAULT NULL, PRIMARY KEY(id_module));
 COMMENT ON COLUMN module.id_module IS 'Identifier';
 COMMENT ON COLUMN module.id_person_owner IS 'Owner link';
@@ -84,7 +85,7 @@ CREATE INDEX IDX_B32214A82A1393C5 ON module_developer_link (id_module);"
             return str_replace("\r","",
 "CREATE SEQUENCE sq_person INCREMENT BY 1 MINVALUE 1 START 1;
 CREATE SEQUENCE sq_module INCREMENT BY 1 MINVALUE 1 START 1;
-CREATE TABLE person (id_person INT NOT NULL, v_end TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, id_module_default_module INT DEFAULT NULL, hash VARCHAR(255) DEFAULT NULL, login VARCHAR(255) NOT NULL, salt VARCHAR(255) DEFAULT NULL, v_start TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id_person, v_end));
+CREATE TABLE person (id_person INT NOT NULL, v_end TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, id_module_default_module INT DEFAULT NULL, hash VARCHAR(255) DEFAULT NULL, login VARCHAR(255) NOT NULL, salt VARCHAR(255) DEFAULT NULL, status VARCHAR(1) DEFAULT NULL, v_start TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id_person, v_end));
 CREATE INDEX IDX_34DCD176AA08CB10 ON person (login);
 CREATE INDEX IDX_34DCD176E29C4A61 ON person (id_module_default_module);
 COMMENT ON COLUMN person.id_person IS 'Identifier';
@@ -92,6 +93,7 @@ COMMENT ON COLUMN person.id_module_default_module IS 'Default_module link';
 COMMENT ON COLUMN person.hash IS 'Полученный хэш';
 COMMENT ON COLUMN person.login IS 'Имя пользователя';
 COMMENT ON COLUMN person.salt IS 'Соль для вычисления хэша';
+COMMENT ON COLUMN person.status IS 'Статус';
 CREATE TABLE module (id_module INT NOT NULL, id_person_owner INT DEFAULT NULL, name VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id_module));
 COMMENT ON COLUMN module.id_module IS 'Identifier';
 COMMENT ON COLUMN module.id_person_owner IS 'Owner link';

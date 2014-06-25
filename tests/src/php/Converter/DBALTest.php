@@ -25,7 +25,12 @@ class DBALTest extends \PHPUnit_Framework_TestCase
             foreach ($properties as $property) {
                 $column = $table->getColumn($property->getName());
                 $this->assertNotEmpty($column); // check column existance
-                $this->assertEquals($property->getType(), $column->getType()->getName());
+                if ($property->getType() == 'char') {
+                    $this->assertEquals('string', $column->getType()->getName());
+                    $this->assertEquals(1, $column->getLength());
+                } else {
+                    $this->assertEquals($property->getType(), $column->getType()->getName());
+                }
                 $this->assertEquals($property->getRequired(), $column->getNotnull());
 
             }
