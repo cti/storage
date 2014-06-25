@@ -47,11 +47,13 @@ CREATE TABLE person (id_person NUMBER(10) NOT NULL, v_end DATE NOT NULL, id_modu
 CREATE INDEX IDX_34DCD176AA08CB10 ON person (login);
 CREATE INDEX IDX_34DCD176E29C4A61 ON person (id_module_default_module);
 COMMENT ON COLUMN person.id_person IS 'Identifier';
+COMMENT ON COLUMN person.v_end IS 'Version end';
 COMMENT ON COLUMN person.id_module_default_module IS 'Default_module link';
 COMMENT ON COLUMN person.hash IS 'Полученный хэш';
 COMMENT ON COLUMN person.login IS 'Имя пользователя';
 COMMENT ON COLUMN person.salt IS 'Соль для вычисления хэша';
 COMMENT ON COLUMN person.status IS 'Статус';
+COMMENT ON COLUMN person.v_start IS 'Version start';
 CREATE TABLE module (id_module NUMBER(10) NOT NULL, id_person_owner NUMBER(10) DEFAULT NULL, name VARCHAR2(255) DEFAULT NULL, PRIMARY KEY(id_module));
 COMMENT ON COLUMN module.id_module IS 'Identifier';
 COMMENT ON COLUMN module.id_person_owner IS 'Owner link';
@@ -65,6 +67,8 @@ CREATE TABLE module_developer_link (id_module NUMBER(10) NOT NULL, id_person_dev
 CREATE INDEX IDX_B32214A82A1393C5 ON module_developer_link (id_module);
 COMMENT ON COLUMN module_developer_link.id_module IS 'Module link';
 COMMENT ON COLUMN module_developer_link.id_person_developer IS 'Developer link';
+COMMENT ON COLUMN module_developer_link.v_end IS 'Version end';
+COMMENT ON COLUMN module_developer_link.v_start IS 'Version start';
 ALTER TABLE person ADD CONSTRAINT FK_34DCD176E29C4A61 FOREIGN KEY (id_module_default_module) REFERENCES module (id_module);
 ALTER TABLE person_favorite_module_link ADD CONSTRAINT FK_ABC434EACDFA5ACF FOREIGN KEY (id_module_favorite_module) REFERENCES module (id_module);
 ALTER TABLE module_developer_link ADD CONSTRAINT FK_B32214A82A1393C5 FOREIGN KEY (id_module) REFERENCES module (id_module);"
@@ -89,11 +93,13 @@ CREATE TABLE person (id_person INT NOT NULL, v_end TIMESTAMP(0) WITHOUT TIME ZON
 CREATE INDEX IDX_34DCD176AA08CB10 ON person (login);
 CREATE INDEX IDX_34DCD176E29C4A61 ON person (id_module_default_module);
 COMMENT ON COLUMN person.id_person IS 'Identifier';
+COMMENT ON COLUMN person.v_end IS 'Version end';
 COMMENT ON COLUMN person.id_module_default_module IS 'Default_module link';
 COMMENT ON COLUMN person.hash IS 'Полученный хэш';
 COMMENT ON COLUMN person.login IS 'Имя пользователя';
 COMMENT ON COLUMN person.salt IS 'Соль для вычисления хэша';
 COMMENT ON COLUMN person.status IS 'Статус';
+COMMENT ON COLUMN person.v_start IS 'Version start';
 CREATE TABLE module (id_module INT NOT NULL, id_person_owner INT DEFAULT NULL, name VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id_module));
 COMMENT ON COLUMN module.id_module IS 'Identifier';
 COMMENT ON COLUMN module.id_person_owner IS 'Owner link';
@@ -102,11 +108,15 @@ CREATE TABLE person_favorite_module_link (id_module_favorite_module INT NOT NULL
 CREATE INDEX IDX_ABC434EACDFA5ACF ON person_favorite_module_link (id_module_favorite_module);
 COMMENT ON COLUMN person_favorite_module_link.id_module_favorite_module IS 'Favorite_module link';
 COMMENT ON COLUMN person_favorite_module_link.id_person IS 'Person link';
+COMMENT ON COLUMN person_favorite_module_link.v_end IS 'Version end';
 COMMENT ON COLUMN person_favorite_module_link.rating IS 'Рейтинг';
+COMMENT ON COLUMN person_favorite_module_link.v_start IS 'Version start';
 CREATE TABLE module_developer_link (id_module INT NOT NULL, id_person_developer INT NOT NULL, v_end TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, v_start TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id_module, id_person_developer, v_end));
 CREATE INDEX IDX_B32214A82A1393C5 ON module_developer_link (id_module);
 COMMENT ON COLUMN module_developer_link.id_module IS 'Module link';
 COMMENT ON COLUMN module_developer_link.id_person_developer IS 'Developer link';
+COMMENT ON COLUMN module_developer_link.v_end IS 'Version end';
+COMMENT ON COLUMN module_developer_link.v_start IS 'Version start';
 ALTER TABLE person ADD CONSTRAINT FK_34DCD176E29C4A61 FOREIGN KEY (id_module_default_module) REFERENCES module (id_module) NOT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE person_favorite_module_link ADD CONSTRAINT FK_ABC434EACDFA5ACF FOREIGN KEY (id_module_favorite_module) REFERENCES module (id_module) NOT DEFERRABLE INITIALLY IMMEDIATE;
 ALTER TABLE module_developer_link ADD CONSTRAINT FK_B32214A82A1393C5 FOREIGN KEY (id_module) REFERENCES module (id_module) NOT DEFERRABLE INITIALLY IMMEDIATE;"

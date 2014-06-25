@@ -109,7 +109,14 @@ class Model
             $properties = $this->properties;
             $this->properties = array();
             foreach ($properties as $key => $config) {
-                $this->addProperty($key, $config);
+                if($config instanceof Model) {
+                    $reference = $this->hasOne($config);
+                    if(is_string($key)) {
+                        $reference->usingAlias($key);
+                    }
+                } else {
+                    $this->addProperty($key, $config);
+                }
             }
         }
 

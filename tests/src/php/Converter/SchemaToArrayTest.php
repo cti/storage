@@ -47,12 +47,12 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                             'required' => false,
                         ),
                         'v_start' => array(
-                            'comment' => '',
+                            'comment' => 'Version start',
                             'type' => 'datetime',
                             'required' => true,
                         ),
                         'v_end' => array(
-                            'comment' => '',
+                            'comment' => 'Version end',
                             'type' => 'datetime',
                             'required' => true,
                         ),
@@ -121,12 +121,12 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                             'required' => false,
                         ),
                         'v_start' => array(
-                            'comment' => '',
+                            'comment' => 'Version start',
                             'type' => 'datetime',
                             'required' => true,
                         ),
                         'v_end' => array(
-                            'comment' => '',
+                            'comment' => 'Version end',
                             'type' => 'datetime',
                             'required' => true,
                         ),
@@ -160,12 +160,12 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                             'required' => true,
                         ),
                         'v_start' => array(
-                            'comment' => '',
+                            'comment' => 'Version start',
                             'type' => 'datetime',
                             'required' => true,
                         ),
                         'v_end' => array(
-                            'comment' => '',
+                            'comment' => 'Version end',
                             'type' => 'datetime',
                             'required' => true,
                         ),

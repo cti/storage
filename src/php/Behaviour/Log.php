@@ -13,6 +13,7 @@ class Log extends Behaviour
             'v_start' => new Property(array(
                 'behaviour' => $this,
                 'name' => 'v_start',
+                'comment' => 'Version start',
                 'type' => 'datetime',
                 'primary' => true,
                 'required' => true,
@@ -20,6 +21,7 @@ class Log extends Behaviour
             'v_end' => new Property(array(
                 'behaviour' => $this,
                 'name' => 'v_end',
+                'comment' => 'Version end',
                 'type' => 'datetime',
                 'readonly' => true,
                 'required' => true,
