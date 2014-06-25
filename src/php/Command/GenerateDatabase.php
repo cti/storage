@@ -75,6 +75,7 @@ class GenerateDatabase extends Command
                 $this->dbal->executeQuery($query);
             }
         }
+        $this->dbal->commit();
 
     }
 }
