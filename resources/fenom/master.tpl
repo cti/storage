@@ -5,6 +5,7 @@ namespace Storage;
 use Cti\Di\Manager;
 use Cti\Storage\Adapter\DBAL;
 use OutOfRangeException;
+use Storage;
 
 {include 'blocks/comment.tpl'}
 
