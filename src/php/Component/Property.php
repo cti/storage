@@ -146,7 +146,10 @@ class Property
         if($this->type == 'datetime') {
             return 'date';
         }
-        return $this->type;
+        if($this->type == 'integer') {
+            return 'integer';
+        }
+        return 'string';
     }
 
     /**
