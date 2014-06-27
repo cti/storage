@@ -42,7 +42,7 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                             'required' => false,
                         ),
                         'id_module_default_module' => array(
-                            'comment' => 'Default_module link',
+                            'comment' => 'Default_module',
                             'type' => 'integer',
                             'required' => false,
                         ),
@@ -86,7 +86,7 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                             'required' => false,
                         ),
                         'id_person_owner' => array(
-                            'comment' => 'Owner link',
+                            'comment' => 'Owner',
                             'type' => 'integer',
                             'required' => false,
                         )
@@ -106,12 +106,12 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                     'is_link' => true,
                     'properties' => array(
                         'id_person' => array(
-                            'comment' => 'Person link',
+                            'comment' => 'Person',
                             'type' => 'integer',
                             'required' => true,
                         ),
                         'id_module_favorite_module' => array(
-                            'comment' => 'Favorite_module link',
+                            'comment' => 'Favorite_module',
                             'type' => 'integer',
                             'required' => true,
                         ),
@@ -150,12 +150,12 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                     'is_link' => true,
                     'properties' => array(
                         'id_module' => array(
-                            'comment' => 'Module link',
+                            'comment' => 'Module',
                             'type' => 'integer',
                             'required' => true,
                         ),
                         'id_person_developer' => array(
-                            'comment' => 'Developer link',
+                            'comment' => 'Developer',
                             'type' => 'integer',
                             'required' => true,
                         ),
