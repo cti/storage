@@ -16,7 +16,6 @@ use Cti\Core\Module\Fenom;
 class Storage extends Project implements Bootloader, Warmer
 {
     /**
-     * @inject
      * @var \Cti\Storage\Schema
      */
     protected $schema;
@@ -62,6 +61,9 @@ class Storage extends Project implements Bootloader, Warmer
      */
     public function getSchema()
     {
+        if(!$this->schema) {
+            $this->schema = $this->manager->get('Cti\\Storage\\Schema');
+        }
         return $this->schema;
     }
 
