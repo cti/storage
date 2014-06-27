@@ -93,10 +93,14 @@ class Reference
             $behaviour = $property->getBehaviour();
             if (!($behaviour instanceof \Cti\Storage\Behaviour\Log)) {
                 $name = $this->getDestinationAlias() != $this->getDestination() ? $key . '_' . $this->getDestinationAlias(): $key;
+                $comment = ucfirst($this->getDestinationAlias());
+                if($this->getDestination() == $this->getDestinationAlias()) {
+                    $comment = $schema->getModel($this->getDestination())->getComment();
+                }
                 $this->properties[$name] = $source->addProperty($name, new Property(array(
                     'name' => $name,
                     'foreignName' => $key,
-                    'comment' => ucfirst($this->getDestinationAlias()),
+                    'comment' => $comment,
                     'type' => $property->getType(),
                     'relation' => $this,
                     'readonly' => true,

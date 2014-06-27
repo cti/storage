@@ -106,7 +106,7 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                     'is_link' => true,
                     'properties' => array(
                         'id_person' => array(
-                            'comment' => 'Person',
+                            'comment' => 'Пользователь',
                             'type' => 'integer',
                             'required' => true,
                         ),
@@ -150,7 +150,7 @@ class SchemaToArrayTest extends \PHPUnit_Framework_TestCase
                     'is_link' => true,
                     'properties' => array(
                         'id_module' => array(
-                            'comment' => 'Module',
+                            'comment' => 'Модуль',
                             'type' => 'integer',
                             'required' => true,
                         ),
