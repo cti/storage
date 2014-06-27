@@ -54,6 +54,27 @@ class {$model->getClassName()}Base
 
 {/foreach}
     /**
+     * merge data with model
+     * @param array $data
+     * @return {$model->getClassName()}
+
+     */
+    public function merge($data = array())
+    {
+        $setters = array(
+{foreach $model->getProperties() as $property}
+            '{$property->getName()}' => '{$property->getSetter()}',
+{/foreach}
+        );
+        foreach($setters as $property => $setter) {
+            if(array_key_exists($property, $data)) {
+                $this->$setter($data[$property]);
+            }
+        }
+        return $this;
+    }
+
+    /**
      * Get model repository
      * @return Repository 
      */
@@ -64,7 +85,8 @@ class {$model->getClassName()}Base
 
     /**
      * Save item in repository
-     * @return {$model->getClassName()} 
+     * @return {$model->getClassName()}
+
      */
     public function save()
     {
