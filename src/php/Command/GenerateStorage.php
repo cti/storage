@@ -28,6 +28,7 @@ class GenerateStorage extends Command
     {
         $this
             ->setName('generate:storage')
+            ->addArgument('debug')            
             ->setDescription('Generate php classes')
         ;
     }
@@ -39,6 +40,8 @@ class GenerateStorage extends Command
          */
         $schema = $this->application->getStorage()->getSchema();
 
+        $debug = $input->getArgument('debug') == true;
+
         $fs = new Filesystem();
 
         $fs->dumpFile(
@@ -47,6 +50,10 @@ class GenerateStorage extends Command
                 'schema' => $schema
             ))
         );
+        if($debug) {
+            echo '- master' . PHP_EOL;
+        }
+
 
         foreach($schema->getModels() as $model) {
 
@@ -64,6 +71,11 @@ class GenerateStorage extends Command
             $repositorySource = $repositoryGenerator->getCode();
             $path = $this->application->getProject()->getPath('build php Storage Repository ' . $model->getClassName() . 'Repository.php');
             $fs->dumpFile($path, $repositorySource);
+
+            if($debug) {
+                echo '- generate ' . $model->getClassName() . PHP_EOL;
+            }
+
 
 //            if($model->hasOwnQuery()) {
 //                $fs->dumpFile(

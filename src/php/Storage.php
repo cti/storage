@@ -94,7 +94,7 @@ class Storage extends Project implements Bootloader, Warmer
      */
     public function warm(Application $application)
     {
-        $application->getConsole()->execute('generate:storage');
+        $application->getConsole()->execute('generate:storage', array('debug' => true));
     }
 
     public function registerCommands(Console $console, Manager $manager)
