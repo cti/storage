@@ -39,6 +39,7 @@ class GenerateDatabase extends Command
         $this
             ->setName('generate:database')
             ->setDescription("Generate all storage stuff in database")
+            ->addArgument('debug')            
             ->addOption('test')
             ->addOption('commit');
     }
@@ -55,7 +56,12 @@ class GenerateDatabase extends Command
         $this->generator->setFromSchema($dbalFromSchema);
         $queries = $this->generator->migrate();
 
+        $debug = $input->getArgument('debug') == true;
+
         $create = $this->application->getProject()->getPath('build sql create.sql');
+        if($debug) {
+            echo "- generate create.sql" . PHP_EOL;
+        }
 
         $output->writeln('Create ' . $create);
         $fs->dumpFile($create, implode(";\n",$queries) . ';');
@@ -66,11 +72,16 @@ class GenerateDatabase extends Command
         $queries = $this->generator->migrate();
 
         $migrate = $this->application->getProject()->getPath('build sql migrate.sql');
+        if($debug) {
+            echo "- generate migrate.sql" . PHP_EOL;
+        }
 
         $output->writeln('Create ' . $migrate);
         $fs->dumpFile($migrate, implode(";\n",$queries) . (count($queries) ? ';' : ''));
 
-        echo implode(";\n",$queries) . ';';
+        if(!$debug) {
+            echo implode(";\n",$queries) . ';';
+        }
         if ($input->getOption('test') != true) {
             foreach($queries as $query) {
                 $this->dbal->executeQuery($query);

@@ -28,7 +28,7 @@ class GenerateStorage extends Command
     {
         $this
             ->setName('generate:storage')
-            ->addArgument('debug')            
+            ->addArgument('debug')
             ->setDescription('Generate php classes')
         ;
     }
