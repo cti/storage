@@ -60,7 +60,7 @@ class GenerateDatabase extends Command
 
         $create = $this->application->getProject()->getPath('build sql create.sql');
         if($debug) {
-            echo "- generate create.sql" . PHP_EOL;
+            echo "- build create.sql" . PHP_EOL;
         }
 
         $output->writeln('Create ' . $create);
@@ -73,7 +73,7 @@ class GenerateDatabase extends Command
 
         $migrate = $this->application->getProject()->getPath('build sql migrate.sql');
         if($debug) {
-            echo "- generate migrate.sql" . PHP_EOL;
+            echo "- build migrate.sql" . PHP_EOL;
         }
 
         $output->writeln('Create ' . $migrate);
