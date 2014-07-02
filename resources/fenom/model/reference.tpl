@@ -68,6 +68,6 @@
 {/foreach}
         );
         ${$linkModel->getName()}_repository = $this->getRepository()->getMaster()->get{$linkModel->getClassName()|pluralize}();
-        return ${$linkModel->getName()}_repository->findWhere($query, 'many');
+        return ${$linkModel->getName()}_repository->findAll($query);
     }
 {/if}
